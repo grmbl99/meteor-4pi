@@ -1,0 +1,36 @@
+body {
+  padding: 10px;
+  font-family: sans-serif;
+}
+
+.piview {
+  width:200px;
+  float: left;
+  outline: 1px solid green;
+  outline-offset: 5px;
+  margin: 10px;
+  background-color: lightgreen;
+}
+
+.pialert {
+  background-color: red
+}
+
+.feature {
+  position:relative;
+  height: 25px;
+}
+
+.featurename {
+  position:absolute;
+  left: 3px;
+  top: 2px;
+  z-index: 10;
+}
+
+.featuresize {
+  position:absolute;
+  left: 0px;
+  top: 2px;
+  z-index: 5;
+}
