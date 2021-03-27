@@ -6,17 +6,15 @@ import { InputForm } from './InputForm.jsx';
 
 export function App(props) {
   const features = useTracker(() => FeaturesCollection.find({}).fetch());
-  const [count, setCount] = useState(12);
 
-  // const handleSubmit = (input) => {
-  //   setCount(count + 1);
-  //   setFeatures(features.concat([{id: count, pi: input.pi, name: input.name, size: parseInt(input.size)}]));
-  // };
+  const handleSubmit = (input) => {
+    FeaturesCollection.insert({name: input.name, pi: input.pi, size: parseInt(input.size)});
+  };
 
   return (
     <div>
       <div>
-        {/* <InputForm onSubmit={handleSubmit}/> */}
+        <InputForm onSubmit={handleSubmit}/>
         <PiView features={features} name="1" />
         <PiView features={features} name="2" />
         <PiView features={features} name="3" />
@@ -25,3 +23,4 @@ export function App(props) {
     </div>
   );  
 }
+

@@ -12,7 +12,7 @@ export function PiView(props) {
 
   const listItems = features.flatMap((feature) => {
     if (feature.pi === props.name) {
-      return(<Feature key={feature.id} feature={feature} />);
+      return(<Feature key={feature._id} feature={feature} />);
     } else {
       return([]);
     }
