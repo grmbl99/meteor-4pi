@@ -12,7 +12,7 @@ export function PiView(props) {
 
   const listItems = features.flatMap((feature) => {
     if (feature.pi === props.name) {
-      return(<Feature key={feature._id} feature={feature} />);
+      return(<Feature onClick={props.onFeatureClicked} key={feature._id} feature={feature} />);
     } else {
       return([]);
     }
@@ -28,8 +28,13 @@ export function PiView(props) {
 
 function Feature(props) {
   const feature=props.feature;
+
+  function onClick() {
+    props.onClick(feature._id);
+  };
+
   return (
-    <div className="feature">
+    <div className="feature" onClick={onClick}>
       <div className="featurename">Featurename: {feature.name}</div>
       <div className="featuresize">
         <svg width="100px" height="20px">

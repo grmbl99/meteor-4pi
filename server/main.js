@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection } from '/imports/api/FeaturesCollection';
 
-const insertFeature = (feature) => FeaturesCollection.insert(feature);
+function insertFeature(feature) {
+  FeaturesCollection.insert(feature);
+}
  
 Meteor.startup(() => {
   if (FeaturesCollection.find().count() === 0) {

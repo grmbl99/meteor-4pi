@@ -5,7 +5,7 @@ export function InputForm(props) {
   const [size, setSize] = useState('');
   const [pi, setPi] = useState('');
 
-  const handleSubmit = (event) => {
+  function handleSubmit(event) {
     props.onSubmit({name: name, size: size, pi: pi});
     setName('');
     setSize('');
@@ -13,7 +13,7 @@ export function InputForm(props) {
     event.preventDefault();
   };
 
-  const handleNameChange = (event) => {
+  function handleNameChange(event) {
     setName(event.target.value);
   };
 
