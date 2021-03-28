@@ -2,27 +2,53 @@ import React, { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd'
 import { ItemTypes } from './Constants'
 
+//----------------------------------------------------------------------
 export function PiView(props) {
   const features = props.features;
+  const sprints = props.sprints;
 
   const [{isOver}, drop] = useDrop(() => ({
     accept: ItemTypes.FEATURE,
-    drop: (item) => { props.onFeatureDropped(item.id,props.name) },
+    drop: (item) => { props.onFeatureDropped(item.id,props.pi) },
     collect: (monitor) => ({
       isOver: monitor.isOver()
     })
   }))
 
-  let size=0;
-  features.forEach(feature => {
-    if (feature.pi === props.name) {
-      size += feature.size;
+  let dict={};
+  let offset=0;
+  sprints.forEach(sprint => {
+    if (sprint.pi === props.pi) {
+      dict[sprint.sprintname]=offset;
+      offset += 65;
     }
   });
 
-  const listItems = features.flatMap((feature) => {
-    if (feature.pi === props.name) {
-      return(<Feature key={feature._id} feature={feature} />);
+  let size=0;
+  let done=0;
+  features.forEach(feature => {
+    if (feature.pi === props.pi) {
+      size += feature.size;
+      done += feature.done;
+    }
+  });
+  perct=size>0 ? done/size : 0;
+  perctstr = Intl.NumberFormat('en-IN', { style: "percent" }).format(perct);
+
+
+  const featuresList = features.flatMap((feature) => {
+    so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+    eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+    if (feature.pi === props.pi) {
+      return(<Feature key={feature._id} feature={feature} so={so} eo={eo}/>);
+    } else {
+      return([]);
+    }
+  });
+
+  const sprintsList = sprints.flatMap((sprint) => {
+    if (sprint.pi === props.pi) {
+      return(<Sprint key={sprint._id} name={sprint.sprintname} />);
     } else {
       return([]);
     }
@@ -37,12 +63,21 @@ export function PiView(props) {
         backgroundColor: size>140 ? "red" : "lightgreen"
       }}
     >
-      {props.name}: total size: {size}
-      {listItems}
+      <div className="piheader">{props.pi}</div>
+      {sprintsList}
+      <div className="piheader">{perctstr} [{done}/{size}]
+        <div className="pisize">
+          <svg width="450px" height="25px">
+            <rect x="0" y="5" height="20" width={465*perct} fill="yellow"/>
+          </svg>
+        </div>
+      </div>
+      {featuresList}
     </div>
   );
 }
 
+//----------------------------------------------------------------------
 function Feature(props) {
   const feature=props.feature;
 
@@ -54,6 +89,8 @@ function Feature(props) {
     })
   }))
 
+  perct=feature.done/feature.size;
+
   return (
     <div 
       className="feature" 
@@ -63,12 +100,20 @@ function Feature(props) {
         cursor: "move"
       }}
     >
-      <div className="featurename">Featurename: {feature.name}</div>
+      <div className="featurename">{feature.name}</div>
       <div className="featuresize">
-        <svg width="100px" height="20px">
-          <rect height="20" width={feature.size} fill="green"/>
+        <svg width="450px" height="20px">
+          <rect x={props.so} y="0" height="20" width={props.eo-props.so} fill="lightgray"/>
+          <rect x={props.so} y="0" height="20" width={(props.eo-props.so)*perct} fill="green"/>
         </svg>
       </div>
     </div>
+  );
+}
+
+//----------------------------------------------------------------------
+function Sprint(props) {
+  return(
+    <div className="sprint">{props.name}</div>
   );
 }
