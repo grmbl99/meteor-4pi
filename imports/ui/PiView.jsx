@@ -9,7 +9,7 @@ export function PiView(props) {
 
   const [{isOver}, drop] = useDrop(() => ({
     accept: ItemTypes.FEATURE,
-    drop: (item) => { props.onFeatureDropped(item.id,props.pi) },
+    drop: (item) => { props.onFeatureDropped(item.id,props.pi,props.team,props.project) },
     collect: (monitor) => ({
       isOver: monitor.isOver()
     })
@@ -27,7 +27,10 @@ export function PiView(props) {
   let size=0;
   let done=0;
   features.forEach(feature => {
-    if (feature.pi === props.pi) {
+    if (feature.pi === props.pi && 
+        (props.team === "" || feature.team === props.team) &&
+        (props.project === "" || feature.project === props.project)
+        ) {
       size += feature.size;
       done += feature.done;
     }
@@ -39,7 +42,10 @@ export function PiView(props) {
   const featuresList = features.flatMap((feature) => {
     so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
     eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
-    if (feature.pi === props.pi) {
+    if (feature.pi === props.pi && 
+        (props.team === "" || feature.team === props.team) &&
+        (props.project === "" || feature.project === props.project)
+      ) {
       return(<Feature key={feature._id} feature={feature} so={so} eo={eo}/>);
     } else {
       return([]);
@@ -63,7 +69,7 @@ export function PiView(props) {
         backgroundColor: size>140 ? "red" : "lightgreen"
       }}
     >
-      <div className="piheader">{props.pi}</div>
+      <div className="piheader">{props.pi} {props.team} {props.project}</div>
       {sprintsList}
       <div className="piheader">{perctstr} [{done}/{size}]
         <div className="pisize">
