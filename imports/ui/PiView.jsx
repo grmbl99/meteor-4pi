@@ -13,7 +13,7 @@ export function PiView(props) {
     collect: (monitor) => ({
       isOver: monitor.isOver()
     })
-  }))
+  }),[props])
 
   let dict={};
   let offset=0;

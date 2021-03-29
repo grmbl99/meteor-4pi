@@ -5,12 +5,17 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(10,1fr);
+  grid-template-columns: repeat(10, auto);
   gap: 10px 10px;
 }
 
 .new-row {
   grid-column-start: 1;
+}
+
+.project-team-heading {
+  grid-column-start: 2;
+  grid-column-end: span 4;
 }
 
 .piview {
