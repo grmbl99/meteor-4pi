@@ -4,9 +4,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
-import { NewFeatureForm } from './NewFeatureForm.jsx';
-import { TeamSelect } from './TeamSelect.jsx';
-import { ProjectSelect } from './ProjectSelect.jsx';
+import { NewFeatureForm, TeamSelect, ProjectSelect } from './Forms.jsx';
 
 export function App(props) {
   const features = useTracker(getFeatures);

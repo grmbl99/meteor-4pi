@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd'
-import { ItemTypes } from './Constants'
+
+const ItemTypes = {
+  FEATURE: 'feature'
+}
 
 //----------------------------------------------------------------------
 export function PiView(props) {
