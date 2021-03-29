@@ -54,15 +54,15 @@ export function PiView(props) {
       ref={drop}
       style={{
         opacity: isOver ? 0.5 : 1, 
-        backgroundColor: size>140 ? 'red' : 'lightgreen'
       }}
     >
       <div className='piheader'>{props.pi} {props.team} {props.project}</div>
       {sprintsList}
-      <div className='piheader'>{perctstr} [{done}/{size}]
+      <div className='piprogress'>
+        {perctstr} [{done}/{size}]
         <div className='pisize'>
-          <svg width='450px' height='25px'>
-            <rect x='0' y='5' height='20' width={465*perct} fill='yellow'/>
+          <svg width='455px' height='40px'>
+            <rect x='0' y='0' height='30' width={465*perct} fill='purple'/>
           </svg>
         </div>
       </div>
@@ -84,6 +84,7 @@ function Feature(props) {
   }))
 
   perct=feature.done/feature.size;
+  perctstr=Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
 
   return (
     <div 
@@ -96,9 +97,12 @@ function Feature(props) {
     >
       <div className='featurename'>{feature.name}</div>
       <div className='featuresize'>
+        <div className='featureprogress' style={{left: props.so+5}}>
+          {perctstr} [{feature.done}/{feature.size}]
+        </div>
         <svg width='450px' height='20px'>
-          <rect x={props.so} y='0' height='20' width={props.eo-props.so} fill='lightgray'/>
-          <rect x={props.so} y='0' height='20' width={(props.eo-props.so)*perct} fill='green'/>
+          <rect x={props.so} y='0' height='20' width={props.eo-props.so} fill='rgb(230, 230, 230)'/>
+          <rect x={props.so} y='0' height='20' width={(props.eo-props.so)*perct} fill='rgb(81, 122, 235)'/>
         </svg>
       </div>
     </div>
