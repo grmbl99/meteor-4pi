@@ -39,6 +39,8 @@ export function App(props) {
     teamsList.push(<div key={i++} className='new-row'></div>)
     teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
     teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
+    teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
+    teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.4' project={projectFilter} team={team.teamname}/>);
   });
 
   let projectsList=[];
@@ -46,6 +48,8 @@ export function App(props) {
     projectsList.push(<div key={i++} className='new-row'></div>)
     projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
     projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
+    projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
+    projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.4' project={project.projectname} team={teamFilter}/>);
   });
 
   return (

@@ -21,7 +21,6 @@ body {
 .piview {
   width:455px;
   float: left;
-  /* outline: 1px solid green; */
   outline-offset: 5px;
   margin: 10px;
   background-color: rgb(245, 245, 245);

@@ -1,21 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
 
-function insertFeature(feature) {
-  FeaturesCollection.insert(feature);
-}
-
-function insertSprint(sprint) {
-  SprintsCollection.insert(sprint);
-}
-
-function insertTeam(team) {
-  TeamsCollection.insert(team);
-}
-
-function insertProject(project) {
-  ProjectsCollection.insert(project);
-}
+function insertFeature(feature) { FeaturesCollection.insert(feature);}
+function insertSprint(sprint) {SprintsCollection.insert(sprint);}
+function insertTeam(team) {TeamsCollection.insert(team);}
+function insertProject(project) {ProjectsCollection.insert(project);}
 
 Meteor.startup(() => {
   if (FeaturesCollection.find().count() === 0) {
@@ -26,7 +15,6 @@ Meteor.startup(() => {
       {pi: 'PI 21.2', name: 'last feature', size: 30, done: 15, startsprint: '2125', endsprint: '2129', team: 'hercules', project: 'tiger'}
     ].forEach(insertFeature);
   }
-
 
   if (SprintsCollection.find().count() === 0) {
     [
