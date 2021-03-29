@@ -22,11 +22,6 @@ export function App(props) {
     console.log("added: " + input.name);
   };
 
-  // function handleRemove(value) {
-  //   FeaturesCollection.remove({ _id: value});
-  //   console.log(value);
-  // };
-
   function handleMove(featureId,pi,team,project) {
     let updates = { "pi": pi };
     if (project !== "") { updates["project"]=project; }
@@ -35,22 +30,28 @@ export function App(props) {
     FeaturesCollection.update({ _id: featureId },{ $set: updates});
   };
 
+  let teamsList=[];
+  teams.forEach(team => {
+    teamsList.push(<div className="new-row"><PiView key={team._id+"1"} onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.1" project="" team={team.teamname}/></div>);
+    teamsList.push(<PiView key={team._id+"2"} onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.2" project="" team={team.teamname}/>);
+  });
+
+  let projectsList=[];
+  projects.forEach(project => {
+    projectsList.push(<div className="new-row"><PiView key={project._id+"1"} onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.1" project={project.projectname} team=""/></div>);
+    projectsList.push(<PiView key={project._id+"2"} onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.2" project={project.projectname} team=""/>);
+  });
+
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div>
-        <div>
-          <InputForm onSubmit={handleSubmit}/>
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.1" project="puma" team="pegasus"/>
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.2" project="puma" team="pegasus"/>
-
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.1" project="" team="mushu"/>
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.2" project="" team="mushu"/>
-
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.1" project="puma" team=""/>
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.2" project="puma" team=""/>
-
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.1" project="voip" team=""/>
-          <PiView onFeatureDropped={handleMove} features={features} sprints={sprints} pi="PI 21.2" project="voip" team=""/>
+        <InputForm onSubmit={handleSubmit}/>
+        <div className="grid-container">
+          <h1 className="new-row">Teams:</h1>
+          {teamsList}
+          <h1 className="new-row">Projects:</h1>
+          {projectsList}
         </div>
       </div>
     </DndProvider>

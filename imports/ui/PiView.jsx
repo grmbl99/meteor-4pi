@@ -17,48 +17,33 @@ export function PiView(props) {
 
   let dict={};
   let offset=0;
+  let sprintsList=[];
   sprints.forEach(sprint => {
     if (sprint.pi === props.pi) {
       dict[sprint.sprintname]=offset;
       offset += 65;
+      sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname} />);
     }
   });
 
   let size=0;
   let done=0;
+  let featuresList=[];
   features.forEach(feature => {
+    so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+    eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
     if (feature.pi === props.pi && 
         (props.team === "" || feature.team === props.team) &&
         (props.project === "" || feature.project === props.project)
         ) {
       size += feature.size;
       done += feature.done;
+      featuresList.push(<Feature key={feature._id} feature={feature} so={so} eo={eo}/>)
     }
   });
+
   perct=size>0 ? done/size : 0;
   perctstr = Intl.NumberFormat('en-IN', { style: "percent" }).format(perct);
-
-
-  const featuresList = features.flatMap((feature) => {
-    so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-    eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
-    if (feature.pi === props.pi && 
-        (props.team === "" || feature.team === props.team) &&
-        (props.project === "" || feature.project === props.project)
-      ) {
-      return(<Feature key={feature._id} feature={feature} so={so} eo={eo}/>);
-    } else {
-      return([]);
-    }
-  });
-
-  const sprintsList = sprints.flatMap((sprint) => {
-    if (sprint.pi === props.pi) {
-      return(<Sprint key={sprint._id} name={sprint.sprintname} />);
-    } else {
-      return([]);
-    }
-  });
 
   return (
     <div 

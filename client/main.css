@@ -3,6 +3,16 @@ body {
   font-family: sans-serif;
 }
 
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(10,1fr);
+  gap: 10px 10px;
+}
+
+.new-row {
+  grid-column-start: 1;
+}
+
 .piview {
   width:450px;
   float: left;
