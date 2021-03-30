@@ -35,7 +35,7 @@ export function ProjectSelectForm(props) {
   return (
     <form onSubmit={handleSubmit}>
       <div className='form-grid-container'>
-        <label>Project:</label>
+        <label>Project Filter:</label>
         <input type='text' value={projectname} onChange={(event) => setProjectname(event.target.value)} />
         <input type='submit' value='Submit' />
       </div>
@@ -55,7 +55,7 @@ export function TeamSelectForm(props) {
   return (
     <form onSubmit={handleSubmit}>
      <div className='form-grid-container'>
-       <label>Team:</label> 
+       <label>Team Filter:</label> 
        <input type='text' value={teamname} onChange={(event) => setTeamname(event.target.value)} />
       <input type='submit' value='Submit' />
     </div>

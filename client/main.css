@@ -11,7 +11,7 @@ body {
 
 .form-grid-container {
   display: grid;
-  grid-template-columns: 50px 100px 75px;
+  grid-template-columns: 100px 100px 75px;
   gap: 10px 10px;
 }
 
@@ -27,7 +27,8 @@ body {
   grid-column-end: span 1;
 }
 .filters {
-  padding-top: 30px;
+  padding-top: 35px;
+  padding-left: 10px;
   grid-column-end: span 2;
 }
 

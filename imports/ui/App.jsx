@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
-import { NewFeatureForm, TeamSelectForm, ProjectSelectForm } from './Forms.jsx';
+import { TeamSelectForm, ProjectSelectForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popup.jsx';
 
 export function App(props) {
@@ -15,8 +15,6 @@ export function App(props) {
 
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
-  const [teamShowFilter, setTeamShowFilter] = useState('');
-  const [projectShowFilter, setProjectShowFilter] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState({name: '', pi: '', size: '', done: '', startsprint: '', endsprint: ''});
 
@@ -57,24 +55,20 @@ export function App(props) {
   let teamsList=[];
   let i=0;
   teams.forEach(team => {
-    if (teamShowFilter === '' || teamShowFilter === team.teamname) {
-      teamsList.push(<div key={i++} className='new-row'></div>)
-      teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
-      teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
-      teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
-      teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.4' project={projectFilter} team={team.teamname}/>);  
-    }
+    teamsList.push(<div key={i++} className='new-row'></div>)
+    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
+    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
+    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
+    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.4' project={projectFilter} team={team.teamname}/>);  
   });
 
   let projectsList=[];
   projects.forEach(project => {
-    if (projectShowFilter === '' || projectShowFilter === project.projectname ) {
-      projectsList.push(<div key={i++} className='new-row'></div>)
-      projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
-      projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
-      projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
-      projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.4' project={project.projectname} team={teamFilter}/>);
-    }
+    projectsList.push(<div key={i++} className='new-row'></div>)
+    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
+    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
+    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
+    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.4' project={project.projectname} team={teamFilter}/>);
   });
 
   return (
@@ -82,17 +76,15 @@ export function App(props) {
       <DndProvider backend={HTML5Backend}>
         <div className='grid-container'>
 
-          <div className='heading'>Teams View</div>
+          <div className='heading'>Project Manager View</div>
           <div className='filters'>
             <ProjectSelectForm onSubmit={(input) => {setProjectFilter(input.projectname)}}/>
-            <TeamSelectForm onSubmit={(input) => {setTeamShowFilter(input.teamname)}}/>
           </div>
           {teamsList}
 
-          <div className='heading'>Projects View</div>
+          <div className='heading'>Product Owner View</div>
           <div className='filters'>
             <TeamSelectForm onSubmit={(input) => {setTeamFilter(input.teamname)}}/>
-            <ProjectSelectForm onSubmit={(input) => {setProjectShowFilter(input.projectname)}}/>
           </div>
           {projectsList}
 
