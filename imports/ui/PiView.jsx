@@ -41,7 +41,7 @@ export function PiView(props) {
         ) {
       size += feature.size;
       done += feature.done;
-      featuresList.push(<Feature key={feature._id} feature={feature} so={so} eo={eo}/>)
+      featuresList.push(<Feature key={feature._id} feature={feature} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>)
     }
   });
 
@@ -96,7 +96,7 @@ function Feature(props) {
       }}
     >
       <div className='featurename'>{feature.name}</div>
-      <div className='featuresize'>
+      <div className='featuresize' onClick={() => {props.onFeatureClicked(feature)}}>
         <div className='featureprogress' style={{left: props.so+5}}>
           {perctstr} [{feature.done}/{feature.size}]
         </div>
