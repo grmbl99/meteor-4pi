@@ -34,8 +34,11 @@ export function ProjectSelectForm(props) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Project: <input type='text' value={projectname} onChange={(event) => setProjectname(event.target.value)} /></label>
-      <input type='submit' value='Submit' />
+      <div className='form-grid-container'>
+        <label>Project:</label>
+        <input type='text' value={projectname} onChange={(event) => setProjectname(event.target.value)} />
+        <input type='submit' value='Submit' />
+      </div>
     </form>
   );
 }
@@ -51,8 +54,11 @@ export function TeamSelectForm(props) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Team: <input type='text' value={teamname} onChange={(event) => setTeamname(event.target.value)} /></label>
+     <div className='form-grid-container'>
+       <label>Team:</label> 
+       <input type='text' value={teamname} onChange={(event) => setTeamname(event.target.value)} />
       <input type='submit' value='Submit' />
+    </div>
     </form>
   );
 }

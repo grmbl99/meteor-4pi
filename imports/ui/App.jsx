@@ -14,6 +14,8 @@ export function App(props) {
 
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
+  const [teamShowFilter, setTeamShowFilter] = useState('');
+  const [projectShowFilter, setProjectShowFilter] = useState('');
 
   function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
   function getSprints() {return (SprintsCollection.find({}).fetch()); }
@@ -36,37 +38,43 @@ export function App(props) {
   let teamsList=[];
   let i=0;
   teams.forEach(team => {
-    teamsList.push(<div key={i++} className='new-row'></div>)
-    teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
-    teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
-    teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
-    teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.4' project={projectFilter} team={team.teamname}/>);
+    if (teamShowFilter === '' || teamShowFilter === team.teamname) {
+      teamsList.push(<div key={i++} className='new-row'></div>)
+      teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
+      teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
+      teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
+      teamsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.4' project={projectFilter} team={team.teamname}/>);  
+    }
   });
 
   let projectsList=[];
   projects.forEach(project => {
-    projectsList.push(<div key={i++} className='new-row'></div>)
-    projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
-    projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
-    projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
-    projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.4' project={project.projectname} team={teamFilter}/>);
+    if (projectShowFilter === '' || projectShowFilter === project.projectname ) {
+      projectsList.push(<div key={i++} className='new-row'></div>)
+      projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
+      projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
+      projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
+      projectsList.push(<PiView key={i++} onFeatureDropped={handleMove} features={features} sprints={sprints} pi='PI 21.4' project={project.projectname} team={teamFilter}/>);
+    }
   });
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div>
         <div className='grid-container'>
-          <div className='heading'>
+          {/* <div className='heading'>
             <NewFeatureForm onSubmit={handleNewFeature}/>
-          </div>
-          <div className='heading'>
-            <h2>Teams:</h2>
+          </div> */}
+          <div className='heading'>Teams View</div>
+          <div className='filters'>
             <ProjectSelectForm onSubmit={(input) => {setProjectFilter(input.projectname)}}/>
+            <TeamSelectForm onSubmit={(input) => {setTeamShowFilter(input.teamname)}}/>
           </div>
           {teamsList}
-          <div className='heading'>
-            <h2>Projects:</h2>
+          <div className='heading'>Projects View</div>
+          <div className='filters'>
             <TeamSelectForm onSubmit={(input) => {setTeamFilter(input.teamname)}}/>
+            <ProjectSelectForm onSubmit={(input) => {setProjectShowFilter(input.projectname)}}/>
           </div>
           {projectsList}
         </div>

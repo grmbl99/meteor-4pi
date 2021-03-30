@@ -9,13 +9,26 @@ body {
   gap: 10px 10px;
 }
 
+.form-grid-container {
+  display: grid;
+  grid-template-columns: 50px 100px 75px;
+  gap: 10px 10px;
+}
+
 .new-row {
   grid-column-start: 1;
 }
 
 .heading {
+  padding-top: 30px;
+  padding-left: 10px;
+  font-size: 20pt;
   grid-column-start: 2;
-  grid-column-end: span 4;
+  grid-column-end: span 1;
+}
+.filters {
+  padding-top: 30px;
+  grid-column-end: span 2;
 }
 
 .piview {
