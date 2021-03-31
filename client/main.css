@@ -3,15 +3,85 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.grid-container {
+.container {
+  display: flex;
+  flex-direction: row;
+}
+.left {
+  height: 100vh;
+  display: block;
+  width: 150px;
+}
+.right {
+  height: 100vh;
+  display: block;
+  width: auto;
+  overflow-y: scroll;
+}
+
+.menu-container {
   display: grid;
-  grid-template-columns: repeat(10, auto);
+  grid-template-rows: auto;
   gap: 10px 10px;
 }
 
-.form-grid-container {
+.menu-heading {
+  padding-top: 30px;
+  font-size: 15pt;
+}
+
+.filter {
+  background-color: rgb(170, 170, 170);
+  color: white;
+  padding-left: 10px;
+  padding-top: 5pt;
+  width: 130px;
+  height: 85px;
+  outline-offset:  -1px;
+  outline: 1px solid rgb(110, 110, 110);
+}
+
+.filter-grid-container {
   display: grid;
-  grid-template-columns: 100px 100px 75px;
+  grid-template-columns: auto;
+  gap: 5px 5px;
+}
+
+.filter-form-cell {
+  width: 110px;;
+}
+
+input[type='submit'] {
+  outline-offset:  -1px;
+  outline: 1px solid rgb(110, 110, 110);
+  background-color: rgb(170, 170, 170);
+  border: none;
+  color: white;
+  padding: 5px 5px;
+}
+
+input[type='submit']:hover {
+  background-color: rgb(110, 110, 110);
+}
+
+.menu-item {
+  background-color: rgb(170, 170, 170);
+  color: white;
+  padding-left: 10px;
+  padding-top: 3pt;
+  height: 25px;
+  width: 130px;
+  outline-offset:  -1px;
+  outline: 1px solid rgb(110, 110, 110);
+}
+
+.menu-item:hover {
+  background-color: rgb(110, 110, 110);
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(10, auto);
   gap: 10px 10px;
 }
 
@@ -26,13 +96,8 @@ body {
   grid-column-start: 2;
   grid-column-end: span 1;
 }
-.filters {
-  padding-top: 35px;
-  padding-left: 10px;
-  grid-column-end: span 2;
-}
 
-.piview {
+.pi-view {
   width:455px;
   float: left;
   outline-offset: 5px;
@@ -41,7 +106,7 @@ body {
   box-shadow: 3px 3px 5px 6px #ccc;
 }
 
-.piheader {
+.pi-header {
   float: left;
   position: relative;
   width: 450px;
@@ -66,23 +131,26 @@ body {
   font-size: 11pt;
 }
 
-.piprogress {
+.pi-progress {
   float: left;
   position: relative;
-  width: 450px;
+  width: 455px;
   height: 60px;
-  line-height: 60px;
-  padding-left: 5px;
   background-color: rgb(170, 170, 170);
 }
 
-.pisize {
+.pi-progress-bar {
   position:absolute;
   left: 0px;
   top: 15px;
-  height: 30px;
-  opacity: 0.5;
-  background-color: white;
+}
+
+.pi-progress-text {
+  position: absolute;
+  font-size: 10pt;
+  top: 6px;
+  left: 5pt;
+  color: white;
 }
 
 .feature {
@@ -92,7 +160,7 @@ body {
   width: 450px;
 }
 
-.featurename {
+.feature-name {
   position:absolute;
   left: 5px;
   top: 2px;
@@ -100,17 +168,17 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.featureprogress {
+.feature-progress-bar {
+  position:absolute;
+  left: 0px;
+  top: 22px;
+}
+
+.feature-progress-text {
   position: absolute;
   font-size: 10pt;
   top: 3px;
   color: rgb(50, 50, 50);
-}
-
-.featuresize {
-  position:absolute;
-  left: 0px;
-  top: 22px;
 }
 
 .popup {

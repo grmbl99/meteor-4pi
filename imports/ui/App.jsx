@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, createRef } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
-import { TeamSelectForm, ProjectSelectForm } from './Forms.jsx';
+import { FilterForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popup.jsx';
 
 export function App(props) {
@@ -53,9 +53,13 @@ export function App(props) {
   };
 
   let teamsList=[];
+  let teamsNav=[];
   let i=0;
   teams.forEach(team => {
-    teamsList.push(<div key={i++} className='new-row'></div>)
+    const newRef = createRef();
+    teamsNav.push(<div className='menu-item' key={i} onClick={() => {newRef.current.scrollIntoView()}}>{team.teamname}</div>);
+
+    teamsList.push(<div ref={newRef} key={i++} className='new-row'></div>)
     teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
     teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
     teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
@@ -63,8 +67,12 @@ export function App(props) {
   });
 
   let projectsList=[];
+  let projectsNav=[];
   projects.forEach(project => {
-    projectsList.push(<div key={i++} className='new-row'></div>)
+    const newRef = createRef();
+    projectsNav.push(<div className='menu-item' key={i} onClick={() => {newRef.current.scrollIntoView()}}>{project.projectname}</div>);
+
+    projectsList.push(<div ref={newRef} key={i++} className='new-row'></div>)
     projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
     projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
     projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
@@ -72,26 +80,28 @@ export function App(props) {
   });
 
   return (
-    <div>
-      <DndProvider backend={HTML5Backend}>
-        <div className='grid-container'>
-
-          <div className='heading'>Project Manager View</div>
-          <div className='filters'>
-            <ProjectSelectForm onSubmit={(input) => {setProjectFilter(input.projectname)}}/>
-          </div>
-          {teamsList}
-
-          <div className='heading'>Product Owner View</div>
-          <div className='filters'>
-            <TeamSelectForm onSubmit={(input) => {setTeamFilter(input.teamname)}}/>
-          </div>
-          {projectsList}
-
+    <div className='container'>
+      <div className='left'>
+        <div className='menu-container'>
+          <div className='menu-heading'>Teams</div>
+          <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername)}}/>
+          {teamsNav}
+          <div className='menu-heading'>Projects</div>
+          <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filtername)}}/>
+          {projectsNav}          
         </div>
-      </DndProvider>
-      <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature}/>
+      </div>
+      <div className='right'>
+        <DndProvider backend={HTML5Backend}>
+          <div className='grid-container'>
+            <div className='heading'>Project Manager View</div>
+            {teamsList}
+            <div className='heading'>Product Owner View</div>
+            {projectsList}
+          </div>
+        </DndProvider>
+        <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature}/>
+      </div>
     </div>
   );  
 }
-

@@ -23,42 +23,23 @@ export function NewFeatureForm(props) {
   );
 }
 
-export function ProjectSelectForm(props) {
-  const [projectname, setProjectname] = useState('');
+export function FilterForm(props) {
+  const [filtername, setFilterName] = useState('');
 
   function handleSubmit(event) {
-    props.onSubmit({projectname: projectname});
-    // setProjectname('');
+    props.onSubmit({filtername: filtername});
     event.preventDefault();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className='form-grid-container'>
-        <label>Project Filter:</label>
-        <input type='text' value={projectname} onChange={(event) => setProjectname(event.target.value)} />
-        <input type='submit' value='Submit' />
-      </div>
-    </form>
-  );
-}
-
-export function TeamSelectForm(props) {
-  const [teamname, setTeamname] = useState('');
-
-  function handleSubmit(event) {
-    props.onSubmit({teamname: teamname});
-    // setTeamname('');
-    event.preventDefault();
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-     <div className='form-grid-container'>
-       <label>Team Filter:</label> 
-       <input type='text' value={teamname} onChange={(event) => setTeamname(event.target.value)} />
-      <input type='submit' value='Submit' />
+    <div className='filter'>
+      <form onSubmit={handleSubmit}>
+        <div className='filter-grid-container'>
+          <label>{props.text}</label>
+          <input className='filter-form-cell' type='text' value={filtername} onChange={(event) => setFilterName(event.target.value)} />
+          <input className='filter-form-cell' type='submit' value='Submit' />
+        </div>
+      </form>
     </div>
-    </form>
   );
 }

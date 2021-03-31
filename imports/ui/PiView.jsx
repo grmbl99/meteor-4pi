@@ -50,19 +50,22 @@ export function PiView(props) {
 
   return (
     <div 
-      className='piview'
+      className='pi-view'
       ref={drop}
       style={{
         opacity: isOver ? 0.5 : 1, 
       }}
     >
-      <div className='piheader'>{props.pi} {props.team} {props.project}</div>
+      <div className='pi-header'>{props.pi} {props.team} {props.project}</div>
       {sprintsList}
-      <div className='piprogress'>
-        {perctstr} [{done}/{size}]
-        <div className='pisize'>
-          <svg width='455px' height='40px'>
-            <rect x='0' y='0' height='30' width={465*perct} fill='purple'/>
+      <div className='pi-progress'>
+        <div className='pi-progress-bar'>
+          <div className='pi-progress-text'>
+            {perctstr} [{done}/{size}]
+          </div>
+          <svg width='455px' height='30px'>
+            <rect x='0' y='0' height='30' width='455' fill='rgb(230, 230, 230)'/>
+            <rect x='0' y='0' height='30' width={455*perct} fill='purple'/>
           </svg>
         </div>
       </div>
@@ -95,12 +98,12 @@ function Feature(props) {
         cursor: 'move'
       }}
     >
-      <div className='featurename'>{feature.name}</div>
-      <div className='featuresize' onClick={() => {props.onFeatureClicked(feature)}}>
-        <div className='featureprogress' style={{left: props.so+5}}>
+      <div className='feature-name'>{feature.name}</div>
+      <div className='feature-progress-bar' onClick={() => {props.onFeatureClicked(feature)}}>
+        <div className='feature-progress-text' style={{left: props.so+5}}>
           {perctstr} [{feature.done}/{feature.size}]
         </div>
-        <svg width='450px' height='20px'>
+        <svg width='455px' height='20px'>
           <rect x={props.so} y='0' height='20' width={props.eo-props.so} fill='rgb(230, 230, 230)'/>
           <rect x={props.so} y='0' height='20' width={(props.eo-props.so)*perct} fill='rgb(81, 122, 235)'/>
         </svg>
