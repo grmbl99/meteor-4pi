@@ -13,15 +13,22 @@ export function App(props) {
   const teams = useTracker(getTeams);
   const projects = useTracker(getProjects);
 
+  function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
+  function getSprints() { return (SprintsCollection.find({}).fetch()); }
+  function getTeams() { return (TeamsCollection.find({}).fetch()); }
+  function getProjects() {return (ProjectsCollection.find({}).fetch()); }
+
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState({name: '', pi: '', size: '', done: '', startsprint: '', endsprint: ''});
-
-  function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
-  function getSprints() {return (SprintsCollection.find({}).fetch()); }
-  function getTeams() {return (TeamsCollection.find({}).fetch()); }
-  function getProjects() {return (ProjectsCollection.find({}).fetch()); }
+  const [selectedFeature, setSelectedFeature] = useState({
+    name: '',
+    pi: '',
+    size: '',
+    done: '',
+    startsprint: '',
+    endsprint: ''
+  });
 
   function updateFeature(input) {
     setShowPopup(false);
@@ -52,31 +59,41 @@ export function App(props) {
     FeaturesCollection.update({ _id: featureId },{ $set: updates});
   };
 
+  let key=0;
+  let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
+
   let teamsList=[];
-  let teamsNav=[];
-  let i=0;
+  let teamsMenu=[];
   teams.forEach(team => {
     const newRef = createRef();
-    teamsNav.push(<div className='menu-item' key={i} onClick={() => {newRef.current.scrollIntoView()}}>{team.teamname}</div>);
+    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView()}}>{team.teamname}</div>);
+    teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>)
 
-    teamsList.push(<div ref={newRef} key={i++} className='new-row'></div>)
-    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={projectFilter} team={team.teamname}/>);
-    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={projectFilter} team={team.teamname}/>);
-    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={projectFilter} team={team.teamname}/>);
-    teamsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.4' project={projectFilter} team={team.teamname}/>);  
+    pis.forEach(pi => {
+      teamsList.push(<PiView 
+        key={key++} 
+        onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
+        features={features} sprints={sprints} 
+        pi={pi} project={projectFilter} team={team.teamname}/>
+      );
+    });
   });
 
   let projectsList=[];
-  let projectsNav=[];
+  let projectsMenu=[];
   projects.forEach(project => {
     const newRef = createRef();
-    projectsNav.push(<div className='menu-item' key={i} onClick={() => {newRef.current.scrollIntoView()}}>{project.projectname}</div>);
+    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView()}}>{project.projectname}</div>);
+    projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>)
 
-    projectsList.push(<div ref={newRef} key={i++} className='new-row'></div>)
-    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.1' project={project.projectname} team={teamFilter}/>);
-    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.2' project={project.projectname} team={teamFilter}/>);
-    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.3' project={project.projectname} team={teamFilter}/>);
-    projectsList.push(<PiView key={i++} onFeatureDropped={moveFeature} onFeatureClicked={editFeature} features={features} sprints={sprints} pi='PI 21.4' project={project.projectname} team={teamFilter}/>);
+    pis.forEach(pi => {
+      projectsList.push(<PiView 
+        key={key++} 
+        onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
+        features={features} sprints={sprints} 
+        pi={pi} project={project.projectname} team={teamFilter}/>
+      );
+    });
   });
 
   return (
@@ -85,10 +102,10 @@ export function App(props) {
         <div className='menu-container'>
           <div className='menu-heading'>Teams</div>
           <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername)}}/>
-          {teamsNav}
+          {teamsMenu}
           <div className='menu-heading'>Projects</div>
           <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filtername)}}/>
-          {projectsNav}          
+          {projectsMenu}          
         </div>
       </div>
       <div className='right'>
