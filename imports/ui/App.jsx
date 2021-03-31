@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
 import { FilterForm } from './Forms.jsx';
-import { UpdateFeaturePopup } from './Popup.jsx';
+import { UpdateFeaturePopup } from './Popups.jsx';
 
 export function App(props) {
   const features = useTracker(getFeatures);
