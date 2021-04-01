@@ -48,6 +48,9 @@ export function PiView(props) {
   perct=size>0 ? done/size : 0;
   perctstr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
 
+  allocstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
+  velstr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
+
   return (
     <div 
       className='pi-view'
@@ -56,7 +59,7 @@ export function PiView(props) {
         opacity: isOver ? 0.5 : 1, 
       }}
     >
-      <div className='pi-header'>{props.pi} {props.team} {props.project}</div>
+      <div className='pi-header'>{props.pi} {props.team} {props.project} {allocstr} {velstr}</div>
       {sprintsList}
       <div className='pi-progress'>
         <div className='pi-progress-bar'>

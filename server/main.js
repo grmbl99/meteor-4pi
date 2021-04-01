@@ -1,16 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
+import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection, AllocationCollection, VelocityCollection } from '/imports/api/Collections';
 
 function insertFeature(feature) { FeaturesCollection.insert(feature);}
 function insertSprint(sprint) {SprintsCollection.insert(sprint);}
 function insertTeam(team) {TeamsCollection.insert(team);}
 function insertProject(project) {ProjectsCollection.insert(project);}
+function insertAllocation(allocation) {AllocationCollection.insert(allocation);}
+function insertVelocity(velocity) {VelocityCollection.insert(velocity);}
 
 Meteor.startup(() => {
   FeaturesCollection.remove({});
   SprintsCollection.remove({});
   ProjectsCollection.remove({});
   TeamsCollection.remove({});
+  AllocationCollection.remove({});
+  VelocityCollection.remove({});
 
   if (FeaturesCollection.find().count() === 0) {
     [
@@ -100,5 +104,35 @@ Meteor.startup(() => {
       {projectname: 'voip'},
       {projectname: 'bobcat'}
     ].forEach(insertProject);
+  }
+
+  if (AllocationCollection.find().count() === 0) {
+    [
+      {teamname: 'pegasus', projectname: 'tiger', pi: 'PI 21.1', allocation: 10},
+      {teamname: 'mushu', projectname: 'puma', pi: 'PI 21.1', allocation: 80},
+      {teamname: 'hades', projectname: 'voip', pi: 'PI 21.1', allocation: 70},
+      {teamname: 'hercules', projectname: 'bobcat', pi: 'PI 21.1', allocation: 20},
+      {teamname: 'pegasus', projectname: 'tiger', pi: 'PI 21.2', allocation: 10},
+      {teamname: 'mushu', projectname: 'puma', pi: 'PI 21.2', allocation: 80},
+      {teamname: 'hades', projectname: 'voip', pi: 'PI 21.2', allocation: 70},
+      {teamname: 'hercules', projectname: 'bobcat', pi: 'PI 21.2', allocation: 20}
+    ].forEach(insertAllocation);      
+  }
+
+  if (VelocityCollection.find().count() === 0) {
+    [
+      {teamname: 'pegasus', pi: 'PI 21.1', velocity: 75},
+      {teamname: 'mushu', pi: 'PI 21.1', velocity: 60},
+      {teamname: 'hades', pi: 'PI 21.1', velocity: 80},
+      {teamname: 'hercules', pi: 'PI 21.1', velocity: 60},
+      {teamname: 'pegasus', pi: 'PI 21.2', velocity: 75},
+      {teamname: 'mushu', pi: 'PI 21.2', velocity: 60},
+      {teamname: 'hades', pi: 'PI 21.2', velocity: 80},
+      {teamname: 'hercules', pi: 'PI 21.2', velocity: 60},
+      {teamname: 'pegasus', pi: 'PI 21.3', velocity: 75},
+      {teamname: 'mushu', pi: 'PI 21.3', velocity: 60},
+      {teamname: 'hades', pi: 'PI 21.3', velocity: 80},
+      {teamname: 'hercules', pi: 'PI 21.3', velocity: 60} 
+    ].forEach(insertVelocity);      
   }
 });
