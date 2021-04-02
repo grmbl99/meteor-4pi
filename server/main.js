@@ -17,7 +17,7 @@ function CompareFeatureCollections() {
   const features = FeaturesCollection.find({}).fetch();  
 
   for (const feature of features) {
-    orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
+    const orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
     if (orgfeature) {
       if(feature.pi!==orgfeature.pi || feature.team!==orgfeature.team || feature.project!==orgfeature.project) {
         insertDeltaFeature({type: 'added', feature: feature});
