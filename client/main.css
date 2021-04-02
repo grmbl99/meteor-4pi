@@ -157,7 +157,19 @@ input[type='submit']:hover {
   float: left;
   position: relative;
   height: 50px;
-  width: 450px;
+  width: 455px;
+}
+
+.feature-added {
+  background-color: yellow;
+}
+
+.feature-removed {
+  background-color: red;
+}
+
+.feature-changed {
+  background-color: green;
 }
 
 .feature-name {

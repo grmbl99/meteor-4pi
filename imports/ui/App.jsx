@@ -2,13 +2,14 @@ import React, { useState, createRef } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection, AllocationCollection, VelocityCollection } from '/imports/api/Collections';
+import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection, AllocationCollection, VelocityCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
 import { FilterForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popups.jsx';
 
 export function App(props) {
   const features = useTracker(getFeatures);
+  const deltafeatures = useTracker(getDeltaFeatures);
   const sprints = useTracker(getSprints);
   const teams = useTracker(getTeams);
   const projects = useTracker(getProjects);
@@ -16,6 +17,7 @@ export function App(props) {
   const velocity = useTracker(getVelocity);
 
   function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
+  function getDeltaFeatures() { return (DeltaFeaturesCollection.find({}).fetch()); }
   function getSprints() { return (SprintsCollection.find({}).fetch()); }
   function getTeams() { return (TeamsCollection.find({}).fetch()); }
   function getProjects() {return (ProjectsCollection.find({}).fetch()); }
@@ -110,7 +112,7 @@ export function App(props) {
       teamsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} sprints={sprints} 
+        features={features} deltafeatures={deltafeatures} sprints={sprints} 
         pi={pi} project={projectFilter} team={team.teamname}
         allocation={alloc} velocity={vel}/>
       );
@@ -130,7 +132,7 @@ export function App(props) {
       projectsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} sprints={sprints} 
+        features={features} deltafeatures={deltafeatures} sprints={sprints} 
         pi={pi} project={project.projectname} team={teamFilter}
         allocation={alloc} velocity={vel}/>
       );

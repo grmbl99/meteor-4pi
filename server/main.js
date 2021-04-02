@@ -1,13 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { FeaturesCollection, OrgFeaturesCollection, AddedFeaturesCollection, RemovedFeaturesCollection, ChangedFeaturesCollection,
+import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, AllocationCollection, VelocityCollection } from '/imports/api/Collections';
 
 function insertFeature(feature) { FeaturesCollection.insert(feature);}
 function insertOrgFeature(feature) {OrgFeaturesCollection.insert(feature);}
-
-function insertAddedFeature(feature) { AddedFeaturesCollection.insert(feature);}
-function insertRemovedFeature(feature) { RemovedFeaturesCollection.insert(feature);}
-function insertChangedFeature(feature) { ChangedFeaturesCollection.insert(feature);}
+function insertDeltaFeature(feature) { DeltaFeaturesCollection.insert(feature);}
 
 function insertSprint(sprint) {SprintsCollection.insert(sprint);}
 function insertTeam(team) {TeamsCollection.insert(team);}
@@ -15,76 +12,45 @@ function insertProject(project) {ProjectsCollection.insert(project);}
 function insertAllocation(allocation) {AllocationCollection.insert(allocation);}
 function insertVelocity(velocity) {VelocityCollection.insert(velocity);}
 
-// compare FeaturesCollection with OrgFeaturesCollection
-// fill AddedFeaturesCollection, RemovedFeaturesCollection and ChangedFeaturesCollection
+// compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
 function CompareFeatureCollections() {
   const features = FeaturesCollection.find({}).fetch();  
-  features.forEach((feature) => {
-    const orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
+
+  for (const feature of features) {
+    orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
     if (orgfeature) {
-      pichanged = feature.pi!==orgfeature.pi;
-      teamchanged = feature.team!==orgfeature.team;
-      projectchanged = feature.project!==orgfeature.project;
-
-      if(pichanged || teamchanged || projectchanged) {
-        insertAddedFeature({
-          id: feature.id, 
-          name: feature.name,
-          size: feature.size,
-          done: feature.done,
-          startsprint: feature.startsprint,
-          endsprint: feature.endsprint,
-          pi: pichanged ? feature.pi : '', 
-          team: teamchanged ? feature.team : '', 
-          project: projectchanged ? feature.project : ''
-        });
-        insertRemovedFeature({
-          id: feature.id, 
-          name: orgfeature.name,
-          size: orgfeature.size,
-          done: orgfeature.done,
-          startsprint: orgfeature.startsprint,
-          endsprint: orgfeature.endsprint,
-          pi: pichanged ? orgfeature.pi : '', 
-          team: teamchanged ? orgfeature.team : '', 
-          project: projectchanged ? orgfeature.project : ''
-        });
+      if(feature.pi!==orgfeature.pi || feature.team!==orgfeature.team || feature.project!==orgfeature.project) {
+        insertDeltaFeature({type: 'added', feature: feature});
+        insertDeltaFeature({type: 'removed', feature: orgfeature});
       }
-
-      sizechanged = feature.size!==orgfeature.size;
-      donechanged = feature.done!==orgfeature.done;
-      startsprintchanged = feature.startsprint!==orgfeature.startsprint;
-      endsprintchanged = feature.endsprint!==orgfeature.endsprint;
-
-      if(sizechanged || donechanged || startsprintchanged || endsprintchanged) {
-        insertChangedFeature(orgfeature);  
+      if(feature.size!==orgfeature.size || feature.done!==orgfeature.done || 
+         feature.startsprint!==orgfeature.startsprint || feature.endsprint!==orgfeature.endsprint) {
+        orgfeature._id=feature._id;
+        insertDeltaFeature({type: 'changed', feature: orgfeature});
       }
     } else {
-      insertAddedFeature(feature);
+      insertDeltaFeature({type: 'added', feature: feature});
     }
-  });
+  }
 
   const orgfeatures = OrgFeaturesCollection.find({}).fetch();  
-  orgfeatures.forEach((orgfeature) => {
+  for (const orgfeature of orgfeatures) {
     const feature = FeaturesCollection.findOne({id: orgfeature.id});
     if (!feature) {
-      insertRemovedFeature(orgfeature);
+      insertDeltaFeature({type: 'removed', feature: orgfeature});
     }
-  });
+  }
 }
 
 Meteor.startup(() => {
   FeaturesCollection.remove({});
   OrgFeaturesCollection.remove({});
+  DeltaFeaturesCollection.remove({});
   SprintsCollection.remove({});
   ProjectsCollection.remove({});
   TeamsCollection.remove({});
   AllocationCollection.remove({});
   VelocityCollection.remove({});
-
-  AddedFeaturesCollection.remove({});
-  RemovedFeaturesCollection.remove({});
-  ChangedFeaturesCollection.remove({});
 
   if (OrgFeaturesCollection.find().count() === 0) {
     [

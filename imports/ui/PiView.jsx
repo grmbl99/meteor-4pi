@@ -8,6 +8,7 @@ const ItemTypes = {
 //----------------------------------------------------------------------
 export function PiView(props) {
   const features = props.features;
+  const deltafeatures = props.deltafeatures;
   const sprints = props.sprints;
 
   const [{isOver}, drop] = useDrop(() => ({
@@ -41,7 +42,38 @@ export function PiView(props) {
         ) {
       size += feature.size;
       done += feature.done;
-      featuresList.push(<Feature key={feature._id} feature={feature} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>)
+
+      displaytype='normal';
+      for (const deltafeature of deltafeatures) {
+        if (deltafeature.feature._id === feature._id) {
+          if (deltafeature.type === 'added') {
+            displaytype='added';
+            break;
+          } else if (deltafeature.type === 'changed') {
+            displaytype='changed';
+            break;
+          }
+        }
+      }
+
+      featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>)
+    }
+  });
+
+  deltafeatures.forEach(deltafeature => {
+    if(deltafeature.type === 'removed')
+    {
+      feature=deltafeature.feature;
+      so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+      eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+      if (feature.pi === props.pi && 
+          (props.team === '' || feature.team === props.team) &&
+          (props.project === '' || feature.project === props.project)
+          ) {
+      
+        displaytype='removed';
+        featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>)
+      }  
     }
   });
 
@@ -92,9 +124,14 @@ function Feature(props) {
   perct=feature.done/feature.size;
   perctstr=Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
 
+  if (props.displaytype === 'added') {featureClassName = 'feature feature-added'}
+  else if (props.displaytype === 'removed') {featureClassName = 'feature feature-removed'}
+  else if (props.displaytype === 'changed') {featureClassName = 'feature feature-changed'}
+  else {featureClassName = 'feature'}
+
   return (
     <div 
-      className='feature' 
+      className={featureClassName} 
       ref={drag}
       style={{
         opacity: isDragging ? 0.5 : 1,
