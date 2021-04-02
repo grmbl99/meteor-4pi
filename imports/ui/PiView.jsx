@@ -22,20 +22,20 @@ export function PiView(props) {
   let dict={};
   let offset=0;
   let sprintsList=[];
-  sprints.forEach(sprint => {
+  for (const sprint of sprints) {
     if (sprint.pi === props.pi) {
       dict[sprint.sprintname]=offset;
       offset += 65;
       sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname} />);
     }
-  });
+  }
 
   let size=0;
   let done=0;
   let featuresList=[];
-  features.forEach(feature => {
-    so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-    eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+  for (const feature of features) {
+    let so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+    let eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
     if (feature.pi === props.pi && 
         (props.team === '' || feature.team === props.team) &&
         (props.project === '' || feature.project === props.project)
@@ -43,7 +43,7 @@ export function PiView(props) {
       size += feature.size;
       done += feature.done;
 
-      displaytype='normal';
+      let displaytype='normal';
       for (const deltafeature of deltafeatures) {
         if (deltafeature.feature._id === feature._id) {
           if (deltafeature.type === 'added') {
@@ -58,30 +58,29 @@ export function PiView(props) {
 
       featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>)
     }
-  });
+  }
 
-  deltafeatures.forEach(deltafeature => {
+  for (const deltafeature of deltafeatures) {
     if(deltafeature.type === 'removed')
     {
-      feature=deltafeature.feature;
-      so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-      eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+      const feature=deltafeature.feature;
+      let so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+      let eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
       if (feature.pi === props.pi && 
           (props.team === '' || feature.team === props.team) &&
           (props.project === '' || feature.project === props.project)
           ) {
-      
-        displaytype='removed';
+        let displaytype='removed';
         featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>)
       }  
     }
-  });
+  }
 
-  perct=size>0 ? done/size : 0;
-  perctstr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
+  const perct=size>0 ? done/size : 0;
+  const perctstr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
 
-  allocstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
-  velstr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
+  const allocstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
+  const velstr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
 
   return (
     <div 
@@ -121,8 +120,8 @@ function Feature(props) {
     })
   }))
 
-  perct=feature.done/feature.size;
-  perctstr=Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
+  const perct=feature.done/feature.size;
+  const perctstr=Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
 
   if (props.displaytype === 'added') {featureClassName = 'feature feature-added'}
   else if (props.displaytype === 'removed') {featureClassName = 'feature feature-removed'}

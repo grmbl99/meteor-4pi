@@ -70,18 +70,18 @@ export function App(props) {
     let alloc=0;
 
     if (teamname !== '') {
-      velocity.forEach(entry => {
+      for (const entry of velocity) {
         if(entry.pi === pi && entry.teamname === teamname) { 
           vel = entry.velocity;
         }
-      });
+      }
 
       if (projectname !== '') {
-        allocation.forEach(entry => {
+        for (const entry of allocation) {
           if(entry.pi === pi && entry.projectname === projectname && entry.teamname === teamname) { 
             alloc = entry.allocation;
           }
-        });
+        }
 
         // return velocity based on allocation percentage
         vel = alloc === 0 ? 0 : vel/alloc;  
@@ -101,12 +101,12 @@ export function App(props) {
 
   let teamsList=[];
   let teamsMenu=[];
-  teams.forEach(team => {
+  for (const team of teams) {
     const newRef = createRef();
     teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView()}}>{team.teamname}</div>);
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>)
 
-    pis.forEach(pi => {
+    for (const pi of pis) {
       let {vel,alloc} = getTeamVelocityAndAllocation(pi,projectFilter,team.teamname);
 
       teamsList.push(<PiView 
@@ -116,17 +116,18 @@ export function App(props) {
         pi={pi} project={projectFilter} team={team.teamname}
         allocation={alloc} velocity={vel}/>
       );
-    });
-  });
+    }
+  }
 
   let projectsList=[];
   let projectsMenu=[];
-  projects.forEach(project => {
+
+  for (const project of projects) {
     const newRef = createRef();
     projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView()}}>{project.projectname}</div>);
     projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>)
 
-    pis.forEach(pi => {
+    for (const pi of pis) {
       let {vel,alloc} = getTeamVelocityAndAllocation(pi,project.projectname,teamFilter);
       
       projectsList.push(<PiView 
@@ -136,8 +137,8 @@ export function App(props) {
         pi={pi} project={project.projectname} team={teamFilter}
         allocation={alloc} velocity={vel}/>
       );
-    });
-  });
+    }
+  }
 
   return (
     <div className='container'>

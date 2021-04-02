@@ -161,15 +161,16 @@ input[type='submit']:hover {
 }
 
 .feature-added {
-  background-color: yellow;
+  background-color: yellowgreen;
 }
 
 .feature-removed {
-  background-color: red;
+  background-color: lightcoral;
+  color: gray;
 }
 
 .feature-changed {
-  background-color: green;
+  background-color: lightgoldenrodyellow;
 }
 
 .feature-name {
