@@ -101,7 +101,7 @@ function Feature(props) {
         cursor: 'move'
       }}
     >
-      <div className='feature-name'>{feature.name}</div>
+      <div className='feature-name'>{feature.id} {feature.name}</div>
       <div className='feature-progress-bar' onClick={() => {props.onFeatureClicked(feature)}}>
         <div className='feature-progress-text' style={{left: props.so+5}}>
           {perctstr} [{feature.done}/{feature.size}]
