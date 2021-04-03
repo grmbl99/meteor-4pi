@@ -41,6 +41,13 @@ function CompareFeatureCollections() {
     }
   }
 }
+Meteor.methods({
+  test() {
+    console.log('test call');
+    DeltaFeaturesCollection.remove({});
+    CompareFeatureCollections();
+  }
+});
 
 Meteor.startup(() => {
   FeaturesCollection.remove({});

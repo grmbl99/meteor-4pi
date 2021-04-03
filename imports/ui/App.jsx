@@ -2,6 +2,7 @@ import React, { useState, createRef } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCollection, 
          ProjectsCollection, AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
@@ -18,11 +19,13 @@ export function App(props) {
   function getVelocities() { return (VelocitiesCollection.find({}).fetch()); }
   
   function moveFeature(featureId,pi,team,project) {
-    let updates = { 'pi': pi };
-    if (project !== '') { updates['project']=project; }
-    if (team !== '') { updates['team']=team; }
-  
-    FeaturesCollection.update({ _id: featureId },{ $set: updates});
+    if(!compareModeOn) {
+      let updates = { 'pi': pi };
+      if (project !== '') { updates['project']=project; }
+      if (team !== '') { updates['team']=team; }
+    
+      FeaturesCollection.update({ _id: featureId },{ $set: updates});  
+    }
   }
   
   function updateFeature(input) {
@@ -43,6 +46,16 @@ export function App(props) {
   function editFeature(feature) {
     setSelectedFeature(feature);
     setShowPopup(true);
+  }
+
+  function toggleCompareMode(event) {
+    if (!compareModeOn) {
+      setCompareModeOn(true);
+      Meteor.call('test', () => { setCompareWith(deltafeatures); });
+    } else {
+      setCompareModeOn(false);
+      setCompareWith([]);
+    }
   }
 
   function getTeamVelocityAndAllocation(pi,projectname,teamname) {
@@ -87,6 +100,8 @@ export function App(props) {
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
   const [showPopup, setShowPopup] = useState(false);
+  const [compareModeOn, setCompareModeOn] = useState(false);
+  const [compareWith, setCompareWith] = useState([]);
   const [selectedFeature, setSelectedFeature] = useState({
     name: '',
     pi: '',
@@ -112,7 +127,7 @@ export function App(props) {
       teamsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltafeatures={deltafeatures} sprints={sprints} 
+        features={features} deltafeatures={compareWith} sprints={sprints} 
         pi={pi} project={projectFilter} team={team.teamname}
         allocation={teamallocation} velocity={teamvelocity}/>
       );
@@ -133,7 +148,7 @@ export function App(props) {
       projectsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltafeatures={deltafeatures} sprints={sprints} 
+        features={features} deltafeatures={compareWith} sprints={sprints} 
         pi={pi} project={project.projectname} team={teamFilter}
         allocation={teamallocation} velocity={teamvelocity}/>
       );
@@ -149,7 +164,8 @@ export function App(props) {
           {teamsMenu}
           <div className='menu-heading'>Projects</div>
           <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filtername)}}/>
-          {projectsMenu}          
+          {projectsMenu}
+          <div>compare: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
         </div>
       </div>
       <div className='right'>
