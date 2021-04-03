@@ -1,21 +1,13 @@
 import React, { useState, createRef } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection, AllocationCollection, VelocityCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
 import { FilterForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popups.jsx';
 
 export function App(props) {
-  const features = useTracker(getFeatures);
-  const deltafeatures = useTracker(getDeltaFeatures);
-  const sprints = useTracker(getSprints);
-  const teams = useTracker(getTeams);
-  const projects = useTracker(getProjects);
-  const allocation = useTracker(getAllocation);
-  const velocity = useTracker(getVelocity);
-
   function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
   function getDeltaFeatures() { return (DeltaFeaturesCollection.find({}).fetch()); }
   function getSprints() { return (SprintsCollection.find({}).fetch()); }
@@ -23,19 +15,15 @@ export function App(props) {
   function getProjects() {return (ProjectsCollection.find({}).fetch()); }
   function getAllocation() {return (AllocationCollection.find({}).fetch()); }
   function getVelocity() {return (VelocityCollection.find({}).fetch()); }
-
-  const [teamFilter, setTeamFilter] = useState('');
-  const [projectFilter, setProjectFilter] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState({
-    name: '',
-    pi: '',
-    size: '',
-    done: '',
-    startsprint: '',
-    endsprint: ''
-  });
-
+  
+  function moveFeature(featureId,pi,team,project) {
+    let updates = { 'pi': pi };
+    if (project !== '') { updates['project']=project; }
+    if (team !== '') { updates['team']=team; }
+  
+    FeaturesCollection.update({ _id: featureId },{ $set: updates});
+  }
+  
   function updateFeature(input) {
     setShowPopup(false);
     FeaturesCollection.update(
@@ -51,38 +39,32 @@ export function App(props) {
     );
     console.log('update: ' + input._id);
   }
-
+  
   function editFeature(feature) {
     setSelectedFeature(feature);
     setShowPopup(true);
   }
 
-  function moveFeature(featureId,pi,team,project) {
-    let updates = { 'pi': pi };
-    if (project !== '') { updates['project']=project; }
-    if (team !== '') { updates['team']=team; }
-
-    FeaturesCollection.update({ _id: featureId },{ $set: updates});
-  };
-
   function getTeamVelocityAndAllocation(pi,projectname,teamname) {
     let vel=0;
     let alloc=0;
-
+  
+    console.log(velocity);
+  
     if (teamname !== '') {
       for (const entry of velocity) {
         if(entry.pi === pi && entry.teamname === teamname) { 
           vel = entry.velocity;
         }
       }
-
+  
       if (projectname !== '') {
         for (const entry of allocation) {
           if(entry.pi === pi && entry.projectname === projectname && entry.teamname === teamname) { 
             alloc = entry.allocation;
           }
         }
-
+  
         // return velocity based on allocation percentage
         vel = alloc === 0 ? 0 : vel/alloc;  
       } else {
@@ -94,7 +76,27 @@ export function App(props) {
     }
         
     return{vel,alloc}
-  };
+  }
+  
+  const features = useTracker(getFeatures);
+  const deltafeatures = useTracker(getDeltaFeatures);
+  const sprints = useTracker(getSprints);
+  const teams = useTracker(getTeams);
+  const projects = useTracker(getProjects);
+  const allocation = useTracker(getAllocation);
+  const velocity = useTracker(getVelocity);
+
+  const [teamFilter, setTeamFilter] = useState('');
+  const [projectFilter, setProjectFilter] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState({
+    name: '',
+    pi: '',
+    size: '',
+    done: '',
+    startsprint: '',
+    endsprint: ''
+  });
 
   let key=0;
   let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
@@ -107,7 +109,7 @@ export function App(props) {
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>)
 
     for (const pi of pis) {
-      let {vel,alloc} = getTeamVelocityAndAllocation(pi,projectFilter,team.teamname);
+      let {vel,alloc} = getTeamVelocityAndAllocation(pi,projectFilter,team.teamname,velocity,allocation);
 
       teamsList.push(<PiView 
         key={key++} 

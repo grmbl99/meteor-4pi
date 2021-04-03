@@ -1,5 +1,26 @@
 import React, { useState } from 'react';
 
+export function FilterForm(props) {
+  const [filtername, setFilterName] = useState('');
+
+  function handleSubmit(event) {
+    props.onSubmit({filtername: filtername});
+    event.preventDefault();
+  };
+
+  return (
+    <div className='filter'>
+      <form onSubmit={handleSubmit}>
+        <div className='filter-grid-container'>
+          <label>{props.text}</label>
+          <input className='filter-form-cell' type='text' value={filtername} onChange={(event) => setFilterName(event.target.value)} />
+          <input className='filter-form-cell' type='submit' value='Submit' />
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function NewFeatureForm(props) {
   const [name, setName] = useState('');
   const [size, setSize] = useState('');
@@ -20,26 +41,5 @@ export function NewFeatureForm(props) {
       <label>PI: <input type='text' value={pi} onChange={(event) => setPi(event.target.value)} /></label>
       <input type='submit' value='Submit' />
     </form>
-  );
-}
-
-export function FilterForm(props) {
-  const [filtername, setFilterName] = useState('');
-
-  function handleSubmit(event) {
-    props.onSubmit({filtername: filtername});
-    event.preventDefault();
-  };
-
-  return (
-    <div className='filter'>
-      <form onSubmit={handleSubmit}>
-        <div className='filter-grid-container'>
-          <label>{props.text}</label>
-          <input className='filter-form-cell' type='text' value={filtername} onChange={(event) => setFilterName(event.target.value)} />
-          <input className='filter-form-cell' type='submit' value='Submit' />
-        </div>
-      </form>
-    </div>
   );
 }

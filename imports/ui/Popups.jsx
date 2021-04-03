@@ -22,7 +22,7 @@ export function UpdateFeaturePopup(props) {
   function handleSubmit(event) {
     props.onSubmit({_id: props.feature._id, name: name, size: size, done: done, pi: pi, startsprint: startSprint, endsprint: endSprint});
     event.preventDefault();
-  };
+  }
 
   return (
     <div className={showHideClassName}>
