@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
-         SprintsCollection, TeamsCollection, ProjectsCollection, AllocationCollection, VelocityCollection } from '/imports/api/Collections';
+         SprintsCollection, TeamsCollection, ProjectsCollection, 
+         AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
 
-function insertFeature(feature) { FeaturesCollection.insert(feature);}
-function insertOrgFeature(feature) {OrgFeaturesCollection.insert(feature);}
-function insertDeltaFeature(feature) { DeltaFeaturesCollection.insert(feature);}
-
-function insertSprint(sprint) {SprintsCollection.insert(sprint);}
-function insertTeam(team) {TeamsCollection.insert(team);}
-function insertProject(project) {ProjectsCollection.insert(project);}
-function insertAllocation(allocation) {AllocationCollection.insert(allocation);}
-function insertVelocity(velocity) {VelocityCollection.insert(velocity);}
+function insertFeature(feature) { FeaturesCollection.insert(feature); }
+function insertOrgFeature(feature) {OrgFeaturesCollection.insert(feature); }
+function insertDeltaFeature(feature) { DeltaFeaturesCollection.insert(feature); }
+function insertSprint(sprint) { SprintsCollection.insert(sprint); }
+function insertTeam(team) { TeamsCollection.insert(team); }
+function insertProject(project) { ProjectsCollection.insert(project); }
+function insertAllocation(allocation) { AllocationsCollection.insert(allocation); }
+function insertVelocity(velocity) { VelocitiesCollection.insert(velocity); }
 
 // compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
 function CompareFeatureCollections() {
@@ -25,7 +25,7 @@ function CompareFeatureCollections() {
       }
       if(feature.size!==orgfeature.size || feature.done!==orgfeature.done || 
          feature.startsprint!==orgfeature.startsprint || feature.endsprint!==orgfeature.endsprint) {
-        orgfeature._id=feature._id;
+        orgfeature._id=feature._id; // store org data, but allow searching on (current) feature-id
         insertDeltaFeature({type: 'changed', feature: orgfeature});
       }
     } else {
@@ -33,7 +33,7 @@ function CompareFeatureCollections() {
     }
   }
 
-  const orgfeatures = OrgFeaturesCollection.find({}).fetch();  
+  const orgfeatures = OrgFeaturesCollection.find({}).fetch();
   for (const orgfeature of orgfeatures) {
     const feature = FeaturesCollection.findOne({id: orgfeature.id});
     if (!feature) {
@@ -49,8 +49,8 @@ Meteor.startup(() => {
   SprintsCollection.remove({});
   ProjectsCollection.remove({});
   TeamsCollection.remove({});
-  AllocationCollection.remove({});
-  VelocityCollection.remove({});
+  AllocationsCollection.remove({});
+  VelocitiesCollection.remove({});
 
   if (OrgFeaturesCollection.find().count() === 0) {
     [
@@ -185,7 +185,7 @@ Meteor.startup(() => {
     ].forEach(insertProject);
   }
 
-  if (AllocationCollection.find().count() === 0) {
+  if (AllocationsCollection.find().count() === 0) {
     [
       {teamname: 'pegasus', projectname: 'tiger', pi: 'PI 21.1', allocation: 10},
       {teamname: 'mushu', projectname: 'puma', pi: 'PI 21.1', allocation: 80},
@@ -198,7 +198,7 @@ Meteor.startup(() => {
     ].forEach(insertAllocation);      
   }
 
-  if (VelocityCollection.find().count() === 0) {
+  if (VelocitiesCollection.find().count() === 0) {
     [
       {teamname: 'pegasus', pi: 'PI 21.1', velocity: 75},
       {teamname: 'mushu', pi: 'PI 21.1', velocity: 60},

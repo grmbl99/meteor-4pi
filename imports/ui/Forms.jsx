@@ -6,7 +6,7 @@ export function FilterForm(props) {
   function handleSubmit(event) {
     props.onSubmit({filtername: filtername});
     event.preventDefault();
-  };
+  }
 
   return (
     <div className='filter'>
@@ -32,7 +32,7 @@ export function NewFeatureForm(props) {
     setSize('');
     setPi('');
     event.preventDefault();
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit}>

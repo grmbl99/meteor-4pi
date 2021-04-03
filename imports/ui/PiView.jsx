@@ -15,27 +15,27 @@ export function PiView(props) {
     })
   }),[props]);
 
-  let dict={};
+  const dict={};
   let offset=0;
-  let sprintsList=[];
+  const sprintsList=[];
   for (const sprint of sprints) {
     if (sprint.pi === props.pi) {
       dict[sprint.sprintname]=offset;
       offset += 65;
-      sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname} />);
+      sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname}/>);
     }
   }
 
   let size=0;
   let done=0;
-  let featuresList=[];
+  const featuresList=[];
   for (const feature of features) {
-    let so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-    let eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+    const so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+    const eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+
     if (feature.pi === props.pi && 
         (props.team === '' || feature.team === props.team) &&
-        (props.project === '' || feature.project === props.project)
-        ) {
+        (props.project === '' || feature.project === props.project)) {
       size += feature.size;
       done += feature.done;
 
@@ -57,26 +57,25 @@ export function PiView(props) {
   }
 
   for (const deltafeature of deltafeatures) {
-    if(deltafeature.type === 'removed')
-    {
+    if(deltafeature.type === 'removed') {
       const feature=deltafeature.feature;
-      let so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-      let eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+      const so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+      const eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+
       if (feature.pi === props.pi && 
           (props.team === '' || feature.team === props.team) &&
-          (props.project === '' || feature.project === props.project)
-          ) {
+          (props.project === '' || feature.project === props.project)) {
         let displaytype='removed';
         featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>);
       }  
     }
   }
 
-  const perct=size>0 ? done/size : 0;
-  const perctstr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
+  const percentdone=size>0 ? done/size : 0;
+  const percentdonestr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(percentdone);
 
-  const allocstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
-  const velstr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
+  const allocationstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
+  const velocitystr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
 
   return (
     <div 
@@ -86,16 +85,16 @@ export function PiView(props) {
         opacity: isOver ? 0.5 : 1, 
       }}
     >
-      <div className='pi-header'>{props.pi} {props.team} {props.project} {allocstr} {velstr}</div>
+      <div className='pi-header'>{props.pi} {props.team} {props.project} {allocationstr} {velocitystr}</div>
       {sprintsList}
       <div className='pi-progress'>
         <div className='pi-progress-bar'>
           <div className='pi-progress-text'>
-            {perctstr} [{done}/{size}]
+            {percentdonestr} [{done}/{size}]
           </div>
           <svg width='455px' height='30px'>
             <rect x='0' y='0' height='30' width='455' fill='rgb(230, 230, 230)'/>
-            <rect x='0' y='0' height='30' width={455*perct} fill='purple'/>
+            <rect x='0' y='0' height='30' width={455*percentdone} fill='purple'/>
           </svg>
         </div>
       </div>

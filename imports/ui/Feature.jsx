@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDrag } from 'react-dnd'
+import { useDrag } from 'react-dnd';
 
 export const ItemTypes = {
   FEATURE: 'feature'
@@ -12,17 +12,17 @@ export function Feature(props) {
     type: ItemTypes.FEATURE,
     item: { id: feature._id },
     collect: monitor => ({
-      isDragging: monitor.isDragging(),
+      isDragging: monitor.isDragging()
     })
-  }))
+  }));
 
   const perct=feature.done/feature.size;
   const perctstr=Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
 
-  if (props.displaytype === 'added') {featureClassName = 'feature feature-added'}
-  else if (props.displaytype === 'removed') {featureClassName = 'feature feature-removed'}
-  else if (props.displaytype === 'changed') {featureClassName = 'feature feature-changed'}
-  else {featureClassName = 'feature'}
+  if (props.displaytype === 'added') { featureClassName = 'feature feature-added' }
+  else if (props.displaytype === 'removed') { featureClassName = 'feature feature-removed' }
+  else if (props.displaytype === 'changed') { featureClassName = 'feature feature-changed' }
+  else { featureClassName = 'feature' }
 
   return (
     <div 
