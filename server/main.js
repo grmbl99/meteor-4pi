@@ -4,7 +4,7 @@ import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
 
 function insertFeature(feature) { FeaturesCollection.insert(feature); }
-function insertOrgFeature(feature) {OrgFeaturesCollection.insert(feature); }
+function insertOrgFeature(feature) { OrgFeaturesCollection.insert(feature); }
 function insertDeltaFeature(feature) { DeltaFeaturesCollection.insert(feature); }
 function insertSprint(sprint) { SprintsCollection.insert(sprint); }
 function insertTeam(team) { TeamsCollection.insert(team); }
@@ -42,8 +42,7 @@ function CompareFeatureCollections() {
   }
 }
 Meteor.methods({
-  test() {
-    console.log('test call');
+  UpdateDeltaFeatureCollection() {
     DeltaFeaturesCollection.remove({});
     CompareFeatureCollections();
   }

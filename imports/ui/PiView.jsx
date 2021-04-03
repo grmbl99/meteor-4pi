@@ -40,34 +40,38 @@ export function PiView(props) {
       done += feature.done;
 
       let displaytype='normal';
-      for (const deltafeature of deltafeatures) {
-        if (deltafeature.feature._id === feature._id) {
-          if (deltafeature.type === 'added') {
-            displaytype='added';
-            break;
-          } else if (deltafeature.type === 'changed') {
-            displaytype='changed';
-            break;
+      if (props.comparemodeon) {
+        for (const deltafeature of deltafeatures) {
+          if (deltafeature.feature._id === feature._id) {
+            if (deltafeature.type === 'added') {
+              displaytype='added';
+              break;
+            } else if (deltafeature.type === 'changed') {
+              displaytype='changed';
+              break;
+            }
           }
-        }
+        }    
       }
 
       featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>);
     }
   }
 
-  for (const deltafeature of deltafeatures) {
-    if(deltafeature.type === 'removed') {
-      const feature=deltafeature.feature;
-      const so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-      const eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+  if(props.comparemodeon) {
+    for (const deltafeature of deltafeatures) {
+      if(deltafeature.type === 'removed') {
+        const feature=deltafeature.feature;
+        const so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+        const eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
 
-      if (feature.pi === props.pi && 
-          (props.team === '' || feature.team === props.team) &&
-          (props.project === '' || feature.project === props.project)) {
-        let displaytype='removed';
-        featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>);
-      }  
+        if (feature.pi === props.pi && 
+            (props.team === '' || feature.team === props.team) &&
+            (props.project === '' || feature.project === props.project)) {
+          let displaytype='removed';
+          featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>);
+        }  
+      }
     }
   }
 

@@ -9,15 +9,7 @@ import { PiView } from './PiView.jsx';
 import { FilterForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popups.jsx';
 
-export function App(props) {
-  function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
-  function getDeltaFeatures() { return (DeltaFeaturesCollection.find({}).fetch()); }
-  function getSprints() { return (SprintsCollection.find({}).fetch()); }
-  function getTeams() { return (TeamsCollection.find({}).fetch()); }
-  function getProjects() { return (ProjectsCollection.find({}).fetch()); }
-  function getAllocations() { return (AllocationsCollection.find({}).fetch()); }
-  function getVelocities() { return (VelocitiesCollection.find({}).fetch()); }
-  
+export function App(props) {  
   function moveFeature(featureId,pi,team,project) {
     if(!compareModeOn) {
       let updates = { 'pi': pi };
@@ -44,17 +36,18 @@ export function App(props) {
   }
   
   function editFeature(feature) {
-    setSelectedFeature(feature);
-    setShowPopup(true);
+    if (!compareModeOn) {
+      setSelectedFeature(feature);
+      setShowPopup(true);
+    }
   }
 
   function toggleCompareMode(event) {
     if (!compareModeOn) {
       setCompareModeOn(true);
-      Meteor.call('test', () => { setCompareWith(deltafeatures); });
+      Meteor.call('UpdateDeltaFeatureCollection');
     } else {
       setCompareModeOn(false);
-      setCompareWith([]);
     }
   }
 
@@ -88,7 +81,15 @@ export function App(props) {
         
     return{teamvelocity,teamallocation}
   }
-  
+
+  function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
+  function getDeltaFeatures() { return (DeltaFeaturesCollection.find({}).fetch()); }
+  function getSprints() { return (SprintsCollection.find({}).fetch()); }
+  function getTeams() { return (TeamsCollection.find({}).fetch()); }
+  function getProjects() { return (ProjectsCollection.find({}).fetch()); }
+  function getAllocations() { return (AllocationsCollection.find({}).fetch()); }
+  function getVelocities() { return (VelocitiesCollection.find({}).fetch()); }
+
   const features = useTracker(getFeatures);
   const deltafeatures = useTracker(getDeltaFeatures);
   const sprints = useTracker(getSprints);
@@ -101,7 +102,6 @@ export function App(props) {
   const [projectFilter, setProjectFilter] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [compareModeOn, setCompareModeOn] = useState(false);
-  const [compareWith, setCompareWith] = useState([]);
   const [selectedFeature, setSelectedFeature] = useState({
     name: '',
     pi: '',
@@ -127,7 +127,7 @@ export function App(props) {
       teamsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltafeatures={compareWith} sprints={sprints} 
+        features={features} deltafeatures={deltafeatures} comparemodeon={compareModeOn} sprints={sprints} 
         pi={pi} project={projectFilter} team={team.teamname}
         allocation={teamallocation} velocity={teamvelocity}/>
       );
@@ -148,7 +148,7 @@ export function App(props) {
       projectsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltafeatures={compareWith} sprints={sprints} 
+        features={features} deltafeatures={deltafeatures} comparemodeon={compareModeOn} sprints={sprints} 
         pi={pi} project={project.projectname} team={teamFilter}
         allocation={teamallocation} velocity={teamvelocity}/>
       );
