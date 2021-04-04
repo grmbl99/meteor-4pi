@@ -6,10 +6,17 @@ import { ProgressBar } from './ProgressBar.jsx';
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
 function calcRelFeatureStartAndDuration(feature,dict) {
   const nrsprints=Object.keys(dict).length;
-  const startsprint=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-  const endsprint=feature.endsprint in dict ? dict[feature.endsprint] : 0;
-  const duration=(endsprint-startsprint+1)/nrsprints*100;
-  const start=startsprint/nrsprints*100;
+
+  let duration=0;
+  let start=0;
+  if (feature.startsprint in dict && feature.endsprint in dict) {
+    const startsprint=dict[feature.startsprint];
+    const endsprint=dict[feature.endsprint];
+
+    duration=(endsprint-startsprint+1)/nrsprints*100;
+    start=startsprint/nrsprints*100;  
+  }
+
   return([start,duration]);
 }
 

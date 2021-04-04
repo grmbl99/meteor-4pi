@@ -99,7 +99,7 @@ input[type='submit']:hover {
 
 .pi-view {
   float: left;
-  outline-offset: 5px;
+  /* outline-offset: 5px; */
   margin: 10px;
   background-color: rgb(245, 245, 245);
   box-shadow: 3px 3px 5px 6px #ccc;
@@ -145,26 +145,32 @@ input[type='submit']:hover {
 }
 
 .pi-progress-bar-fill {
-  background-color: purple;
+  background-image: linear-gradient(to right, rgb(111, 0, 255), rgb(207, 128, 253));
+  box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .feature {
   position: relative;
   height: 50px;
-  margin-top: 5px;
+  margin-top: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: rgb(252, 252, 250);
+  box-shadow: 3px 3px 5px gray;
 }
 
 .feature-added {
-  background-image: linear-gradient(to right, rgba(30, 255, 0, 0.61), rgba(0, 0, 0, 0.247));
+  box-shadow: 3px 3px 5px green;
   text-decoration: underline;
 }
 
 .feature-removed {
-  background-image: linear-gradient(to right, rgba(255, 0, 0, 0.61), rgba(0, 0, 0, 0.247));
+  box-shadow: 3px 3px 5px red;
   text-decoration: line-through;
 }
 
 .feature-changed {
+  box-shadow: 3px 3px 5px rgb(99, 99, 252);
   font-style: italic;
 }
 
@@ -173,7 +179,7 @@ input[type='submit']:hover {
   left: 5px;
   top: 2px;
   text-decoration: inherit;
-  font-size: 11pt;
+  font-size: 10pt;
   font-family: Arial, sans-serif;
 }
 
@@ -186,13 +192,15 @@ input[type='submit']:hover {
 }
 
 .feature-progress-bar-fill {
-  background-color: rgb(81, 122, 235);
+  background-image: linear-gradient(to right, rgb(255, 255, 255), rgb(0, 139, 253));
+  box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .progress-bar-total {
   position: absolute;
   height: inherit;
   background-color: rgb(230, 230, 230);
+  box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .progress-bar-done {
@@ -203,7 +211,7 @@ input[type='submit']:hover {
 .progress-bar-text {
   position: absolute;
   top: 20%;
-  left: 10px;
+  left: 7px;
   width: 100pt;
   height: inherit;
 }
