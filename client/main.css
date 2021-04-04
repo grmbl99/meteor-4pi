@@ -79,7 +79,7 @@ input[type='submit']:hover {
   background-color: rgb(110, 110, 110);
 }
 
-.grid-container {
+.pi-grid-container {
   display: grid;
   grid-template-columns: repeat(10, auto);
   gap: 10px 10px;
@@ -98,7 +98,6 @@ input[type='submit']:hover {
 }
 
 .pi-view {
-  width:455px;
   float: left;
   outline-offset: 5px;
   margin: 10px;
@@ -107,9 +106,6 @@ input[type='submit']:hover {
 }
 
 .pi-header {
-  float: left;
-  position: relative;
-  width: 450px;
   height: 30px;
   line-height: 30px;
   padding-left: 5px;
@@ -119,8 +115,12 @@ input[type='submit']:hover {
   font-size: 13pt;
 }
 
+.sprint-grid-container {
+  display: grid;
+  grid-template-columns: repeat(10, auto);
+}
+
 .sprint {
-  float: left;
   text-align: center;
   line-height: 35px;
   width: 65px;
@@ -132,66 +132,80 @@ input[type='submit']:hover {
 }
 
 .pi-progress {
-  float: left;
-  position: relative;
-  width: 455px;
   height: 60px;
   background-color: rgb(170, 170, 170);
 }
 
 .pi-progress-bar {
-  position:absolute;
-  left: 0px;
-  top: 15px;
-}
-
-.pi-progress-text {
-  position: absolute;
+  position: relative;
+  top: 10pt;
+  height: 30px;
   font-size: 10pt;
-  top: 6px;
-  left: 5pt;
   color: white;
 }
 
+.pi-progress-bar-fill {
+  background-color: purple;
+}
+
 .feature {
-  float: left;
   position: relative;
   height: 50px;
-  width: 455px;
+  margin-top: 5px;
 }
 
 .feature-added {
-  background-color: yellowgreen;
+  background-image: linear-gradient(to right, rgba(30, 255, 0, 0.61), rgba(0, 0, 0, 0.247));
+  text-decoration: underline;
 }
 
 .feature-removed {
-  background-color: lightcoral;
-  color: gray;
+  background-image: linear-gradient(to right, rgba(255, 0, 0, 0.61), rgba(0, 0, 0, 0.247));
+  text-decoration: line-through;
 }
 
 .feature-changed {
-  background-color: lightgoldenrodyellow;
+  font-style: italic;
 }
 
 .feature-name {
   position:absolute;
   left: 5px;
   top: 2px;
+  text-decoration: inherit;
   font-size: 11pt;
   font-family: Arial, sans-serif;
 }
 
 .feature-progress-bar {
-  position:absolute;
-  left: 0px;
+  position: relative;
+  height: 20px;
   top: 22px;
+  font-size: 8pt;
+  color: rgb(50, 50, 50);
 }
 
-.feature-progress-text {
+.feature-progress-bar-fill {
+  background-color: rgb(81, 122, 235);
+}
+
+.progress-bar-total {
   position: absolute;
-  font-size: 10pt;
-  top: 3px;
-  color: rgb(50, 50, 50);
+  height: inherit;
+  background-color: rgb(230, 230, 230);
+}
+
+.progress-bar-done {
+  position: absolute;
+  height: inherit;
+}
+
+.progress-bar-text {
+  position: absolute;
+  top: 20%;
+  left: 10px;
+  width: 100pt;
+  height: inherit;
 }
 
 .popup {

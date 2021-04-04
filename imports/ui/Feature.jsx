@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
+import { ProgressBar } from './ProgressBar.jsx';
 
 export const ItemTypes = {
   FEATURE: 'feature'
@@ -16,9 +17,6 @@ export function Feature(props) {
     })
   }));
 
-  const perct=feature.done/feature.size;
-  const perctstr=Intl.NumberFormat('en-IN', { style: 'percent' }).format(perct);
-
   if (props.displaytype === 'added') { featureClassName = 'feature feature-added' }
   else if (props.displaytype === 'removed') { featureClassName = 'feature feature-removed' }
   else if (props.displaytype === 'changed') { featureClassName = 'feature feature-changed' }
@@ -27,6 +25,7 @@ export function Feature(props) {
   return (
     <div 
       className={featureClassName} 
+      onClick={() => {props.onFeatureClicked(feature)}}
       ref={drag}
       style={{
         opacity: isDragging ? 0.5 : 1,
@@ -34,15 +33,9 @@ export function Feature(props) {
       }}
     >
       <div className='feature-name'>{feature.id} {feature.name}</div>
-      <div className='feature-progress-bar' onClick={() => {props.onFeatureClicked(feature)}}>
-        <div className='feature-progress-text' style={{left: props.so+5}}>
-          {perctstr} [{feature.done}/{feature.size}]
-        </div>
-        <svg width='455px' height='20px'>
-          <rect x={props.so} y='0' height='20' width={props.eo-props.so} fill='rgb(230, 230, 230)'/>
-          <rect x={props.so} y='0' height='20' width={(props.eo-props.so)*perct} fill='rgb(81, 122, 235)'/>
-        </svg>
-      </div>
+      <ProgressBar className='feature-progress-bar' 
+                   fillStyle='feature-progress-bar-fill' 
+                   start={props.start} width={props.duration} size={feature.size} done={feature.done}/>
     </div>
   );
 }

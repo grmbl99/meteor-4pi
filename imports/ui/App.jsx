@@ -170,7 +170,7 @@ export function App(props) {
       </div>
       <div className='right'>
         <DndProvider backend={HTML5Backend}>
-          <div className='grid-container'>
+          <div className='pi-grid-container'>
             <div className='heading'>Project Manager View</div>
             {teamsList}
             <div className='heading'>Product Owner View</div>

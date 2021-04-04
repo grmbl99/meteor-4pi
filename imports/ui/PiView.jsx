@@ -1,8 +1,19 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 import { Feature, ItemTypes } from './Feature.jsx';
+import { ProgressBar } from './ProgressBar.jsx';
 
-export function PiView(props) {
+// calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
+function calcRelFeatureStartAndDuration(feature,dict) {
+  const nrsprints=Object.keys(dict).length;
+  const startsprint=feature.startsprint in dict ? dict[feature.startsprint] : 0;
+  const endsprint=feature.endsprint in dict ? dict[feature.endsprint] : 0;
+  const duration=(endsprint-startsprint+1)/nrsprints*100;
+  const start=startsprint/nrsprints*100;
+  return([start,duration]);
+}
+
+export function PiView(props) {  
   const features = props.features;
   const deltafeatures = props.deltafeatures;
   const sprints = props.sprints;
@@ -16,12 +27,12 @@ export function PiView(props) {
   }),[props]);
 
   const dict={};
-  let offset=0;
+  let sprintnr=0;
   const sprintsList=[];
   for (const sprint of sprints) {
     if (sprint.pi === props.pi) {
-      dict[sprint.sprintname]=offset;
-      offset += 65;
+      dict[sprint.sprintname]=sprintnr;
+      sprintnr += 1;
       sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname}/>);
     }
   }
@@ -30,8 +41,7 @@ export function PiView(props) {
   let done=0;
   const featuresList=[];
   for (const feature of features) {
-    const so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-    const eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+    const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
     if (feature.pi === props.pi && 
         (props.team === '' || feature.team === props.team) &&
@@ -54,7 +64,10 @@ export function PiView(props) {
         }    
       }
 
-      featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>);
+      featuresList.push(<Feature key={feature._id} feature={feature} 
+                                 displaytype={displaytype} 
+                                 start={start} duration={duration}
+                                 onFeatureClicked={props.onFeatureClicked}/>);
     }
   }
 
@@ -62,21 +75,20 @@ export function PiView(props) {
     for (const deltafeature of deltafeatures) {
       if(deltafeature.type === 'removed') {
         const feature=deltafeature.feature;
-        const so=feature.startsprint in dict ? dict[feature.startsprint] : 0;
-        const eo=feature.endsprint in dict ? dict[feature.endsprint]+65 : 0;
+        const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
         if (feature.pi === props.pi && 
             (props.team === '' || feature.team === props.team) &&
             (props.project === '' || feature.project === props.project)) {
           let displaytype='removed';
-          featuresList.push(<Feature key={feature._id} feature={feature} displaytype={displaytype} so={so} eo={eo} onFeatureClicked={props.onFeatureClicked}/>);
+          featuresList.push(<Feature key={feature._id} feature={feature} 
+                                     displaytype={displaytype} 
+                                     start={start} duration={duration}
+                                     onFeatureClicked={props.onFeatureClicked}/>);
         }  
       }
     }
   }
-
-  const percentdone=size>0 ? done/size : 0;
-  const percentdonestr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(percentdone);
 
   const allocationstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
   const velocitystr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
@@ -90,17 +102,13 @@ export function PiView(props) {
       }}
     >
       <div className='pi-header'>{props.pi} {props.team} {props.project} {allocationstr} {velocitystr}</div>
-      {sprintsList}
+      <div className='sprint-grid-container'>
+        {sprintsList}
+      </div>
       <div className='pi-progress'>
-        <div className='pi-progress-bar'>
-          <div className='pi-progress-text'>
-            {percentdonestr} [{done}/{size}]
-          </div>
-          <svg width='455px' height='30px'>
-            <rect x='0' y='0' height='30' width='455' fill='rgb(230, 230, 230)'/>
-            <rect x='0' y='0' height='30' width={455*percentdone} fill='purple'/>
-          </svg>
-        </div>
+        <ProgressBar className='pi-progress-bar' 
+                     fillStyle='pi-progress-bar-fill' 
+                     start='0' width='100' size={size} done={done}/>
       </div>
       {featuresList}
     </div>
