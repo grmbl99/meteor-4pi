@@ -163,13 +163,13 @@ Meteor.startup(() => {
       {pi: 'PI 21.3', sprintname: '2141'},
       {pi: 'PI 21.3', sprintname: '2143'},
       {pi: 'PI 21.3', sprintname: 'IP 21.3'},
-      {pi: 'PI 21.4', sprintname: '2147'},
-      {pi: 'PI 21.4', sprintname: '2149'},
-      {pi: 'PI 21.4', sprintname: '2151'},
-      {pi: 'PI 21.4', sprintname: '2201'},
-      {pi: 'PI 21.4', sprintname: '2203'},
-      {pi: 'PI 21.4', sprintname: '2205'},
-      {pi: 'PI 21.4', sprintname: 'IP 21.4'}
+      // {pi: 'PI 21.4', sprintname: '2147'},
+      // {pi: 'PI 21.4', sprintname: '2149'},
+      // {pi: 'PI 21.4', sprintname: '2151'},
+      // {pi: 'PI 21.4', sprintname: '2201'},
+      // {pi: 'PI 21.4', sprintname: '2203'},
+      // {pi: 'PI 21.4', sprintname: '2205'},
+      // {pi: 'PI 21.4', sprintname: 'IP 21.4'}
     ].forEach(insertSprint);
   }
 

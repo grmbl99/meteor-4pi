@@ -34,8 +34,8 @@ export function PiView(props) {
   }),[props]);
 
   const dict={};
-  let sprintnr=0;
   const sprintsList=[];
+  let sprintnr=0;
   for (const sprint of sprints) {
     if (sprint.pi === props.pi) {
       dict[sprint.sprintname]=sprintnr;
@@ -43,6 +43,7 @@ export function PiView(props) {
       sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname}/>);
     }
   }
+  if (sprintnr===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
 
   let size=0;
   let done=0;
@@ -125,5 +126,11 @@ export function PiView(props) {
 function Sprint(props) {
   return(
     <div className='sprint'>{props.name}</div>
+  );
+}
+
+function SprintPlaceholder(props) {
+  return(
+    <div className='sprint-placeholder'>{props.name}</div>
   );
 }
