@@ -51,11 +51,11 @@ export function App(props) {
     }
   }
 
-  function getTeamVelocityAndAllocation(pi,projectname,teamname) {
-    let teamvelocity=0;
-    let teamallocation=0;
+  function getAllocation(pi,projectname,teamname) {
+    let alloc=0;
   
     if (teamname !== '') {
+      let teamvelocity=0;
       for (const velocity of velocities) {
         if(velocity.pi === pi && velocity.teamname === teamname) { 
           teamvelocity = velocity.velocity;
@@ -63,6 +63,7 @@ export function App(props) {
       }
   
       if (projectname !== '') {
+        let teamallocation=0;
         for (const allocation of allocations) {
           if(allocation.pi === pi && allocation.projectname === projectname && allocation.teamname === teamname) { 
             teamallocation = allocation.allocation;
@@ -70,17 +71,15 @@ export function App(props) {
         }
   
         // percentage of the team-velocity allocated to a project
-        teamallocation = teamallocation === 0 ? 0 : teamvelocity/teamallocation;
-        teamvelocity=-1;
+        alloc = teamallocation === 0 ? 0 : teamvelocity/teamallocation;
       } else {
-        teamallocation=-1;
+        alloc = teamvelocity;
       }
     } else {
-      teamvelocity=-1;
-      teamallocation=-1;
+      alloc=-1;
     }
         
-    return([teamvelocity,teamallocation]);
+    return(alloc);
   }
 
   function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
@@ -123,14 +122,14 @@ export function App(props) {
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const [teamvelocity,teamallocation] = getTeamVelocityAndAllocation(pi,projectFilter,team.teamname);
+      const allocation = getAllocation(pi,projectFilter,team.teamname);
 
       teamsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
         features={features} deltafeatures={deltafeatures} comparemodeon={compareModeOn} sprints={sprints} 
         pi={pi} project={projectFilter} team={team.teamname}
-        allocation={teamallocation} velocity={teamvelocity}/>
+        allocation={allocation}/>
       );
     }
   }
@@ -144,14 +143,14 @@ export function App(props) {
     projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const [teamvelocity,teamallocation] = getTeamVelocityAndAllocation(pi,project.projectname,teamFilter);
+      const allocation = getAllocation(pi,project.projectname,teamFilter);
       
       projectsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
         features={features} deltafeatures={deltafeatures} comparemodeon={compareModeOn} sprints={sprints} 
         pi={pi} project={project.projectname} team={teamFilter}
-        allocation={teamallocation} velocity={teamvelocity}/>
+        allocation={allocation}/>
       );
     }
   }

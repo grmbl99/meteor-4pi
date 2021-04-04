@@ -98,15 +98,6 @@ export function PiView(props) {
     }
   }
 
-  let allocation=-1;
-  if (props.team!=='') {
-    if (props.project!=='') {
-      allocation=props.allocation;
-    } else {
-      allocation=props.velocity;
-    }
-  }
-
   return (
     <div 
       className='pi-view'
@@ -117,8 +108,8 @@ export function PiView(props) {
     >
       <div className='pi-header'>
         {props.pi} {props.team} {props.project} 
-        <Load allocation={allocation} size={size}/>
-        <Allocation allocation={allocation}/>
+        <Load allocation={props.allocation} size={size}/>
+        <Allocation allocation={props.allocation}/>
       </div>
       <div className='sprint-grid-container'>
         {sprintsList}
@@ -146,28 +137,28 @@ function SprintPlaceholder(props) {
 }
 
 function Allocation(props) {
-  let className='pi-badges pi-velocity-badge';
+  let className='pi-badge pi-allocation-badge';
   let allocstr='';
 
   if (props.allocation!==-1) {
-    allocstr+=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.allocation);
+    allocstr+=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(props.allocation);
   } else {
     className+=' display-none';
   }
 
   return(
-    <div className={className}>Alloc={allocstr}SP</div>
+    <div className={className}>Alloc: {allocstr}SP</div>
   );
 }
 
 function Load(props) {
-  let className='pi-badges pi-load-badge';
+  let className='pi-badge pi-load-badge';
   let loadstr='';
 
   if (props.allocation!==-1) {
     if (props.allocation>0) {
       const load=props.size/props.allocation*100;
-      loadstr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(load);
+      loadstr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(load);
       if (load>100) {
         className+=' pi-badge-alert';
       }
@@ -175,7 +166,7 @@ function Load(props) {
       if (props.size===0) {
         loadstr='0';
       } else {
-        loadstr='oo';
+        loadstr=String.fromCharCode(8734); // infinity sign
         className+=' pi-badge-alert';
       }
     }  
@@ -184,6 +175,6 @@ function Load(props) {
   }
 
   return(
-    <div className={className}>Load={loadstr}%</div>
+    <div className={className}>Load: {loadstr}%</div>
   );
 }

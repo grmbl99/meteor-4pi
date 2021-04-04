@@ -106,8 +106,8 @@ input[type='submit']:hover {
 
 .pi-header {
   position: relative;
-  height: 40px;
-  line-height: 40px;
+  height: 45px;
+  line-height: 45px;
   padding-left: 5px;
   background-color: rgb(110, 110, 110);
   color: white;
@@ -115,19 +115,28 @@ input[type='submit']:hover {
   font-size: 13pt;
 }
 
-.pi-badges {
+.pi-badge {
   position: absolute;
   right: 5pt;
+  height: 15px;
+  border-radius: 3pt;
+  padding-left: 3pt;
+  padding-right: 3pt;
+  line-height: initial;
   font-size: 8pt;
+  font-weight: normal;
+  background-color:green;
 }
 .pi-load-badge {
-  top: -6pt;
-}
-.pi-velocity-badge {
   top: 5pt;
+}
+.pi-allocation-badge {
+  top: 19pt;
 }
 .pi-badge-alert {
   color: darkred;
+  font-weight: bold;
+  background-color: darksalmon;
 }
 
 .sprint-grid-container {
