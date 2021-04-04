@@ -69,8 +69,9 @@ export function App(props) {
           }
         }
   
-        // return velocity based on allocation percentage
-        teamvelocity = teamallocation === 0 ? 0 : teamvelocity/teamallocation;  
+        // percentage of the team-velocity allocated to a project
+        teamallocation = teamallocation === 0 ? 0 : teamvelocity/teamallocation;
+        teamvelocity=-1;
       } else {
         teamallocation=-1;
       }
@@ -79,7 +80,7 @@ export function App(props) {
       teamallocation=-1;
     }
         
-    return{teamvelocity,teamallocation}
+    return([teamvelocity,teamallocation]);
   }
 
   function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
@@ -122,7 +123,7 @@ export function App(props) {
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      let {teamvelocity,teamallocation} = getTeamVelocityAndAllocation(pi,projectFilter,team.teamname);
+      const [teamvelocity,teamallocation] = getTeamVelocityAndAllocation(pi,projectFilter,team.teamname);
 
       teamsList.push(<PiView 
         key={key++} 
@@ -143,7 +144,7 @@ export function App(props) {
     projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      let {teamvelocity,teamallocation} = getTeamVelocityAndAllocation(pi,project.projectname,teamFilter);
+      const [teamvelocity,teamallocation] = getTeamVelocityAndAllocation(pi,project.projectname,teamFilter);
       
       projectsList.push(<PiView 
         key={key++} 

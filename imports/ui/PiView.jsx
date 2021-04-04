@@ -98,8 +98,14 @@ export function PiView(props) {
     }
   }
 
-  const allocationstr = props.allocation === -1 ? '' : 'a=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.allocation) + '%';
-  const velocitystr = props.velocity === -1 ? '' : 'v=' + Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(props.velocity) + 'sp';
+  let allocation=-1;
+  if (props.team!=='') {
+    if (props.project!=='') {
+      allocation=props.allocation;
+    } else {
+      allocation=props.velocity;
+    }
+  }
 
   return (
     <div 
@@ -109,7 +115,11 @@ export function PiView(props) {
         opacity: isOver ? 0.5 : 1, 
       }}
     >
-      <div className='pi-header'>{props.pi} {props.team} {props.project} {allocationstr} {velocitystr}</div>
+      <div className='pi-header'>
+        {props.pi} {props.team} {props.project} 
+        <Load allocation={allocation} size={size}/>
+        <Allocation allocation={allocation}/>
+      </div>
       <div className='sprint-grid-container'>
         {sprintsList}
       </div>
@@ -132,5 +142,48 @@ function Sprint(props) {
 function SprintPlaceholder(props) {
   return(
     <div className='sprint-placeholder'>{props.name}</div>
+  );
+}
+
+function Allocation(props) {
+  let className='pi-badges pi-velocity-badge';
+  let allocstr='';
+
+  if (props.allocation!==-1) {
+    allocstr+=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.allocation);
+  } else {
+    className+=' display-none';
+  }
+
+  return(
+    <div className={className}>Alloc={allocstr}SP</div>
+  );
+}
+
+function Load(props) {
+  let className='pi-badges pi-load-badge';
+  let loadstr='';
+
+  if (props.allocation!==-1) {
+    if (props.allocation>0) {
+      const load=props.size/props.allocation*100;
+      loadstr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(load);
+      if (load>100) {
+        className+=' pi-badge-alert';
+      }
+    } else {
+      if (props.size===0) {
+        loadstr='0';
+      } else {
+        loadstr='oo';
+        className+=' pi-badge-alert';
+      }
+    }  
+  } else {
+    className+=' display-none';
+  }
+
+  return(
+    <div className={className}>Load={loadstr}%</div>
   );
 }
