@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
          AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
+import { DisplayTypes } from '/imports/ui/Consts.jsx';
 
 function insertFeature(feature) { FeaturesCollection.insert(feature); }
 function insertOrgFeature(feature) { OrgFeaturesCollection.insert(feature); }
@@ -20,16 +21,16 @@ function CompareFeatureCollections() {
     const orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
     if (orgfeature) {
       if(feature.pi!==orgfeature.pi || feature.team!==orgfeature.team || feature.project!==orgfeature.project) {
-        insertDeltaFeature({type: 'added', feature: feature});
-        insertDeltaFeature({type: 'removed', feature: orgfeature});
+        insertDeltaFeature({type: DisplayTypes.ADDED, feature: feature});
+        insertDeltaFeature({type: DisplayTypes.REMOVED, feature: orgfeature});
       }
       if(feature.size!==orgfeature.size || feature.done!==orgfeature.done || 
          feature.startsprint!==orgfeature.startsprint || feature.endsprint!==orgfeature.endsprint) {
         orgfeature._id=feature._id; // store org data, but allow searching on (current) feature-id
-        insertDeltaFeature({type: 'changed', feature: orgfeature});
+        insertDeltaFeature({type: DisplayTypes.CHANGED, feature: orgfeature});
       }
     } else {
-      insertDeltaFeature({type: 'added', feature: feature});
+      insertDeltaFeature({type: DisplayTypes.ADDED, feature: feature});
     }
   }
 
@@ -37,7 +38,7 @@ function CompareFeatureCollections() {
   for (const orgfeature of orgfeatures) {
     const feature = FeaturesCollection.findOne({id: orgfeature.id});
     if (!feature) {
-      insertDeltaFeature({type: 'removed', feature: orgfeature});
+      insertDeltaFeature({type: DisplayTypes.REMOVED, feature: orgfeature});
     }
   }
 }

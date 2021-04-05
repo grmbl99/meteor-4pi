@@ -1,7 +1,8 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { Feature, ItemTypes } from './Feature.jsx';
+import { Feature } from './Feature.jsx';
 import { ProgressBar } from './ProgressBar.jsx';
+import { ItemTypes, DisplayTypes, NOT_SET } from './Consts.jsx';
 
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
 function calcRelFeatureStartAndDuration(feature,dict) {
@@ -49,10 +50,10 @@ export function PiView(props) {
   let done=0;
   const featuresList=[];
   for (const feature of features) {
-    let orgstart=-1;
-    let orgduration=-1;
-    let orgsize=-1;
-    let orgdone=-1;
+    let orgstart=NOT_SET;
+    let orgduration=NOT_SET;
+    let orgsize=NOT_SET;
+    let orgdone=NOT_SET;
     const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
     if (feature.pi === props.pi && 
@@ -61,15 +62,15 @@ export function PiView(props) {
       size += feature.size;
       done += feature.done;
 
-      let displaytype='normal';
+      let displaytype=DisplayTypes.NORMAL;
       if (props.comparemodeon) {
         for (const deltafeature of deltafeatures) {
           if (deltafeature.feature._id === feature._id) {
-            if (deltafeature.type === 'added') {
-              displaytype='added';
+            if (deltafeature.type === DisplayTypes.ADDED) {
+              displaytype=DisplayTypes.ADDED;
               break;
-            } else if (deltafeature.type === 'changed') {
-              displaytype='changed';
+            } else if (deltafeature.type === DisplayTypes.CHANGED) {
+              displaytype=DisplayTypes.CHANGED;
               [orgstart,orgduration]=calcRelFeatureStartAndDuration(deltafeature.feature,dict);
               orgsize=deltafeature.feature.size;
               orgdone=deltafeature.feature.done;
@@ -90,19 +91,19 @@ export function PiView(props) {
 
   if(props.comparemodeon) {
     for (const deltafeature of deltafeatures) {
-      if(deltafeature.type === 'removed') {
+      if(deltafeature.type === DisplayTypes.REMOVED) {
         const feature=deltafeature.feature;
         const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
         if (feature.pi === props.pi && 
             (props.team === '' || feature.team === props.team) &&
             (props.project === '' || feature.project === props.project)) {
-          let displaytype='removed';
+          let displaytype=DisplayTypes.REMOVED;
           featuresList.push(<Feature key={feature._id} feature={feature} 
                                      displaytype={displaytype} 
                                      start={start} duration={duration}
-                                     orgstart='-1' orgduration='-1'
-                                     orgsize='-1' orgdone='-1'
+                                     orgstart={NOT_SET} orgduration={NOT_SET}
+                                     orgsize={NOT_SET} orgdone={NOT_SET}
                                      onFeatureClicked={props.onFeatureClicked}/>);
         }  
       }
@@ -151,7 +152,7 @@ function Allocation(props) {
   let className='pi-badge pi-allocation-badge';
   let allocstr='';
 
-  if (props.allocation!==-1) {
+  if (props.allocation!==NOT_SET) {
     allocstr+=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(props.allocation);
   } else {
     className+=' display-none';
@@ -166,7 +167,7 @@ function Load(props) {
   let className='pi-badge pi-load-badge';
   let loadstr='';
 
-  if (props.allocation!==-1) {
+  if (props.allocation!==NOT_SET) {
     if (props.allocation>0) {
       const load=props.size/props.allocation*100;
       loadstr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(load);

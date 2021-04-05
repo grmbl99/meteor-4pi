@@ -1,10 +1,7 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { ProgressBar } from './ProgressBar.jsx';
-
-export const ItemTypes = {
-  FEATURE: 'feature'
-}
+import { ItemTypes, DisplayTypes } from './Consts.jsx';
 
 export function Feature(props) {
   const feature=props.feature;
@@ -17,9 +14,9 @@ export function Feature(props) {
     })
   }));
 
-  if (props.displaytype === 'added') { featureClassName = 'feature feature-added' }
-  else if (props.displaytype === 'removed') { featureClassName = 'feature feature-removed' }
-  else if (props.displaytype === 'changed') { featureClassName = 'feature feature-changed' }
+  if (props.displaytype === DisplayTypes.ADDED) { featureClassName = 'feature feature-added' }
+  else if (props.displaytype === DisplayTypes.REMOVED) { featureClassName = 'feature feature-removed' }
+  else if (props.displaytype === DisplayTypes.CHANGED) { featureClassName = 'feature feature-changed' }
   else { featureClassName = 'feature' }
 
   return (

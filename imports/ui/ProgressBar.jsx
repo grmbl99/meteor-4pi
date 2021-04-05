@@ -1,4 +1,5 @@
 import React from 'react';
+import { NOT_SET } from './Consts.jsx';
 
 export function ProgressBar(props) {
   const perctdone = props.size>0 ? props.done/props.size : 0;
@@ -6,7 +7,8 @@ export function ProgressBar(props) {
 
   let orgperctdonestr='';
   let diffPerctDoneClassName='display-none';
-  if (props.orgsize!==-1 && props.orgdone!==-1) {
+
+  if (props.orgsize!==NOT_SET && props.orgdone!==NOT_SET) {
     const orgperctdone = props.orgsize>0 ? props.orgdone/props.orgsize : 0;
     if (orgperctdone!==perctdone) {
       orgperctdonestr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(orgperctdone);
@@ -15,7 +17,8 @@ export function ProgressBar(props) {
   }
 
   let diffStartEndClassName='display-none';
-  if (props.orgstart!==-1 && props.orgwidth!==-1 &&
+
+  if (props.orgstart!==NOT_SET && props.orgwidth!==NOT_SET &&
     (props.orgwidth!==props.width || props.orgstart!==props.start)) {
     diffStartEndClassName='progress-bar-diff-startend';
   }
