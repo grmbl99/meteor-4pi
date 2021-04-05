@@ -157,7 +157,7 @@ export function App(props) {
   }
 
   return (
-    <div className='container'>
+    <div>
       <div className='left'>
         <div className='menu-container'>
           <div className='menu-heading'>Teams</div>
