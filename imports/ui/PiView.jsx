@@ -49,6 +49,10 @@ export function PiView(props) {
   let done=0;
   const featuresList=[];
   for (const feature of features) {
+    let orgstart=-1;
+    let orgduration=-1;
+    let orgsize=-1;
+    let orgdone=-1;
     const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
     if (feature.pi === props.pi && 
@@ -66,6 +70,9 @@ export function PiView(props) {
               break;
             } else if (deltafeature.type === 'changed') {
               displaytype='changed';
+              [orgstart,orgduration]=calcRelFeatureStartAndDuration(deltafeature.feature,dict);
+              orgsize=deltafeature.feature.size;
+              orgdone=deltafeature.feature.done;
               break;
             }
           }
@@ -75,6 +82,8 @@ export function PiView(props) {
       featuresList.push(<Feature key={feature._id} feature={feature} 
                                  displaytype={displaytype} 
                                  start={start} duration={duration}
+                                 orgstart={orgstart} orgduration={orgduration}
+                                 orgsize={orgsize} orgdone={orgdone}
                                  onFeatureClicked={props.onFeatureClicked}/>);
     }
   }
@@ -92,6 +101,8 @@ export function PiView(props) {
           featuresList.push(<Feature key={feature._id} feature={feature} 
                                      displaytype={displaytype} 
                                      start={start} duration={duration}
+                                     orgstart='-1' orgduration='-1'
+                                     orgsize='-1' orgdone='-1'
                                      onFeatureClicked={props.onFeatureClicked}/>);
         }  
       }

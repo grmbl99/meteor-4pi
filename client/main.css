@@ -178,7 +178,7 @@ input[type='submit']:hover {
   top: 10pt;
   height: 30px;
   font-size: 10pt;
-  color: white;
+  color: white;  
 }
 
 .pi-progress-bar-fill {
@@ -188,7 +188,7 @@ input[type='submit']:hover {
 
 .feature {
   position: relative;
-  height: 50px;
+  height: 53px;
   margin-top: 10px;
   padding-left: 5px;
   padding-right: 5px;
@@ -207,14 +207,14 @@ input[type='submit']:hover {
 }
 
 .feature-changed {
-  box-shadow: 3px 3px 5px rgb(99, 99, 252);
-  font-style: italic;
+  /* box-shadow: 3px 3px 5px rgb(99, 99, 252); */
+  /* font-style: italic; */
 }
 
 .feature-name {
   position:absolute;
   left: 5px;
-  top: 2px;
+  top: 3px;
   text-decoration: inherit;
   font-size: 10pt;
   font-family: Arial, sans-serif;
@@ -222,8 +222,8 @@ input[type='submit']:hover {
 
 .feature-progress-bar {
   position: relative;
-  height: 20px;
-  top: 22px;
+  height: 21px;
+  top: 24px;
   font-size: 8pt;
   color: rgb(50, 50, 50);
 }
@@ -240,6 +240,21 @@ input[type='submit']:hover {
   box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
+.progress-bar-diff-startend {
+  position: absolute;
+  height: 3px;
+  top: 18px;
+  background-color: rgb(2, 2, 255);
+}
+
+.progress-bar-diff-perctdone {
+  position: absolute;
+  height: 3px;
+  top: 0px;
+  background-color: rgb(216, 15, 15);
+  box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
+}
+
 .progress-bar-done {
   position: absolute;
   height: inherit;
@@ -247,7 +262,7 @@ input[type='submit']:hover {
 
 .progress-bar-text {
   position: absolute;
-  top: 20%;
+  top: 19%;
   left: 7px;
   width: 100pt;
   height: inherit;

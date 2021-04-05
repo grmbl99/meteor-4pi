@@ -35,7 +35,9 @@ export function Feature(props) {
       <div className='feature-name'>{feature.id} {feature.name}</div>
       <ProgressBar className='feature-progress-bar' 
                    fillStyle='feature-progress-bar-fill' 
-                   start={props.start} width={props.duration} size={feature.size} done={feature.done}/>
+                   start={props.start} width={props.duration} size={feature.size} done={feature.done}
+                   orgstart={props.orgstart} orgwidth={props.orgduration}
+                   orgsize={props.orgsize} orgdone={props.orgdone}/>
     </div>
   );
 }
