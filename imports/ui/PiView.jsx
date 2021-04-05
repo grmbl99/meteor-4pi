@@ -2,7 +2,7 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import { Feature } from './Feature.jsx';
 import { ProgressBar } from './ProgressBar.jsx';
-import { ItemTypes, DisplayTypes, NOT_SET } from './Consts.jsx';
+import { ItemTypes, DisplayTypes, NOT_SET } from '/imports/api/Consts.jsx';
 
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
 function calcRelFeatureStartAndDuration(feature,dict) {
@@ -120,8 +120,8 @@ export function PiView(props) {
     >
       <div className='pi-header'>
         {props.pi} {props.team} {props.project} 
-        <Load allocation={props.allocation} size={size}/>
-        <Allocation allocation={props.allocation}/>
+        <LoadBadge allocation={props.allocation} size={size}/>
+        <AllocationBadge allocation={props.allocation}/>
       </div>
       <div className='sprint-grid-container'>
         {sprintsList}
@@ -148,7 +148,7 @@ function SprintPlaceholder(props) {
   );
 }
 
-function Allocation(props) {
+function AllocationBadge(props) {
   let className='pi-badge pi-allocation-badge';
   let allocstr='';
 
@@ -163,7 +163,7 @@ function Allocation(props) {
   );
 }
 
-function Load(props) {
+function LoadBadge(props) {
   let className='pi-badge pi-load-badge';
   let loadstr='';
 

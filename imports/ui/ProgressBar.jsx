@@ -1,5 +1,5 @@
 import React from 'react';
-import { NOT_SET } from './Consts.jsx';
+import { NOT_SET } from '/imports/api/Consts.jsx';
 
 export function ProgressBar(props) {
   const perctdone = props.size>0 ? props.done/props.size : 0;

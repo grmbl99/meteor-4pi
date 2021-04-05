@@ -8,6 +8,7 @@ import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCo
 import { PiView } from './PiView.jsx';
 import { FilterForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popups.jsx';
+import { NOT_SET } from '/imports/api/Consts.jsx';
 
 export function App(props) {  
   function moveFeature(featureId,pi,team,project) {
@@ -76,7 +77,7 @@ export function App(props) {
         alloc = teamvelocity;
       }
     } else {
-      alloc=-1;
+      alloc=NOT_SET;
     }
         
     return(alloc);

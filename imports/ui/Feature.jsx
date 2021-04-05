@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { ProgressBar } from './ProgressBar.jsx';
-import { ItemTypes, DisplayTypes } from './Consts.jsx';
+import { ItemTypes, DisplayTypes } from '/imports/api/Consts.jsx';
 
 export function Feature(props) {
   const feature=props.feature;

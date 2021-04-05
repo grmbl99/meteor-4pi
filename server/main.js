@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
          AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
-import { DisplayTypes } from '/imports/ui/Consts.jsx';
+import { DisplayTypes } from '/imports/api/Consts.jsx';
 
 function insertFeature(feature) { FeaturesCollection.insert(feature); }
 function insertOrgFeature(feature) { OrgFeaturesCollection.insert(feature); }
