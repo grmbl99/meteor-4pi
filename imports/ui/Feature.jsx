@@ -16,7 +16,6 @@ export function Feature(props) {
 
   if (props.displaytype === DisplayTypes.ADDED) { featureClassName = 'feature feature-added' }
   else if (props.displaytype === DisplayTypes.REMOVED) { featureClassName = 'feature feature-removed' }
-  else if (props.displaytype === DisplayTypes.CHANGED) { featureClassName = 'feature feature-changed' }
   else { featureClassName = 'feature' }
 
   return (

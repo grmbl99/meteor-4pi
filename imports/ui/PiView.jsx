@@ -68,13 +68,11 @@ export function PiView(props) {
           if (deltafeature.feature._id === feature._id) {
             if (deltafeature.type === DisplayTypes.ADDED) {
               displaytype=DisplayTypes.ADDED;
-              break;
-            } else if (deltafeature.type === DisplayTypes.CHANGED) {
-              displaytype=DisplayTypes.CHANGED;
+            }
+            if (deltafeature.type === DisplayTypes.CHANGED) {
               [orgstart,orgduration]=calcRelFeatureStartAndDuration(deltafeature.feature,dict);
               orgsize=deltafeature.feature.size;
               orgdone=deltafeature.feature.done;
-              break;
             }
           }
         }    

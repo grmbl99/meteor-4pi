@@ -70,7 +70,7 @@ Meteor.startup(() => {
       {id: '100004', name: 'value changed', pi: 'PI 21.1', size: 20, done: 10, startsprint: '2111', endsprint: '2113', team: 'pegasus', project: 'puma'},
       {id: '100005', name: 'value changed', pi: 'PI 21.1', size: 2, done: 0, startsprint: '2109', endsprint: '2111', team: 'pegasus', project: 'voip'},
       {id: '100006', name: 'value changed', pi: 'PI 21.1', size: 30, done: 13, startsprint: '2109', endsprint: '2117', team: 'mushu', project: 'puma'},
-      {id: '100007', name: 'this is a feature for testing', pi: 'PI 21.2', size: 30, done: 15, startsprint: '2125', endsprint: 'IP 21.2', team: 'hercules', project: 'tiger'},
+      {id: '100007', name: 'value and pi changed', pi: 'PI 21.3', size: 35, done: 15, startsprint: '2125', endsprint: 'IP 21.2', team: 'hercules', project: 'tiger'},
       {id: '100008', name: 'this is a feature for testing', pi: 'PI 21.2', size: 10, done: 5, startsprint: '2125', endsprint: '2129', team: 'pegasus', project: 'puma'},
       {id: '100009', name: 'this is a feature for testing', pi: 'PI 21.2', size: 2, done: 0, startsprint: '2129', endsprint: 'IP 21.2', team: 'pegasus', project: 'voip'},
       {id: '100010', name: 'this is a feature for testing', pi: 'PI 21.2', size: 15, done: 3, startsprint: '2123', endsprint: '2129', team: 'mushu', project: 'puma'},

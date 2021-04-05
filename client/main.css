@@ -205,11 +205,6 @@ input[type='submit']:hover {
   text-decoration: line-through;
 }
 
-.feature-changed {
-  /* box-shadow: 3px 3px 5px rgb(99, 99, 252); */
-  /* font-style: italic; */
-}
-
 .feature-name {
   position:absolute;
   left: 5px;
