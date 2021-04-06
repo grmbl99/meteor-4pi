@@ -1,8 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
 import { Feature } from './Feature.jsx';
 import { ProgressBar } from './ProgressBar.jsx';
 import { ItemTypes, DisplayTypes, NOT_SET } from '/imports/api/Consts.jsx';
+
+export { PiView };
+
+PiView.propTypes = {
+  features: PropTypes.array.isRequired,
+  deltafeatures: PropTypes.array.isRequired,
+  sprints: PropTypes.array.isRequired,
+  onFeatureDropped: PropTypes.func.isRequired,
+  onFeatureClicked: PropTypes.func.isRequired,
+  pi: PropTypes.string,
+  team: PropTypes.string,
+  project: PropTypes.string,
+  comparemodeon: PropTypes.bool,
+  allocation: PropTypes.number
+};
 
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
 function calcRelFeatureStartAndDuration(feature,dict) {
@@ -21,14 +37,14 @@ function calcRelFeatureStartAndDuration(feature,dict) {
   return([start,duration]);
 }
 
-export function PiView(props) {  
+function PiView(props) {  
   const features = props.features;
   const deltafeatures = props.deltafeatures;
   const sprints = props.sprints;
 
   const [{isOver}, drop] = useDrop(() => ({
     accept: ItemTypes.FEATURE,
-    drop: (item) => { props.onFeatureDropped(item.id,props.pi,props.team,props.project) },
+    drop: (item) => { props.onFeatureDropped(item.id,props.pi,props.team,props.project); },
     collect: (monitor) => ({
       isOver: monitor.isOver()
     })
@@ -127,12 +143,16 @@ export function PiView(props) {
       <div className='pi-progress'>
         <ProgressBar className='pi-progress-bar' 
                      fillStyle='pi-progress-bar-fill' 
-                     start='0' width='100' size={size} done={done}/>
+                     start={0} width={100} size={size} done={done}/>
       </div>
       {featuresList}
     </div>
   );
 }
+
+Sprint.propTypes = {
+  name: PropTypes.string
+};
 
 function Sprint(props) {
   return(
@@ -140,11 +160,19 @@ function Sprint(props) {
   );
 }
 
+SprintPlaceholder.propTypes = {
+  name: PropTypes.string
+};
+
 function SprintPlaceholder(props) {
   return(
     <div className='sprint-placeholder'>{props.name}</div>
   );
 }
+
+AllocationBadge.propTypes = {
+  allocation: PropTypes.number
+};
 
 function AllocationBadge(props) {
   let className='pi-badge pi-allocation-badge';
@@ -160,6 +188,11 @@ function AllocationBadge(props) {
     <div className={className}>Alloc: {allocstr}SP</div>
   );
 }
+
+LoadBadge.propTypes = {
+  allocation: PropTypes.number,
+  size: PropTypes.number
+};
 
 function LoadBadge(props) {
   let className='pi-badge pi-load-badge';

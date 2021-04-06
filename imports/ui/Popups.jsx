@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
-export function UpdateFeaturePopup(props) {
+export { UpdateFeaturePopup };
+
+UpdateFeaturePopup.propTypes = {
+  show: PropTypes.bool.isRequired,
+  feature: PropTypes.object.isRequired,
+  onSubmit: PropTypes.func.isRequired
+};
+
+function UpdateFeaturePopup(props) {
   const showHideClassName = props.show ? 'popup display-block' : 'popup display-none';
 
   const [name, setName] = useState('');
@@ -11,12 +20,12 @@ export function UpdateFeaturePopup(props) {
   const [endSprint, setEndSprint] = useState('');
 
   if (props.feature) {
-    useEffect(() => { setName(props.feature.name) },[props]);
-    useEffect(() => { setSize(props.feature.size) },[props]);
-    useEffect(() => { setPi(props.feature.pi) },[props]);
-    useEffect(() => { setDone(props.feature.done) },[props]);
-    useEffect(() => { setStartSprint(props.feature.startsprint) },[props]);
-    useEffect(() => { setEndSprint(props.feature.endsprint) },[props]);  
+    useEffect(() => { setName(props.feature.name); },[props]);
+    useEffect(() => { setSize(props.feature.size); },[props]);
+    useEffect(() => { setPi(props.feature.pi); },[props]);
+    useEffect(() => { setDone(props.feature.done); },[props]);
+    useEffect(() => { setStartSprint(props.feature.startsprint); },[props]);
+    useEffect(() => { setEndSprint(props.feature.endsprint); },[props]);  
   }
 
   function handleSubmit(event) {

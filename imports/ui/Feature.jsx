@@ -1,9 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import { ProgressBar } from './ProgressBar.jsx';
 import { ItemTypes, DisplayTypes } from '/imports/api/Consts.jsx';
 
-export function Feature(props) {
+export { Feature };
+
+Feature.propTypes = {
+  feature: PropTypes.object.isRequired,
+  displaytype: PropTypes.string,
+  onFeatureClicked: PropTypes.func,
+  start: PropTypes.number,
+  duration: PropTypes.number,
+  orgstart: PropTypes.number,
+  orgduration: PropTypes.number,
+  orgsize: PropTypes.number,
+  orgdone: PropTypes.number
+};
+
+function Feature(props) {
   const feature=props.feature;
 
   const [{isDragging}, drag] = useDrag(() => ({
@@ -14,14 +29,14 @@ export function Feature(props) {
     })
   }));
 
-  if (props.displaytype === DisplayTypes.ADDED) { featureClassName = 'feature feature-added' }
-  else if (props.displaytype === DisplayTypes.REMOVED) { featureClassName = 'feature feature-removed' }
-  else { featureClassName = 'feature' }
+  let featureClassName='feature';
+  if (props.displaytype === DisplayTypes.ADDED) { featureClassName += ' feature-added'; }
+  else if (props.displaytype === DisplayTypes.REMOVED) { featureClassName += ' feature-removed'; }
 
   return (
     <div 
       className={featureClassName} 
-      onClick={() => {props.onFeatureClicked(feature)}}
+      onClick={() => {props.onFeatureClicked(feature);}}
       ref={drag}
       style={{
         opacity: isDragging ? 0.5 : 1,

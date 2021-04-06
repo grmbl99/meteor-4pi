@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-export function FilterForm(props) {
+export {FilterForm, NewFeatureForm};
+
+FilterForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired
+};
+
+function FilterForm(props) {
   const [filtername, setFilterName] = useState('');
 
   function handleSubmit(event) {
@@ -21,7 +29,11 @@ export function FilterForm(props) {
   );
 }
 
-export function NewFeatureForm(props) {
+NewFeatureForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired
+};
+
+function NewFeatureForm(props) {
   const [name, setName] = useState('');
   const [size, setSize] = useState('');
   const [pi, setPi] = useState('');

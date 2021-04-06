@@ -119,7 +119,7 @@ export function App(props) {
   let teamsMenu=[];
   for (const team of teams) {
     const newRef = createRef();
-    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView()}}>{team.teamname}</div>);
+    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{team.teamname}</div>);
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
@@ -140,7 +140,7 @@ export function App(props) {
 
   for (const project of projects) {
     const newRef = createRef();
-    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView()}}>{project.projectname}</div>);
+    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{project.projectname}</div>);
     projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
@@ -161,10 +161,10 @@ export function App(props) {
       <div className='left'>
         <div className='menu-container'>
           <div className='menu-heading'>Teams</div>
-          <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername)}}/>
+          <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername);}}/>
           {teamsMenu}
           <div className='menu-heading'>Projects</div>
-          <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filtername)}}/>
+          <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filtername);}}/>
           {projectsMenu}
           <div>compare: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
         </div>

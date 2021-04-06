@@ -1,7 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { NOT_SET } from '/imports/api/Consts.jsx';
 
-export function ProgressBar(props) {
+export { ProgressBar };
+
+ProgressBar.propTypes = {
+  size: PropTypes.number.isRequired,
+  done: PropTypes.number.isRequired,
+  orgsize: PropTypes.number,
+  orgdone: PropTypes.number,
+  orgstart: PropTypes.number,
+  orgwidth: PropTypes.number,
+  width: PropTypes.number.isRequired,
+  start: PropTypes.number.isRequired,
+  className: PropTypes.string.isRequired,
+  fillStyle: PropTypes.string.isRequired
+};
+
+function ProgressBar(props) {
   const perctdone = props.size>0 ? props.done/props.size : 0;
   const perctdonestr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctdone);
 
