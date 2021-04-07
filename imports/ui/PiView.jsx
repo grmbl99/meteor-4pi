@@ -13,11 +13,11 @@ PiView.propTypes = {
   sprints: PropTypes.array.isRequired,
   onFeatureDropped: PropTypes.func.isRequired,
   onFeatureClicked: PropTypes.func.isRequired,
-  pi: PropTypes.string,
-  team: PropTypes.string,
-  project: PropTypes.string,
-  comparemodeon: PropTypes.bool,
-  allocation: PropTypes.number
+  pi: PropTypes.string.isRequired,
+  team: PropTypes.string.isRequired,
+  project: PropTypes.string.isRequired,
+  comparemodeon: PropTypes.bool.isRequired,
+  allocation: PropTypes.number.isRequired
 };
 
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI

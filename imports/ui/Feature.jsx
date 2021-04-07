@@ -8,14 +8,14 @@ export { Feature };
 
 Feature.propTypes = {
   feature: PropTypes.object.isRequired,
-  displaytype: PropTypes.string,
-  onFeatureClicked: PropTypes.func,
-  start: PropTypes.number,
-  duration: PropTypes.number,
-  orgstart: PropTypes.number,
-  orgduration: PropTypes.number,
-  orgsize: PropTypes.number,
-  orgdone: PropTypes.number
+  displaytype: PropTypes.string.isRequired,
+  onFeatureClicked: PropTypes.func.isRequired,
+  start: PropTypes.number.isRequired,
+  duration: PropTypes.number.isRequired,
+  orgstart: PropTypes.number.isRequired,
+  orgduration: PropTypes.number.isRequired,
+  orgsize: PropTypes.number.isRequired,
+  orgdone: PropTypes.number.isRequired
 };
 
 function Feature(props) {
