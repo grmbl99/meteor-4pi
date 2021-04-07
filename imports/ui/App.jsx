@@ -72,7 +72,7 @@ export function App(props) {
         }
   
         // percentage of the team-velocity allocated to a project
-        alloc = teamallocation === 0 ? 0 : teamvelocity/teamallocation;
+        alloc = teamallocation === 0 ? 0 : teamvelocity/100*teamallocation;
       } else {
         alloc = teamvelocity;
       }
