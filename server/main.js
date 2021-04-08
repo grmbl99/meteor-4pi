@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import * as vsoNodeApi from 'azure-devops-node-api';
 import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
          AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
@@ -223,4 +224,57 @@ Meteor.startup(() => {
   }
 
   CompareFeatureCollections();
+
+  var query = {query: 
+    `SELECT
+        [System.Id]
+    FROM workitemLinks
+    WHERE
+        (
+            [Source].[System.TeamProject] = @project
+            AND [Source].[System.WorkItemType] = 'Feature'
+            AND [Source].[System.IterationPath] UNDER 'IGT\\Systems\\SAFe Fixed\\PI 21.1'
+            AND [Source].[System.AreaPath] UNDER 'IGT\\Systems\\Portfolio Fixed\\Solution\\ART Imaging Chain'
+        )
+        AND (
+            [Target].[System.TeamProject] = @project
+            AND [Target].[System.WorkItemType] = 'Story'
+            AND [Target].[System.State] = 'Done'
+        )
+    ORDER BY [System.IterationId],
+        [System.Id]
+    MODE (MustContain)`
+  };
+  
+  const orgUrl = 'https://tfsemea1.ta.philips.com/tfs/TPC_Region22/';
+  const token = 'dvlfdqm3xzblfaix365ccfkwhax545f6g47dfzb2xk3ifpqlyfrq';
+  let authHandler = vsoNodeApi.getPersonalAccessTokenHandler(token); 
+  let connection = new vsoNodeApi.WebApi(orgUrl, authHandler);
+
+  connection.getWorkItemTrackingApi().then(function(witAPI){
+      var teamContext = { project: 'IGT' };
+      witAPI.queryByWiql(query, teamContext).then(function(queryResult){
+        for (const workitemlink of queryResult.workItemRelations) {
+          if (workitemlink.rel==='System.LinkTypes.Hierarchy-Forward') {
+            console.log(workitemlink.source.id, ' -> ', workitemlink.target.id);
+          } else {
+            //console.log(workitemlink.target.id);
+
+            witAPI.getWorkItem(workitemlink.target.id,['System.Title', 'System.NodeName', 'System.IterationPath', 'Microsoft.VSTS.Scheduling.Effort', 'Philips.Planning.Release']).then(function(result) {
+              let res = result.id;
+              res+=', ' + result.fields['System.Title'];
+              res+=', ' + result.fields['System.NodeName'];
+              res+=', ' + result.fields['System.IterationPath'];
+              res+=', ' + result.fields['Microsoft.VSTS.Scheduling.Effort'];
+              res+=', ' + result.fields['Philips.Planning.Release'];
+              console.log(res);
+            }).catch(function(err){
+              console.log('error 3' + err);
+            });
+          }
+        }
+      }).catch(function(err){console.log('error 1: ' + err);});
+  }).catch(function(err){
+      console.log('error 2: ' + err);
+  });
 });
