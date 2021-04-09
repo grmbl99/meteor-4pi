@@ -224,57 +224,117 @@ Meteor.startup(() => {
   }
 
   CompareFeatureCollections();
-
-  var query = {query: 
-    `SELECT
-        [System.Id]
-    FROM workitemLinks
-    WHERE
-        (
-            [Source].[System.TeamProject] = @project
-            AND [Source].[System.WorkItemType] = 'Feature'
-            AND [Source].[System.IterationPath] UNDER 'IGT\\Systems\\SAFe Fixed\\PI 21.1'
-            AND [Source].[System.AreaPath] UNDER 'IGT\\Systems\\Portfolio Fixed\\Solution\\ART Imaging Chain'
-        )
-        AND (
-            [Target].[System.TeamProject] = @project
-            AND [Target].[System.WorkItemType] = 'Story'
-            AND [Target].[System.State] = 'Done'
-        )
-    ORDER BY [System.IterationId],
-        [System.Id]
-    MODE (MustContain)`
-  };
   
-  const orgUrl = 'https://tfsemea1.ta.philips.com/tfs/TPC_Region22/';
-  const token = 'dvlfdqm3xzblfaix365ccfkwhax545f6g47dfzb2xk3ifpqlyfrq';
-  let authHandler = vsoNodeApi.getPersonalAccessTokenHandler(token); 
-  let connection = new vsoNodeApi.WebApi(orgUrl, authHandler);
-
-  connection.getWorkItemTrackingApi().then(function(witAPI){
-      var teamContext = { project: 'IGT' };
-      witAPI.queryByWiql(query, teamContext).then(function(queryResult){
-        for (const workitemlink of queryResult.workItemRelations) {
-          if (workitemlink.rel==='System.LinkTypes.Hierarchy-Forward') {
-            console.log(workitemlink.source.id, ' -> ', workitemlink.target.id);
-          } else {
-            //console.log(workitemlink.target.id);
-
-            witAPI.getWorkItem(workitemlink.target.id,['System.Title', 'System.NodeName', 'System.IterationPath', 'Microsoft.VSTS.Scheduling.Effort', 'Philips.Planning.Release']).then(function(result) {
-              let res = result.id;
-              res+=', ' + result.fields['System.Title'];
-              res+=', ' + result.fields['System.NodeName'];
-              res+=', ' + result.fields['System.IterationPath'];
-              res+=', ' + result.fields['Microsoft.VSTS.Scheduling.Effort'];
-              res+=', ' + result.fields['Philips.Planning.Release'];
-              console.log(res);
-            }).catch(function(err){
-              console.log('error 3' + err);
-            });
+  async function getAreas(witAPI) {
+    try {
+      const queryResult = await witAPI.getClassificationNode('IGT', 'areas', '/systems/portfolio fixed/solution/art imaging chain',2);
+  
+      console.log(queryResult.name);
+      for (const child of queryResult.children) {
+        console.log('  ' + child.path);
+        if (child.hasChildren) {
+          for (const grandchild of child.children) {
+            console.log('    ' + grandchild.path);
           }
         }
-      }).catch(function(err){console.log('error 1: ' + err);});
-  }).catch(function(err){
-      console.log('error 2: ' + err);
-  });
+      }  
+    } catch(e) {
+      console.log('error getting areas: ' + e);
+    }
+  }
+
+  async function getIterations(witAPI) {
+    try {
+      const queryResult = await witAPI.getClassificationNode('IGT', 'iterations', '/systems/safe fixed',2);
+  
+      console.log(queryResult.name);
+      for (const child of queryResult.children) {
+        console.log('  ' + child.name);
+        if (child.hasChildren) {
+          for (const grandchild of child.children) {
+            const date = new Date(grandchild.attributes.startDate);
+            console.log('    ' + grandchild.name + ' ' + date.getFullYear() + ' ' + date.getMonth() + ' ' + date.getDay());
+          }
+        }
+      }
+    } catch(e) {
+      console.log('error getting iterations: ' + e);
+    }
+  }
+
+  async function getWorkItem(witAPI,id) {
+    try {
+      const queryResult = await witAPI.getWorkItem(id,[
+        'System.Title', 'System.NodeName', 'System.IterationPath', 
+        'Microsoft.VSTS.Scheduling.Effort', 'Philips.Planning.Release']);
+
+      let res = queryResult.id;
+      res+=', ' + queryResult.fields['System.Title'];
+      res+=', ' + queryResult.fields['System.NodeName'];
+      res+=', ' + queryResult.fields['System.IterationPath'];
+      res+=', ' + queryResult.fields['Microsoft.VSTS.Scheduling.Effort'];
+      res+=', ' + queryResult.fields['Philips.Planning.Release'];
+      console.log(res);
+    } catch(e) {
+      console.log('error getting workitem: ' +e);
+    }
+  }
+
+  async function getWorkItems(witAPI, query) {
+    try {
+      const teamContext = { project: 'IGT' };
+      const queryResult = await witAPI.queryByWiql(query, teamContext);  
+
+      for (const workitemlink of queryResult.workItemRelations) {
+        if (workitemlink.rel==='System.LinkTypes.Hierarchy-Forward') {
+          console.log(workitemlink.source.id, ' -> ', workitemlink.target.id);
+        } else {
+          console.log(workitemlink.target.id);
+          getWorkItem(witAPI,workitemlink.target.id);
+        }
+      }
+    } catch(e) {
+      console.log('error getting workitems: ' + e);
+    }
+  }
+
+  async function queryADS() {
+    const url = 'https://tfsemea1.ta.philips.com/tfs/TPC_Region22/';
+    const token = 'dvlfdqm3xzblfaix365ccfkwhax545f6g47dfzb2xk3ifpqlyfrq';
+    const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(token); 
+    const connection = new vsoNodeApi.WebApi(url, authHandler);
+  
+    const query = {query: 
+      `SELECT
+          [System.Id]
+      FROM workitemLinks
+      WHERE
+          (
+              [Source].[System.TeamProject] = @project
+              AND [Source].[System.WorkItemType] = 'Feature'
+              AND [Source].[System.IterationPath] UNDER 'IGT\\Systems\\SAFe Fixed\\PI 21.1'
+              AND [Source].[System.AreaPath] UNDER 'IGT\\Systems\\Portfolio Fixed\\Solution\\ART Imaging Chain'
+          )
+          AND (
+              [Target].[System.TeamProject] = @project
+              AND [Target].[System.WorkItemType] = 'Story'
+              AND [Target].[System.State] = 'Done'
+          )
+      ORDER BY [System.IterationId],
+          [System.Id]
+      MODE (MustContain)`
+    };
+  
+    try {
+      const witAPI = await connection.getWorkItemTrackingApi();
+
+      getIterations(witAPI);
+      getAreas(witAPI);
+      getWorkItems(witAPI, query);  
+    } catch(e) {
+      console.log('error reading from ADS: ' + e);
+    }
+  }
+
+  queryADS();
 });
