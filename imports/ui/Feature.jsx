@@ -33,6 +33,9 @@ function Feature(props) {
   if (props.displaytype === DisplayTypes.ADDED) { featureClassName += ' feature-added'; }
   else if (props.displaytype === DisplayTypes.REMOVED) { featureClassName += ' feature-removed'; }
 
+  const maxlength=60;
+  const trimmedName = feature.name.length > maxlength ? feature.name.substring(0, maxlength - 3) + '...' : feature.name;
+
   return (
     <div 
       className={featureClassName} 
@@ -43,7 +46,7 @@ function Feature(props) {
         cursor: 'move'
       }}
     >
-      <div className='feature-name'>{feature.id} {feature.name}</div>
+      <div className='feature-name'>{feature.id} {trimmedName}</div>
       <ProgressBar className='feature-progress-bar' 
                    fillStyle='feature-progress-bar-fill' 
                    start={props.start} width={props.duration} size={feature.size} done={feature.done}
