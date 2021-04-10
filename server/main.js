@@ -5,15 +5,6 @@ import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
 import { DisplayTypes } from '/imports/api/Consts.jsx';
 
-function insertFeature(feature) { FeaturesCollection.insert(feature); }
-function insertOrgFeature(feature) { OrgFeaturesCollection.insert(feature); }
-function insertDeltaFeature(feature) { DeltaFeaturesCollection.insert(feature); }
-function insertSprint(sprint) { SprintsCollection.insert(sprint); }
-function insertTeam(team) { TeamsCollection.insert(team); }
-function insertProject(project) { ProjectsCollection.insert(project); }
-function insertAllocation(allocation) { AllocationsCollection.insert(allocation); }
-function insertVelocity(velocity) { VelocitiesCollection.insert(velocity); }
-
 // compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
 function CompareFeatureCollections() {
   const features = FeaturesCollection.find({}).fetch();  
@@ -22,16 +13,16 @@ function CompareFeatureCollections() {
     const orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
     if (orgfeature) {
       if(feature.pi!==orgfeature.pi || feature.team!==orgfeature.team || feature.project!==orgfeature.project) {
-        insertDeltaFeature({type: DisplayTypes.ADDED, feature: feature});
-        insertDeltaFeature({type: DisplayTypes.REMOVED, feature: orgfeature});
+        DeltaFeaturesCollection.insert({type: DisplayTypes.ADDED, feature: feature});
+        DeltaFeaturesCollection.insert({type: DisplayTypes.REMOVED, feature: orgfeature});
       }
       if(feature.size!==orgfeature.size || feature.done!==orgfeature.done || 
          feature.startsprint!==orgfeature.startsprint || feature.endsprint!==orgfeature.endsprint) {
         orgfeature._id=feature._id; // store org data, but allow searching on (current) feature-id
-        insertDeltaFeature({type: DisplayTypes.CHANGED, feature: orgfeature});
+        DeltaFeaturesCollection.insert({type: DisplayTypes.CHANGED, feature: orgfeature});
       }
     } else {
-      insertDeltaFeature({type: DisplayTypes.ADDED, feature: feature});
+      DeltaFeaturesCollection.insert({type: DisplayTypes.ADDED, feature: feature});
     }
   }
 
@@ -39,7 +30,7 @@ function CompareFeatureCollections() {
   for (const orgfeature of orgfeatures) {
     const feature = FeaturesCollection.findOne({id: orgfeature.id});
     if (!feature) {
-      insertDeltaFeature({type: DisplayTypes.REMOVED, feature: orgfeature});
+      DeltaFeaturesCollection.insert({type: DisplayTypes.REMOVED, feature: orgfeature});
     }
   }
 }
@@ -100,8 +91,8 @@ Meteor.startup(() => {
       {id: '100033', name: 'this is a feature for testing', pi: 'PI 21.4', size: 2, done: 0, startsprint: '2149', endsprint: '2151', team: 'pegasus', project: 'voip'},
       {id: '100034', name: 'this is a feature for testing', pi: 'PI 21.4', size: 15, done: 3, startsprint: '2151', endsprint: 'IP 21.4', team: 'mushu', project: 'bobcat'},
       {id: '100035', name: 'this is a feature for testing', pi: 'PI 21.4', size: 30, done: 30, startsprint: '2151', endsprint: '2201', team: 'hercules', project: 'tiger'}
-    ].forEach(insertOrgFeature);
-  }
+    ].forEach(feature => OrgFeaturesCollection.insert(feature));
+  }  
 
   if (FeaturesCollection.find().count() === 0) {
     [
@@ -141,7 +132,7 @@ Meteor.startup(() => {
       {id: '100033', name: 'this is a feature for testing', pi: 'PI 21.4', size: 2, done: 0, startsprint: '2149', endsprint: '2151', team: 'pegasus', project: 'voip'},
       {id: '100034', name: 'this is a feature for testing', pi: 'PI 21.4', size: 15, done: 3, startsprint: '2151', endsprint: 'IP 21.4', team: 'mushu', project: 'bobcat'},
       {id: '100035', name: 'this is a feature for testing', pi: 'PI 21.4', size: 30, done: 30, startsprint: '2151', endsprint: '2201', team: 'hercules', project: 'tiger'}
-    ].forEach(insertFeature);
+    ].forEach(feature => FeaturesCollection.insert(feature));
   }
 
   if (SprintsCollection.find().count() === 0) {
@@ -172,7 +163,7 @@ Meteor.startup(() => {
       // {pi: 'PI 21.4', sprintname: '2203'},
       // {pi: 'PI 21.4', sprintname: '2205'},
       // {pi: 'PI 21.4', sprintname: 'IP 21.4'}
-    ].forEach(insertSprint);
+    ].forEach(sprint => SprintsCollection.insert(sprint));
   }
 
   if (TeamsCollection.find().count() === 0) {
@@ -181,7 +172,7 @@ Meteor.startup(() => {
       {teamname: 'mushu'},
       {teamname: 'hades'},
       {teamname: 'hercules'}
-    ].forEach(insertTeam);
+    ].forEach(team => TeamsCollection.insert(team));
   }
 
   if (ProjectsCollection.find().count() === 0) {
@@ -190,7 +181,7 @@ Meteor.startup(() => {
       {projectname: 'puma'},
       {projectname: 'voip'},
       {projectname: 'bobcat'}
-    ].forEach(insertProject);
+    ].forEach(project => ProjectsCollection.insert(project));
   }
 
   if (AllocationsCollection.find().count() === 0) {
@@ -203,7 +194,7 @@ Meteor.startup(() => {
       {teamname: 'mushu', projectname: 'puma', pi: 'PI 21.2', allocation: 80},
       {teamname: 'hades', projectname: 'voip', pi: 'PI 21.2', allocation: 70},
       {teamname: 'hercules', projectname: 'bobcat', pi: 'PI 21.2', allocation: 20}
-    ].forEach(insertAllocation);      
+    ].forEach(allocation => AllocationsCollection.insert(allocation));      
   }
 
   if (VelocitiesCollection.find().count() === 0) {
@@ -220,23 +211,19 @@ Meteor.startup(() => {
       {teamname: 'mushu', pi: 'PI 21.3', velocity: 60},
       {teamname: 'hades', pi: 'PI 21.3', velocity: 80},
       {teamname: 'hercules', pi: 'PI 21.3', velocity: 60} 
-    ].forEach(insertVelocity);      
+    ].forEach(velocity => VelocitiesCollection.insert(velocity));      
   }
 
   CompareFeatureCollections();
   
   async function getAreas(witAPI) {
     try {
-      const queryResult = await witAPI.getClassificationNode('IGT', 'areas', '/systems/portfolio fixed/solution/art imaging chain',2);
+      // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/areas/systems/portfolio%20fixed/solution/art%20imaging%20chain?$depth=1
+      const queryResult = await witAPI.getClassificationNode('IGT', 'areas', '/systems/portfolio fixed/solution/art imaging chain',1);
   
       console.log(queryResult.name);
-      for (const child of queryResult.children) {
-        console.log('  ' + child.path);
-        if (child.hasChildren) {
-          for (const grandchild of child.children) {
-            console.log('    ' + grandchild.path);
-          }
-        }
+      for (const team of queryResult.children) {
+        console.log('  team: ' + team.name);
       }  
     } catch(e) {
       console.log('error getting areas: ' + e);
@@ -245,15 +232,16 @@ Meteor.startup(() => {
 
   async function getIterations(witAPI) {
     try {
+      // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/iterations/systems/safe%20fixed?$depth=2
       const queryResult = await witAPI.getClassificationNode('IGT', 'iterations', '/systems/safe fixed',2);
   
       console.log(queryResult.name);
-      for (const child of queryResult.children) {
-        console.log('  ' + child.name);
-        if (child.hasChildren) {
-          for (const grandchild of child.children) {
-            const date = new Date(grandchild.attributes.startDate);
-            console.log('    ' + grandchild.name + ' ' + date.getFullYear() + ' ' + date.getMonth() + ' ' + date.getDay());
+      for (const pi of queryResult.children) {
+        console.log('  pi: ' + pi.name);
+        if (pi.hasChildren) {
+          for (const sprint of pi.children) {
+            const date = new Date(sprint.attributes.startDate);
+            console.log('    sprint: ' + sprint.name + ' ' + date.getFullYear() + ' ' + date.getMonth() + ' ' + date.getDay());
           }
         }
       }
@@ -330,7 +318,7 @@ Meteor.startup(() => {
 
       getIterations(witAPI);
       getAreas(witAPI);
-      getWorkItems(witAPI, query);  
+      //getWorkItems(witAPI, query);  
     } catch(e) {
       console.log('error reading from ADS: ' + e);
     }
