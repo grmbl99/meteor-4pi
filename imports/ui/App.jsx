@@ -4,11 +4,12 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCollection, 
-         ProjectsCollection, AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
+         ProjectsCollection, AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/Collections';
 import { PiView } from './PiView.jsx';
 import { FilterForm } from './Forms.jsx';
 import { UpdateFeaturePopup } from './Popups.jsx';
 import { NOT_SET } from '/imports/api/Consts.jsx';
+import { ServerStatus, SyncStatus } from '../api/Consts.jsx';
 
 export function App(props) {  
   function moveFeature(featureId,pi,team,project) {
@@ -52,6 +53,12 @@ export function App(props) {
     }
   }
 
+  function refreshADS(event) {
+    if (adsSyncState!==SyncStatus.BUSY) {
+      Meteor.call('RefreshADS');
+    }
+  }
+
   function getAllocation(pi,projectname,teamname) {
     let alloc=0;
   
@@ -90,6 +97,8 @@ export function App(props) {
   function getProjects() { return (ProjectsCollection.find({}).fetch()); }
   function getAllocations() { return (AllocationsCollection.find({}).fetch()); }
   function getVelocities() { return (VelocitiesCollection.find({}).fetch()); }
+  function getServerStatus() { return (ServerStatusCollection.find({}).fetch()); }
+
 
   const features = useTracker(getFeatures);
   const deltafeatures = useTracker(getDeltaFeatures);
@@ -98,6 +107,7 @@ export function App(props) {
   const projects = useTracker(getProjects);
   const allocations = useTracker(getAllocations);
   const velocities = useTracker(getVelocities);
+  const serverstatus = useTracker(getServerStatus);
 
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
@@ -111,6 +121,15 @@ export function App(props) {
     startsprint: '',
     endsprint: ''
   });
+
+  let adsSyncState=SyncStatus.NONE;
+  let adsSyncDate='';
+  for (const status of serverstatus) {
+    if (status.name === ServerStatus.ADS_SYNC_STATUS) { 
+      adsSyncState=status.status; 
+      adsSyncDate=status.date.toString(); 
+    }
+  }
 
   let key=0;
   let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
@@ -160,6 +179,10 @@ export function App(props) {
     <div>
       <div className='left'>
         <div className='menu-container'>
+          <div onClick={() => {refreshADS();}}>ADS Sync</div>
+          <div>state: {adsSyncState}</div>
+          <div>date: {adsSyncDate}</div>
+
           <div className='menu-heading'>Teams</div>
           <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername);}}/>
           {teamsMenu}

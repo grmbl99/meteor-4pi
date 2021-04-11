@@ -8,3 +8,4 @@ export const TeamsCollection = new Mongo.Collection('teams');
 export const ProjectsCollection = new Mongo.Collection('projects');
 export const AllocationsCollection = new Mongo.Collection('allocations');
 export const VelocitiesCollection = new Mongo.Collection('velocities');
+export const ServerStatusCollection = new Mongo.Collection('serverstatus');

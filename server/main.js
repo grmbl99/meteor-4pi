@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
-         AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
-import { DisplayTypes } from '/imports/api/Consts.jsx';
+         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/Collections';
+import { DisplayTypes, ServerStatus, SyncStatus } from '/imports/api/Consts.jsx';
 import { queryADS } from './query-ads.js';
 import { PopulateCollections } from './populate-collections.js';
 
@@ -36,23 +36,48 @@ function CompareFeatureCollections() {
   }
 }
 
+function SyncADS() {
+  console.log('query ADS');
+  ServerStatusCollection.update({name: ServerStatus.ADS_SYNC_STATUS},{ $set: { status: SyncStatus.BUSY, date: '' }});
+
+  queryADS().then(() => { 
+    console.log('queryADS succeeded'); 
+    const date = new Date();
+    ServerStatusCollection.update({name: ServerStatus.ADS_SYNC_STATUS},{ $set: { status: SyncStatus.OK, date: date }});
+  }).catch((e) => { 
+    console.log('queryADS failed: ' + e); 
+    ServerStatusCollection.update({name: ServerStatus.ADS_SYNC_STATUS},{ $set: { status: SyncStatus.FAILED, date: '' }});
+  });
+}
+
 Meteor.methods({
   UpdateDeltaFeatureCollection() {
     DeltaFeaturesCollection.remove({});
     CompareFeatureCollections();
+  },
+
+  RefreshADS() {
+    FeaturesCollection.remove({});
+    SprintsCollection.remove({});
+    ProjectsCollection.remove({});
+    TeamsCollection.remove({});
+    SyncADS();
   }
 });
 
 Meteor.startup(() => {
-  FeaturesCollection.remove({});
   OrgFeaturesCollection.remove({});
   DeltaFeaturesCollection.remove({});
-  SprintsCollection.remove({});
-  ProjectsCollection.remove({});
-  TeamsCollection.remove({});
   AllocationsCollection.remove({});
   VelocitiesCollection.remove({});
 
+  FeaturesCollection.remove({});
+  SprintsCollection.remove({});
+  ProjectsCollection.remove({});
+  TeamsCollection.remove({});
+
+  ServerStatusCollection.remove({});
+
   PopulateCollections();
-  queryADS().then(s => console.log('queryADS done ' + s)).catch(e => console.log(e));
+  SyncADS();
 });

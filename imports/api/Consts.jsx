@@ -31,3 +31,18 @@ export const ADSConfig = {
   ITERATION_OFFSET_WIQL: '\\Systems\\SAFe Fixed'
 };
 
+export const ReturnStatus = {
+  OK: true,
+  NOT_OK: false
+};
+
+export const ServerStatus = {
+  ADS_SYNC_STATUS: 'adssyncstatus'
+};
+
+export const SyncStatus = {
+  OK: 'ok',
+  FAILED: 'failed',
+  BUSY: 'busy',
+  NONE: 'none'
+};

@@ -1,6 +1,7 @@
 import { FeaturesCollection, OrgFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
-         AllocationsCollection, VelocitiesCollection } from '/imports/api/Collections';
+         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/Collections';
+import { ServerStatus, SyncStatus } from '/imports/api/Consts';
 
 function PopulateOrgFeaturesCollection() {
   [
@@ -165,6 +166,12 @@ function PopulateVelocitiesCollection() {
   ].forEach(velocity => VelocitiesCollection.insert(velocity));      
 }
 
+function PopulateServerStatusCollection() { 
+  [
+    {name: ServerStatus.ADS_SYNC_STATUS, status: SyncStatus.NONE, date: ''}
+  ].forEach(status => ServerStatusCollection.insert(status));
+}
+
 export function PopulateCollections() {         
   if (OrgFeaturesCollection.find().count() === 0) { PopulateOrgFeaturesCollection(); }  
   // if (FeaturesCollection.find().count() === 0) { PopulateFeaturesCollection(); }
@@ -173,4 +180,5 @@ export function PopulateCollections() {
   // if (ProjectsCollection.find().count() === 0) { PopulateProjectsCollection();}
   if (AllocationsCollection.find().count() === 0) { PopulateAllocationsCollection(); }
   if (VelocitiesCollection.find().count() === 0) { PopulateVelocitiesCollection(); }
+  if (ServerStatusCollection.find().count() === 0) { PopulateServerStatusCollection(); }
 }

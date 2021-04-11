@@ -1,6 +1,6 @@
 import * as vsoNodeApi from 'azure-devops-node-api';
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
-import { ADSFields, ADSConfig, NOT_SET } from '/imports/api/Consts.jsx';
+import { ADSFields, ADSConfig, NOT_SET, ReturnStatus} from '/imports/api/Consts.jsx';
 
 async function getTeamsFromADS(witAPI) {
   try {
@@ -9,11 +9,12 @@ async function getTeamsFromADS(witAPI) {
 
     for (const team of queryResult.children) {
       TeamsCollection.insert({teamname: team.name});
-    }  
+    }
   } catch(e) {
-    console.log('error getting teams from ADS: ' + e);
+    console.log('Error in getTeamsFromADS');
     throw(e);
   }
+  return(ReturnStatus.OK);
 }
 
 async function getSprintsFromADS(witAPI) {
@@ -31,9 +32,10 @@ async function getSprintsFromADS(witAPI) {
       }
     }
   } catch(e) {
-    console.log('error getting sprints from ADS: ' + e);
+    console.log('Error in getSprintsFromADS');
     throw(e);
   }
+  return(ReturnStatus.OK);
 }
 
 async function getFeatureFromADS(witAPI,id) {
@@ -61,9 +63,10 @@ async function getFeatureFromADS(witAPI,id) {
     ProjectsCollection.upsert({projectname: projectname}, { $set: {projectname: projectname}});
     TeamsCollection.upsert({teamname: teamname}, { $set: {teamname: teamname}});
   } catch(e) {
-    console.log('error getting feature from ADS: ' +e);
+    console.log('Error in getFeatureFromADS');
     throw(e);
   }
+  return(ReturnStatus.OK);
 }
 
 async function getStoryFromADS(witAPI,storyId,featureId) {
@@ -96,9 +99,10 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
       );
     }
   } catch(e) {
-    console.log('error getting story from ADS: ' +e);
+    console.log('Error in getStoryFromADS');
     throw(e);
   }
+  return(ReturnStatus.OK);
 }
 
 async function getStoriesFromADS(witAPI, pis) {
@@ -141,9 +145,10 @@ async function getStoriesFromADS(witAPI, pis) {
     await Promise.all(p);
 
   } catch(e) {
-    console.log('error getting workitems from ADS: ' + e);
+    console.log('Error in getStoriesFromADS');
     throw(e);
   }
+  return(ReturnStatus.OK);
 }
 
 async function getFeaturesFromADS(witAPI, pis) {
@@ -175,37 +180,28 @@ async function getFeaturesFromADS(witAPI, pis) {
     await Promise.all(p);
 
   } catch(e) {
-    console.log('error getting features from ADS: ' + e);
+    console.log('Error in getFeaturesFromADS');
     throw(e);
   }
+  return(ReturnStatus.OK);
 }
-
 
 export async function queryADS() {
   const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(ADSConfig.TOKEN); 
-  const connection = new vsoNodeApi.WebApi(ADSConfig.URL, authHandler);
-  
-  try {
-    const witAPI = await connection.getWorkItemTrackingApi();
+  const connection = new vsoNodeApi.WebApi(ADSConfig.URL, authHandler);  
+  const witAPI = await connection.getWorkItemTrackingApi();
 
-    const pis=['PI 21.1','PI 21.2','PI 21.3','PI 21.4'];
+  const pis=['PI 21.1','PI 21.2','PI 21.3','PI 21.4'];
 
-    console.log('start getting sprints');
-    await getSprintsFromADS(witAPI);
-    console.log('done getting sprints');
-    //await getTeamsFromADS(witAPI);
+  console.log('getting sprints');
+  await getSprintsFromADS(witAPI);
+  //await getTeamsFromADS(witAPI);
 
-    console.log('start getting features');
-    await getFeaturesFromADS(witAPI, pis);
-    console.log('done getting features');
+  console.log('getting features');
+  await getFeaturesFromADS(witAPI, pis);
 
-    console.log('start getting stories');
-    await getStoriesFromADS(witAPI, pis);
-    console.log('done getting stories');
+  console.log('getting stories');
+  await getStoriesFromADS(witAPI, pis);
 
-  } catch(e) {
-    console.log('error reading from ADS: ' + e);
-  }
-
-  return('done');
+  return(ReturnStatus.OK);
 }
