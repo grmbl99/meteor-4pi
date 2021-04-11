@@ -16,7 +16,9 @@ export const ADSFields = {
   NODENAME: 'System.NodeName',
   ITERATION_PATH: 'System.IterationPath',
   EFFORT: 'Microsoft.VSTS.Scheduling.Effort',
-  RELEASE: 'Philips.Planning.Release'
+  RELEASE: 'Philips.Planning.Release',
+  STATE: 'System.State',
+  DONE: 'Done'
 };
 
 export const ADSConfig = {

@@ -1,6 +1,6 @@
 import * as vsoNodeApi from 'azure-devops-node-api';
 import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
-import { ADSFields, ADSConfig } from '/imports/api/Consts.jsx';
+import { ADSFields, ADSConfig, NOT_SET } from '/imports/api/Consts.jsx';
 
 async function getTeamsFromADS(witAPI) {
   try {
@@ -12,6 +12,7 @@ async function getTeamsFromADS(witAPI) {
     }  
   } catch(e) {
     console.log('error getting teams from ADS: ' + e);
+    throw(e);
   }
 }
 
@@ -20,20 +21,22 @@ async function getSprintsFromADS(witAPI) {
     // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/iterations/systems/safe%20fixed?$depth=2
     const queryResult = await witAPI.getClassificationNode(ADSConfig.PROJECT, 'iterations', ADSConfig.ITERATION_OFFSET,2);
 
+    let i=0;
     for (const pi of queryResult.children) {
       if (pi.hasChildren) {
         for (const sprint of pi.children) {
           const startdate = new Date(sprint.attributes.startDate);
-          SprintsCollection.insert({pi: pi.name, sprintname: sprint.name, startdate: startdate});
+          SprintsCollection.insert({pi: pi.name, sprintnr: i++, sprintname: sprint.name, startdate: startdate});
         }
       }
     }
   } catch(e) {
     console.log('error getting sprints from ADS: ' + e);
+    throw(e);
   }
 }
 
-async function getWorkItemFromADS(witAPI,id) {
+async function getFeatureFromADS(witAPI,id) {
   try {
     const queryResult = await witAPI.getWorkItem(id,[
       ADSFields.TITLE, ADSFields.NODENAME, ADSFields.ITERATION_PATH, 
@@ -50,19 +53,55 @@ async function getWorkItemFromADS(witAPI,id) {
     teamname = teamname ? teamname.toLowerCase() : 'undefined';
 
     FeaturesCollection.insert({
-      id: id, name: name, pi: pi, size: size, done: 1, 
-      startsprint: '2151', endsprint: '2201', 
+      id: id, name: name, pi: pi, size: size, done: 0, 
+      startsprintnr: 9999, endsprintnr: NOT_SET, 
       team: teamname, project: projectname
     });
 
     ProjectsCollection.upsert({projectname: projectname}, { $set: {projectname: projectname}});
     TeamsCollection.upsert({teamname: teamname}, { $set: {teamname: teamname}});
   } catch(e) {
-    console.log('error getting workitem from ADS: ' +e);
+    console.log('error getting feature from ADS: ' +e);
+    throw(e);
   }
 }
 
-async function getWorkItemsFromADS(witAPI, pis) {
+async function getStoryFromADS(witAPI,storyId,featureId) {
+  try {
+    const queryResult = await witAPI.getWorkItem(storyId,[ADSFields.ITERATION_PATH, ADSFields.EFFORT, ADSFields.STATE]);
+
+    const state=queryResult.fields[ADSFields.STATE];
+    const effort=queryResult.fields[ADSFields.EFFORT];
+    const parts=queryResult.fields[ADSFields.ITERATION_PATH].split('\\');
+
+    if (effort>0) {
+      if (state===ADSFields.DONE) {
+        FeaturesCollection.update({id: featureId},{ $inc: { done: effort }});
+      } else {
+        // FeaturesCollection.update({id: featureId},{ $inc: {size: effort }});
+      }
+    }
+
+    const sprintname = parts.length>4 ? parts[4] : 'undefined';
+    const sprint = SprintsCollection.findOne({sprintname: sprintname});
+
+    if (sprint) {
+      FeaturesCollection.update(
+        {id: featureId, startsprintnr: { $gt: sprint.sprintnr} },
+        {$set: { startsprintnr: sprint.sprintnr, startsprint: sprintname }}
+      );
+      FeaturesCollection.update(
+        {id: featureId, endsprintnr: { $lt: sprint.sprintnr} },
+        {$set: { endsprintnr: sprint.sprintnr, endsprint: sprintname }}
+      );
+    }
+  } catch(e) {
+    console.log('error getting story from ADS: ' +e);
+    throw(e);
+  }
+}
+
+async function getStoriesFromADS(witAPI, pis) {
   try {
     let piSubQuery='';
     for (const [i,pi] of pis.entries()) {
@@ -84,7 +123,6 @@ async function getWorkItemsFromADS(witAPI, pis) {
           AND (
               [Target].[System.TeamProject] = @project
               AND [Target].[System.WorkItemType] = 'Story'
-              AND [Target].[System.State] = 'Done'
           )
       ORDER BY [System.IterationId],
           [System.Id]
@@ -94,17 +132,54 @@ async function getWorkItemsFromADS(witAPI, pis) {
     const teamContext = { project: ADSConfig.PROJECT };
     const queryResult = await witAPI.queryByWiql(query, teamContext);  
 
+    let p = [];
     for (const workitemlink of queryResult.workItemRelations) {
       if (workitemlink.rel==='System.LinkTypes.Hierarchy-Forward') {
-        // console.log(workitemlink.source.id, ' -> ', workitemlink.target.id);
-      } else {
-        getWorkItemFromADS(witAPI,workitemlink.target.id);
+        p.push(getStoryFromADS(witAPI,workitemlink.target.id,workitemlink.source.id));
       }
     }
+    await Promise.all(p);
+
   } catch(e) {
     console.log('error getting workitems from ADS: ' + e);
+    throw(e);
   }
 }
+
+async function getFeaturesFromADS(witAPI, pis) {
+  try {
+    let piSubQuery='';
+    for (const [i,pi] of pis.entries()) {
+      piSubQuery+=`[System.IterationPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.ITERATION_OFFSET_WIQL}\\${pi}' ${i!==pis.length-1 ? 'OR ' : ''}`;
+    }
+
+    const query = {query: 
+      `
+      SELECT
+          [System.Id]
+      FROM workitems
+      WHERE
+          [System.TeamProject] = @project
+          AND [System.WorkItemType] = 'Feature'
+          AND [System.AreaPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.AREA_OFFSET_WIQL}'
+          AND (${piSubQuery})`
+    };
+
+    const teamContext = { project: ADSConfig.PROJECT };
+    const queryResult = await witAPI.queryByWiql(query, teamContext);  
+
+    let p = [];
+    for (const workitem of queryResult.workItems) {
+      p.push(getFeatureFromADS(witAPI,workitem.id));
+    }
+    await Promise.all(p);
+
+  } catch(e) {
+    console.log('error getting features from ADS: ' + e);
+    throw(e);
+  }
+}
+
 
 export async function queryADS() {
   const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(ADSConfig.TOKEN); 
@@ -113,13 +188,24 @@ export async function queryADS() {
   try {
     const witAPI = await connection.getWorkItemTrackingApi();
 
-    getSprintsFromADS(witAPI);
-    //getTeamsFromADS(witAPI);
-
     const pis=['PI 21.1','PI 21.2','PI 21.3','PI 21.4'];
-    getWorkItemsFromADS(witAPI, pis);  
+
+    console.log('start getting sprints');
+    await getSprintsFromADS(witAPI);
+    console.log('done getting sprints');
+    //await getTeamsFromADS(witAPI);
+
+    console.log('start getting features');
+    await getFeaturesFromADS(witAPI, pis);
+    console.log('done getting features');
+
+    console.log('start getting stories');
+    await getStoriesFromADS(witAPI, pis);
+    console.log('done getting stories');
 
   } catch(e) {
     console.log('error reading from ADS: ' + e);
   }
+
+  return('done');
 }

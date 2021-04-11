@@ -54,5 +54,5 @@ Meteor.startup(() => {
   VelocitiesCollection.remove({});
 
   PopulateCollections();
-  queryADS();
+  queryADS().then(s => console.log('queryADS done ' + s)).catch(e => console.log(e));
 });
