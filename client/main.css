@@ -1,3 +1,8 @@
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 body {
   font-family: Arial, sans-serif;
 }
@@ -6,7 +11,7 @@ body {
   position: fixed;
   top: 0pt;
   left: 0pt;
-  width: 125pt;
+  width: 140pt;
   height: 100vh;
   z-index: 10;
   background-color: white;
@@ -16,13 +21,13 @@ body {
 .right {
   position: absolute;
   top: 0pt;
-  left: 130pt;
+  left: 150pt;
 }
 
 .menu-container {
   display: grid;
   grid-template-rows: auto;
-  gap: 10px 10px;
+  gap: 5px 5px;
   padding: 10pt;
 }
 
@@ -30,12 +35,30 @@ body {
   font-size: 15pt;
 }
 
+.ads-loading-error {
+  color: red;
+}
+
+.ads-sync-date {
+  font-size: 8pt;
+  height: 38pt;
+}
+
+.ads-loading {
+  border: 10px solid #f3f3f3; /* Light grey */
+  border-top: 10px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 2s linear infinite;
+}
+
 .filter {
   background-color: rgb(170, 170, 170);
   color: white;
   padding-left: 10px;
   padding-top: 5pt;
-  width: 130px;
+  width: 150px;
   height: 85px;
   outline-offset:  -1px;
   outline: 1px solid rgb(110, 110, 110);
@@ -66,13 +89,18 @@ input[type='submit']:hover {
 
 .menu-item {
   background-color: rgb(170, 170, 170);
+  font-size: 10pt;
   color: white;
   padding-left: 10px;
   padding-top: 3pt;
-  height: 25px;
-  width: 130px;
+  height: 20px;
+  width: 150px;
   outline-offset:  -1px;
   outline: 1px solid rgb(110, 110, 110);
+}
+
+.menu-item-red {
+  color: red !important;
 }
 
 .menu-item:hover {

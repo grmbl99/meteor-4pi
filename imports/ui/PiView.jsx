@@ -129,7 +129,7 @@ function PiView(props) {
       className='pi-view'
       ref={drop}
       style={{
-        opacity: isOver ? 0.5 : 1, 
+        opacity: isOver ? 0.5 : featuresList.length===0 ? 0.1 : 1, 
       }}
     >
       <div className='pi-header'>

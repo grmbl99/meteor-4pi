@@ -175,13 +175,15 @@ export function App(props) {
     }
   }
 
+  const loadingClassName = adsSyncState===SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
+  const adsSyncClassName = adsSyncState===SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+
   return (
     <div>
       <div className='left'>
         <div className='menu-container'>
-          <div onClick={() => {refreshADS();}}>ADS Sync</div>
-          <div>state: {adsSyncState}</div>
-          <div>date: {adsSyncDate}</div>
+          <div className={adsSyncClassName} onClick={() => {refreshADS();}}>ADS Sync: {adsSyncState}</div>
+          <div className={loadingClassName}>{adsSyncDate}</div>
 
           <div className='menu-heading'>Teams</div>
           <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername);}}/>
