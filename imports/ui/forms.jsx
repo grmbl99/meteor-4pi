@@ -48,9 +48,9 @@ function NewFeatureForm(props) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Name: <input type='text' value={name} onChange={(event) => setName(event.target.value)} /></label>
-      <label>Size: <input type='text' value={size} onChange={(event) => setSize(event.target.value)} /></label>
-      <label>PI: <input type='text' value={pi} onChange={(event) => setPi(event.target.value)} /></label>
+      <label>Name: </label><input type='text' value={name} onChange={(event) => setName(event.target.value)} />
+      <label>Size: </label><input type='text' value={size} onChange={(event) => setSize(event.target.value)} />
+      <label>PI: </label><input type='text' value={pi} onChange={(event) => setPi(event.target.value)} />
       <input type='submit' value='Submit' />
     </form>
   );

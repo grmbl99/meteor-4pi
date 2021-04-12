@@ -42,13 +42,13 @@ function ProgressBar(props) {
   return (
     <div className={props.className}>
       <div className='progress-bar-total' style={{left: props.start+'%', width: props.width+'%'}}>
-        <div className={'progress-bar-done ' + props.fillStyle} style={{width: perctDoneStr}}></div>
-        <div className={diffPerctDoneClassName} style={{width: orgPerctDoneStr}}></div>
+        <div className={'progress-bar-done ' + props.fillStyle} style={{width: perctDoneStr}} />
+        <div className={diffPerctDoneClassName} style={{width: orgPerctDoneStr}} />
         <div className='progress-bar-text'>
           {perctDoneStr} [{props.done}/{props.size}]
         </div>
       </div>
-      <div className={diffStartEndClassName} style={{left: props.orgStart+'%', width: props.orgWidth+'%'}}></div>
+      <div className={diffStartEndClassName} style={{left: props.orgStart+'%', width: props.orgWidth+'%'}} />
     </div>
   );
 }
