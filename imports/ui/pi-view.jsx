@@ -1,37 +1,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
+import * as Constants from '/imports/api/constants';
 import { Feature } from './feature';
 import { ProgressBar } from './progress-bar';
-import { ItemTypes, DisplayTypes, NOT_SET } from '/imports/api/constants';
 
 export { PiView };
 
 PiView.propTypes = {
   features: PropTypes.array.isRequired,
-  deltafeatures: PropTypes.array.isRequired,
+  deltaFeatures: PropTypes.array.isRequired,
   sprints: PropTypes.array.isRequired,
   onFeatureDropped: PropTypes.func.isRequired,
   onFeatureClicked: PropTypes.func.isRequired,
   pi: PropTypes.string.isRequired,
   team: PropTypes.string.isRequired,
   project: PropTypes.string.isRequired,
-  comparemodeon: PropTypes.bool.isRequired,
+  compareModeOn: PropTypes.bool.isRequired,
   allocation: PropTypes.number.isRequired
 };
 
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
 function calcRelFeatureStartAndDuration(feature,dict) {
-  const nrsprints=Object.keys(dict).length;
+  const nrSprints=Object.keys(dict).length;
 
   let duration=0;
   let start=0;
-  if (feature.startsprint in dict && feature.endsprint in dict) {
-    const startsprint=dict[feature.startsprint];
-    const endsprint=dict[feature.endsprint];
+  if (feature.startSprint in dict && feature.endSprint in dict) {
+    const startSprint=dict[feature.startSprint];
+    const endSprint=dict[feature.endSprint];
 
-    duration=(endsprint-startsprint+1)/nrsprints*100;
-    start=startsprint/nrsprints*100;  
+    duration=(endSprint-startSprint+1)/nrSprints*100;
+    start=startSprint/nrSprints*100;  
   }
 
   return([start,duration]);
@@ -39,11 +39,11 @@ function calcRelFeatureStartAndDuration(feature,dict) {
 
 function PiView(props) {  
   const features = props.features;
-  const deltafeatures = props.deltafeatures;
+  const deltaFeatures = props.deltaFeatures;
   const sprints = props.sprints;
 
   const [{isOver}, drop] = useDrop(() => ({
-    accept: ItemTypes.FEATURE,
+    accept: Constants.ItemTypes.FEATURE,
     drop: (item) => { props.onFeatureDropped(item.id,props.pi,props.team,props.project); },
     collect: (monitor) => ({
       isOver: monitor.isOver()
@@ -52,24 +52,24 @@ function PiView(props) {
 
   const dict={};
   const sprintsList=[];
-  let sprintnr=0;
+  let sprintNr=0;
   for (const sprint of sprints) {
     if (sprint.pi === props.pi) {
-      dict[sprint.sprintname]=sprintnr;
-      sprintnr += 1;
-      sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintname}/>);
+      dict[sprint.sprintName]=sprintNr;
+      sprintNr += 1;
+      sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintName}/>);
     }
   }
-  if (sprintnr===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
+  if (sprintNr===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
 
   let size=0;
   let done=0;
   const featuresList=[];
   for (const feature of features) {
-    let orgstart=NOT_SET;
-    let orgduration=NOT_SET;
-    let orgsize=NOT_SET;
-    let orgdone=NOT_SET;
+    let orgStart=Constants.NOT_SET;
+    let orgDuration=Constants.NOT_SET;
+    let orgSize=Constants.NOT_SET;
+    let orgDone=Constants.NOT_SET;
     const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
     if (feature.pi === props.pi && 
@@ -78,46 +78,46 @@ function PiView(props) {
       size += feature.size;
       done += feature.done;
 
-      let displaytype=DisplayTypes.NORMAL;
-      if (props.comparemodeon) {
-        for (const deltafeature of deltafeatures) {
-          if (deltafeature.feature._id === feature._id) {
-            if (deltafeature.type === DisplayTypes.ADDED) {
-              displaytype=DisplayTypes.ADDED;
+      let displayType=Constants.DisplayTypes.NORMAL;
+      if (props.compareModeOn) {
+        for (const deltaFeature of deltaFeatures) {
+          if (deltaFeature.feature._id === feature._id) {
+            if (deltaFeature.type === Constants.DisplayTypes.ADDED) {
+              displayType=Constants.DisplayTypes.ADDED;
             }
-            if (deltafeature.type === DisplayTypes.CHANGED) {
-              [orgstart,orgduration]=calcRelFeatureStartAndDuration(deltafeature.feature,dict);
-              orgsize=deltafeature.feature.size;
-              orgdone=deltafeature.feature.done;
+            if (deltaFeature.type === Constants.DisplayTypes.CHANGED) {
+              [orgStart,orgDuration]=calcRelFeatureStartAndDuration(deltaFeature.feature,dict);
+              orgSize=deltaFeature.feature.size;
+              orgDone=deltaFeature.feature.done;
             }
           }
         }    
       }
 
       featuresList.push(<Feature key={feature._id} feature={feature} 
-                                 displaytype={displaytype} 
+                                 displayType={displayType} 
                                  start={start} duration={duration}
-                                 orgstart={orgstart} orgduration={orgduration}
-                                 orgsize={orgsize} orgdone={orgdone}
+                                 orgStart={orgStart} orgDuration={orgDuration}
+                                 orgSize={orgSize} orgDone={orgDone}
                                  onFeatureClicked={props.onFeatureClicked}/>);
     }
   }
 
-  if(props.comparemodeon) {
-    for (const deltafeature of deltafeatures) {
-      if(deltafeature.type === DisplayTypes.REMOVED) {
-        const feature=deltafeature.feature;
+  if(props.compareModeOn) {
+    for (const deltaFeature of deltaFeatures) {
+      if(deltaFeature.type === Constants.DisplayTypes.REMOVED) {
+        const feature=deltaFeature.feature;
         const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
 
         if (feature.pi === props.pi && 
             (props.team === '' || feature.team === props.team) &&
             (props.project === '' || feature.project === props.project)) {
-          let displaytype=DisplayTypes.REMOVED;
+          let displayType=Constants.DisplayTypes.REMOVED;
           featuresList.push(<Feature key={feature._id} feature={feature} 
-                                     displaytype={displaytype} 
+                                     displayType={displayType} 
                                      start={start} duration={duration}
-                                     orgstart={NOT_SET} orgduration={NOT_SET}
-                                     orgsize={NOT_SET} orgdone={NOT_SET}
+                                     orgStart={Constants.NOT_SET} orgDuration={Constants.NOT_SET}
+                                     orgSize={Constants.NOT_SET} orgDone={Constants.NOT_SET}
                                      onFeatureClicked={props.onFeatureClicked}/>);
         }  
       }
@@ -176,16 +176,16 @@ AllocationBadge.propTypes = {
 
 function AllocationBadge(props) {
   let className='pi-badge pi-allocation-badge';
-  let allocstr='';
+  let allocStr='';
 
-  if (props.allocation!==NOT_SET) {
-    allocstr+=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(props.allocation);
+  if (props.allocation!==Constants.NOT_SET) {
+    allocStr+=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(props.allocation);
   } else {
     className+=' display-none';
   }
 
   return(
-    <div className={className}>Alloc: {allocstr}SP</div>
+    <div className={className}>Alloc: {allocStr}SP</div>
   );
 }
 
@@ -196,20 +196,20 @@ LoadBadge.propTypes = {
 
 function LoadBadge(props) {
   let className='pi-badge pi-load-badge';
-  let loadstr='';
+  let loadStr='';
 
-  if (props.allocation!==NOT_SET) {
+  if (props.allocation!==Constants.NOT_SET) {
     if (props.allocation>0) {
       const load=props.size/props.allocation*100;
-      loadstr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(load);
+      loadStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 0, useGrouping: false }).format(load);
       if (load>100) {
         className+=' pi-badge-alert';
       }
     } else {
       if (props.size===0) {
-        loadstr='0';
+        loadStr='0';
       } else {
-        loadstr=String.fromCharCode(8734); // infinity sign
+        loadStr=String.fromCharCode(8734); // infinity sign
         className+=' pi-badge-alert';
       }
     }  
@@ -218,6 +218,6 @@ function LoadBadge(props) {
   }
 
   return(
-    <div className={className}>Load: {loadstr}%</div>
+    <div className={className}>Load: {loadStr}%</div>
   );
 }

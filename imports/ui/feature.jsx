@@ -1,28 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
+import * as Constants from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
-import { ItemTypes, DisplayTypes } from '/imports/api/constants';
 
 export { Feature };
 
 Feature.propTypes = {
   feature: PropTypes.object.isRequired,
-  displaytype: PropTypes.string.isRequired,
+  displayType: PropTypes.string.isRequired,
   onFeatureClicked: PropTypes.func.isRequired,
   start: PropTypes.number.isRequired,
   duration: PropTypes.number.isRequired,
-  orgstart: PropTypes.number.isRequired,
-  orgduration: PropTypes.number.isRequired,
-  orgsize: PropTypes.number.isRequired,
-  orgdone: PropTypes.number.isRequired
+  orgStart: PropTypes.number.isRequired,
+  orgDuration: PropTypes.number.isRequired,
+  orgSize: PropTypes.number.isRequired,
+  orgDone: PropTypes.number.isRequired
 };
 
 function Feature(props) {
   const feature=props.feature;
 
   const [{isDragging}, drag] = useDrag(() => ({
-    type: ItemTypes.FEATURE,
+    type: Constants.ItemTypes.FEATURE,
     item: { id: feature._id },
     collect: monitor => ({
       isDragging: monitor.isDragging()
@@ -30,11 +30,11 @@ function Feature(props) {
   }));
 
   let featureClassName='feature';
-  if (props.displaytype === DisplayTypes.ADDED) { featureClassName += ' feature-added'; }
-  else if (props.displaytype === DisplayTypes.REMOVED) { featureClassName += ' feature-removed'; }
+  if (props.displayType === Constants.DisplayTypes.ADDED) { featureClassName += ' feature-added'; }
+  else if (props.displayType === Constants.DisplayTypes.REMOVED) { featureClassName += ' feature-removed'; }
 
-  const maxlength=60;
-  const trimmedName = feature.name.length > maxlength ? feature.name.substring(0, maxlength - 3) + '...' : feature.name;
+  const maxLength=60;
+  const trimmedName = feature.name.length > maxLength ? feature.name.substring(0, maxLength - 3) + '...' : feature.name;
 
   return (
     <div 
@@ -50,8 +50,8 @@ function Feature(props) {
       <ProgressBar className='feature-progress-bar' 
                    fillStyle='feature-progress-bar-fill' 
                    start={props.start} width={props.duration} size={feature.size} done={feature.done}
-                   orgstart={props.orgstart} orgwidth={props.orgduration}
-                   orgsize={props.orgsize} orgdone={props.orgdone}/>
+                   orgstart={props.orgStart} orgwidth={props.orgDuration}
+                   orgsize={props.orgSize} orgdone={props.orgDone}/>
     </div>
   );
 }

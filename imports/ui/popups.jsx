@@ -24,12 +24,12 @@ function UpdateFeaturePopup(props) {
     useEffect(() => { setSize(props.feature.size); },[props]);
     useEffect(() => { setPi(props.feature.pi); },[props]);
     useEffect(() => { setDone(props.feature.done); },[props]);
-    useEffect(() => { setStartSprint(props.feature.startsprint); },[props]);
-    useEffect(() => { setEndSprint(props.feature.endsprint); },[props]);  
+    useEffect(() => { setStartSprint(props.feature.startSprint); },[props]);
+    useEffect(() => { setEndSprint(props.feature.endSprint); },[props]);  
   }
 
   function handleSubmit(event) {
-    props.onSubmit({_id: props.feature._id, name: name, size: size, done: done, pi: pi, startsprint: startSprint, endsprint: endSprint});
+    props.onSubmit({_id: props.feature._id, name: name, size: size, done: done, pi: pi, startSprint: startSprint, endSprint: endSprint});
     event.preventDefault();
   }
 

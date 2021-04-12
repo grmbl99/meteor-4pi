@@ -3,12 +3,11 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Meteor } from 'meteor/meteor';
-import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCollection, 
-         ProjectsCollection, AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/collections';
+import * as Constants from '/imports/api/constants';
+import * as Collections from '/imports/api/collections';
 import { PiView } from './pi-view';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
-import { ServerStatus, SyncStatus, NOT_SET } from '/imports/api/constants';
 
 export function App(props) {  
   function moveFeature(featureId,pi,team,project) {
@@ -17,21 +16,21 @@ export function App(props) {
       if (project !== '') { updates['project']=project; }
       if (team !== '') { updates['team']=team; }
     
-      FeaturesCollection.update({ _id: featureId },{ $set: updates});  
+      Collections.FeaturesCollection.update({ _id: featureId },{ $set: updates});  
     }
   }
   
   function updateFeature(input) {
     setShowPopup(false);
-    FeaturesCollection.update(
+    Collections.FeaturesCollection.update(
       {_id: input._id},
       {$set: {
         'name': input.name, 
         'size': parseInt(input.size), 
         'done': parseInt(input.done), 
         'pi': input.pi, 
-        'startsprint': input.startsprint,
-        'endsprint': input.endsprint 
+        'startSprint': input.startSprint,
+        'endSprint': input.endSprint 
       }}
     );
   }
@@ -53,60 +52,59 @@ export function App(props) {
   }
 
   function refreshADS(event) {
-    if (adsSyncState!==SyncStatus.BUSY) {
+    if (adsSyncState!==Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
     }
   }
 
-  function getAllocation(pi,projectname,teamname) {
+  function getAllocation(pi,projectName,teamName) {
     let alloc=0;
   
-    if (teamname !== '') {
-      let teamvelocity=0;
+    if (teamName !== '') {
+      let teamVelocity=0;
       for (const velocity of velocities) {
-        if(velocity.pi === pi && velocity.teamname === teamname) { 
-          teamvelocity = velocity.velocity;
+        if(velocity.pi === pi && velocity.teamName === teamName) { 
+          teamVelocity = velocity.velocity;
         }
       }
   
-      if (projectname !== '') {
-        let teamallocation=0;
+      if (projectName !== '') {
+        let teamAllocation=0;
         for (const allocation of allocations) {
-          if(allocation.pi === pi && allocation.projectname === projectname && allocation.teamname === teamname) { 
-            teamallocation = allocation.allocation;
+          if(allocation.pi === pi && allocation.projectName === projectName && allocation.teamName === teamName) { 
+            teamAllocation = allocation.allocation;
           }
         }
   
         // percentage of the team-velocity allocated to a project
-        alloc = teamallocation === 0 ? 0 : teamvelocity/100*teamallocation;
+        alloc = teamAllocation === 0 ? 0 : teamVelocity/100*teamAllocation;
       } else {
-        alloc = teamvelocity;
+        alloc = teamVelocity;
       }
     } else {
-      alloc=NOT_SET;
+      alloc=Constants.NOT_SET;
     }
         
     return(alloc);
   }
 
-  function getFeatures() { return (FeaturesCollection.find({}).fetch()); }
-  function getDeltaFeatures() { return (DeltaFeaturesCollection.find({}).fetch()); }
-  function getSprints() { return (SprintsCollection.find({}).fetch()); }
-  function getTeams() { return (TeamsCollection.find({}).fetch()); }
-  function getProjects() { return (ProjectsCollection.find({}).fetch()); }
-  function getAllocations() { return (AllocationsCollection.find({}).fetch()); }
-  function getVelocities() { return (VelocitiesCollection.find({}).fetch()); }
-  function getServerStatus() { return (ServerStatusCollection.find({}).fetch()); }
-
+  function getFeatures() { return (Collections.FeaturesCollection.find({}).fetch()); }
+  function getDeltaFeatures() { return (Collections.DeltaFeaturesCollection.find({}).fetch()); }
+  function getSprints() { return (Collections.SprintsCollection.find({}).fetch()); }
+  function getTeams() { return (Collections.TeamsCollection.find({}).fetch()); }
+  function getProjects() { return (Collections.ProjectsCollection.find({}).fetch()); }
+  function getAllocations() { return (Collections.AllocationsCollection.find({}).fetch()); }
+  function getVelocities() { return (Collections.VelocitiesCollection.find({}).fetch()); }
+  function getServerStatus() { return (Collections.ServerStatusCollection.find({}).fetch()); }
 
   const features = useTracker(getFeatures);
-  const deltafeatures = useTracker(getDeltaFeatures);
+  const deltaFeatures = useTracker(getDeltaFeatures);
   const sprints = useTracker(getSprints);
   const teams = useTracker(getTeams);
   const projects = useTracker(getProjects);
   const allocations = useTracker(getAllocations);
   const velocities = useTracker(getVelocities);
-  const serverstatus = useTracker(getServerStatus);
+  const serverStatus = useTracker(getServerStatus);
 
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
@@ -117,14 +115,14 @@ export function App(props) {
     pi: '',
     size: '',
     done: '',
-    startsprint: '',
-    endsprint: ''
+    startSprint: '',
+    endSprint: ''
   });
 
-  let adsSyncState=SyncStatus.NONE;
+  let adsSyncState=Constants.SyncStatus.NONE;
   let adsSyncDate='';
-  for (const status of serverstatus) {
-    if (status.name === ServerStatus.ADS_SYNC_STATUS) { 
+  for (const status of serverStatus) {
+    if (status.name === Constants.ServerStatus.ADS_SYNC_STATUS) { 
       adsSyncState=status.status; 
       adsSyncDate=status.date.toString(); 
     }
@@ -137,17 +135,17 @@ export function App(props) {
   let teamsMenu=[];
   for (const team of teams) {
     const newRef = createRef();
-    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{team.teamname}</div>);
+    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{team.teamName}</div>);
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const allocation = getAllocation(pi,projectFilter,team.teamname);
+      const allocation = getAllocation(pi,projectFilter,team.teamName);
 
       teamsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltafeatures={deltafeatures} comparemodeon={compareModeOn} sprints={sprints} 
-        pi={pi} project={projectFilter} team={team.teamname}
+        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} sprints={sprints} 
+        pi={pi} project={projectFilter} team={team.teamName}
         allocation={allocation}/>
       );
     }
@@ -158,24 +156,24 @@ export function App(props) {
 
   for (const project of projects) {
     const newRef = createRef();
-    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{project.projectname}</div>);
+    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{project.projectName}</div>);
     projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const allocation = getAllocation(pi,project.projectname,teamFilter);
+      const allocation = getAllocation(pi,project.projectName,teamFilter);
       
       projectsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltafeatures={deltafeatures} comparemodeon={compareModeOn} sprints={sprints} 
-        pi={pi} project={project.projectname} team={teamFilter}
+        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} sprints={sprints} 
+        pi={pi} project={project.projectName} team={teamFilter}
         allocation={allocation}/>
       );
     }
   }
 
-  const loadingClassName = adsSyncState===SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
-  const adsSyncClassName = adsSyncState===SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+  const loadingClassName = adsSyncState===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
+  const adsSyncClassName = adsSyncState===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
 
   return (
     <div>
@@ -185,10 +183,10 @@ export function App(props) {
           <div className={loadingClassName}>{adsSyncDate}</div>
 
           <div className='menu-heading'>Teams</div>
-          <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filtername);}}/>
+          <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filterName);}}/>
           {teamsMenu}
           <div className='menu-heading'>Projects</div>
-          <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filtername);}}/>
+          <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filterName);}}/>
           {projectsMenu}
           <div>compare: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
         </div>

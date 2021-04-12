@@ -1,83 +1,90 @@
 import { Meteor } from 'meteor/meteor';
-import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
-         SprintsCollection, TeamsCollection, ProjectsCollection, 
-         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/collections';
-import { DisplayTypes, ServerStatus, SyncStatus } from '/imports/api/constants';
-import { queryADS } from './query-ads';
+import * as Collections from '/imports/api/collections';
+import * as Constants from '/imports/api/constants';
+import { QueryADS } from './query-ads';
 import { PopulateCollections } from './populate-collections';
 
 // compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
-function CompareFeatureCollections() {
-  const features = FeaturesCollection.find({}).fetch();  
+function compareFeatureCollections() {
+  const features = Collections.FeaturesCollection.find({}).fetch();  
 
   for (const feature of features) {
-    const orgfeature = OrgFeaturesCollection.findOne({id: feature.id});
-    if (orgfeature) {
-      if(feature.pi!==orgfeature.pi || feature.team!==orgfeature.team || feature.project!==orgfeature.project) {
-        DeltaFeaturesCollection.insert({type: DisplayTypes.ADDED, feature: feature});
-        DeltaFeaturesCollection.insert({type: DisplayTypes.REMOVED, feature: orgfeature});
+    const orgFeature = Collections.OrgFeaturesCollection.findOne({id: feature.id});
+    if (orgFeature) {
+      if(feature.pi!==orgFeature.pi || feature.team!==orgFeature.team || feature.project!==orgFeature.project) {
+        Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.ADDED, feature: feature});
+        Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.REMOVED, feature: orgFeature});
       }
-      if(feature.size!==orgfeature.size || feature.done!==orgfeature.done || 
-         feature.startsprint!==orgfeature.startsprint || feature.endsprint!==orgfeature.endsprint) {
-        orgfeature._id=feature._id; // store org data, but allow searching on (current) feature-id
-        DeltaFeaturesCollection.insert({type: DisplayTypes.CHANGED, feature: orgfeature});
+      if(feature.size!==orgFeature.size || feature.done!==orgFeature.done || 
+         feature.startsprint!==orgFeature.startsprint || feature.endsprint!==orgFeature.endsprint) {
+        orgFeature._id=feature._id; // store org data, but allow searching on (current) feature-id
+        Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.CHANGED, feature: orgFeature});
       }
     } else {
-      DeltaFeaturesCollection.insert({type: DisplayTypes.ADDED, feature: feature});
+      Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.ADDED, feature: feature});
     }
   }
 
-  const orgfeatures = OrgFeaturesCollection.find({}).fetch();
-  for (const orgfeature of orgfeatures) {
-    const feature = FeaturesCollection.findOne({id: orgfeature.id});
+  const orgFeatures = Collections.OrgFeaturesCollection.find({}).fetch();
+  for (const orgFeature of orgFeatures) {
+    const feature = Collections.FeaturesCollection.findOne({id: orgFeature.id});
     if (!feature) {
-      DeltaFeaturesCollection.insert({type: DisplayTypes.REMOVED, feature: orgfeature});
+      Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.REMOVED, feature: orgFeature});
     }
   }
 }
 
-function SyncADS() {
+function syncADS() {
   console.log('query ADS');
-  ServerStatusCollection.update({name: ServerStatus.ADS_SYNC_STATUS},{ $set: { status: SyncStatus.BUSY, date: '' }});
+  Collections.ServerStatusCollection.update(
+    { name: Constants.ServerStatus.ADS_SYNC_STATUS },
+    { $set: { status: Constants.SyncStatus.BUSY, date: '' } }
+  );
 
-  queryADS().then(() => { 
+  QueryADS().then(() => { 
     console.log('queryADS succeeded'); 
     const date = new Date();
-    ServerStatusCollection.update({name: ServerStatus.ADS_SYNC_STATUS},{ $set: { status: SyncStatus.OK, date: date }});
+    Collections.ServerStatusCollection.update(
+      { name: Constants.ServerStatus.ADS_SYNC_STATUS },
+      { $set: { status: Constants.SyncStatus.OK, date: date }}
+    );
   }).catch((e) => { 
     console.log('queryADS failed: ' + e); 
-    ServerStatusCollection.update({name: ServerStatus.ADS_SYNC_STATUS},{ $set: { status: SyncStatus.FAILED, date: '' }});
+    Collections.ServerStatusCollection.update(
+      { name: Constants.ServerStatus.ADS_SYNC_STATUS },
+      { $set: { status: Constants.SyncStatus.FAILED, date: '' }}
+    );
   });
 }
 
 Meteor.methods({
   UpdateDeltaFeatureCollection() {
-    DeltaFeaturesCollection.remove({});
-    CompareFeatureCollections();
+    Collections.DeltaFeaturesCollection.remove({});
+    compareFeatureCollections();
   },
 
   RefreshADS() {
-    FeaturesCollection.remove({});
-    SprintsCollection.remove({});
-    ProjectsCollection.remove({});
-    TeamsCollection.remove({});
-    SyncADS();
+    Collections.FeaturesCollection.remove({});
+    Collections.SprintsCollection.remove({});
+    Collections.ProjectsCollection.remove({});
+    Collections.TeamsCollection.remove({});
+    syncADS();
   }
 });
 
 Meteor.startup(() => {
-  OrgFeaturesCollection.remove({});
-  DeltaFeaturesCollection.remove({});
-  AllocationsCollection.remove({});
-  VelocitiesCollection.remove({});
+  Collections.OrgFeaturesCollection.remove({});
+  Collections.DeltaFeaturesCollection.remove({});
+  Collections.AllocationsCollection.remove({});
+  Collections.VelocitiesCollection.remove({});
 
-  FeaturesCollection.remove({});
-  SprintsCollection.remove({});
-  ProjectsCollection.remove({});
-  TeamsCollection.remove({});
+  Collections.FeaturesCollection.remove({});
+  Collections.SprintsCollection.remove({});
+  Collections.ProjectsCollection.remove({});
+  Collections.TeamsCollection.remove({});
 
-  ServerStatusCollection.remove({});
+  Collections.ServerStatusCollection.remove({});
 
   PopulateCollections();
-  SyncADS();
+  syncADS();
 });

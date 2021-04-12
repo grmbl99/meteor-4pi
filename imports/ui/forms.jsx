@@ -9,10 +9,10 @@ FilterForm.propTypes = {
 };
 
 function FilterForm(props) {
-  const [filtername, setFilterName] = useState('');
+  const [filterName, setFilterName] = useState('');
 
   function handleSubmit(event) {
-    props.onSubmit({filtername: filtername});
+    props.onSubmit({filterName: filterName});
     event.preventDefault();
   }
 
@@ -21,7 +21,7 @@ function FilterForm(props) {
       <form onSubmit={handleSubmit}>
         <div className='filter-grid-container'>
           <label>{props.text}</label>
-          <input className='filter-form-cell' type='text' value={filtername} onChange={(event) => setFilterName(event.target.value)} />
+          <input className='filter-form-cell' type='text' value={filterName} onChange={(event) => setFilterName(event.target.value)} />
           <input className='filter-form-cell' type='submit' value='Submit' />
         </div>
       </form>
