@@ -1,7 +1,7 @@
 import { FeaturesCollection, OrgFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
-         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/Collections';
-import { ServerStatus, SyncStatus } from '/imports/api/Consts';
+         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/collections';
+import { ServerStatus, SyncStatus } from '/imports/api/constants';
 
 function PopulateOrgFeaturesCollection() {
   [

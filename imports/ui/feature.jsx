@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { ProgressBar } from './ProgressBar.jsx';
-import { ItemTypes, DisplayTypes } from '/imports/api/Consts.jsx';
+import { ProgressBar } from './progress-bar';
+import { ItemTypes, DisplayTypes } from '/imports/api/constants';
 
 export { Feature };
 

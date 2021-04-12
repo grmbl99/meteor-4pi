@@ -1,6 +1,6 @@
 import * as vsoNodeApi from 'azure-devops-node-api';
-import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/Collections';
-import { ADSFields, ADSConfig, NOT_SET, ReturnStatus} from '/imports/api/Consts.jsx';
+import { FeaturesCollection, SprintsCollection, TeamsCollection, ProjectsCollection } from '/imports/api/collections';
+import { ADSFields, ADSConfig, NOT_SET, ReturnStatus} from '/imports/api/constants';
 
 async function getTeamsFromADS(witAPI) {
   try {

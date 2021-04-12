@@ -4,12 +4,11 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, DeltaFeaturesCollection, SprintsCollection, TeamsCollection, 
-         ProjectsCollection, AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/Collections';
-import { PiView } from './PiView.jsx';
-import { FilterForm } from './Forms.jsx';
-import { UpdateFeaturePopup } from './Popups.jsx';
-import { NOT_SET } from '/imports/api/Consts.jsx';
-import { ServerStatus, SyncStatus } from '../api/Consts.jsx';
+         ProjectsCollection, AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/collections';
+import { PiView } from './pi-view';
+import { FilterForm } from './forms';
+import { UpdateFeaturePopup } from './popups';
+import { ServerStatus, SyncStatus, NOT_SET } from '/imports/api/constants';
 
 export function App(props) {  
   function moveFeature(featureId,pi,team,project) {

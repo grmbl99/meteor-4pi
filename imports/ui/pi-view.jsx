@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
-import { Feature } from './Feature.jsx';
-import { ProgressBar } from './ProgressBar.jsx';
-import { ItemTypes, DisplayTypes, NOT_SET } from '/imports/api/Consts.jsx';
+import { Feature } from './feature';
+import { ProgressBar } from './progress-bar';
+import { ItemTypes, DisplayTypes, NOT_SET } from '/imports/api/constants';
 
 export { PiView };
 

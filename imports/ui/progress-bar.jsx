@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { NOT_SET } from '/imports/api/Consts.jsx';
+import { NOT_SET } from '/imports/api/constants';
 
 export { ProgressBar };
 

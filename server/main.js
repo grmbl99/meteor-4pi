@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection,
          SprintsCollection, TeamsCollection, ProjectsCollection, 
-         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/Collections';
-import { DisplayTypes, ServerStatus, SyncStatus } from '/imports/api/Consts.jsx';
-import { queryADS } from './query-ads.js';
-import { PopulateCollections } from './populate-collections.js';
+         AllocationsCollection, VelocitiesCollection, ServerStatusCollection } from '/imports/api/collections';
+import { DisplayTypes, ServerStatus, SyncStatus } from '/imports/api/constants';
+import { queryADS } from './query-ads';
+import { PopulateCollections } from './populate-collections';
 
 // compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
 function CompareFeatureCollections() {
