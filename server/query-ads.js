@@ -8,7 +8,7 @@ async function getTeamsFromADS(witAPI) {
     const queryResult = await witAPI.getClassificationNode(Constants.ADSConfig.PROJECT, 'areas', Constants.ADSConfig.AREA_OFFSET,1);
 
     for (const team of queryResult.children) {
-      Collections.TeamsCollection.insert({teamName: team.name});
+      Collections.TeamsCollection.insert({name: team.name});
     }
   } catch(e) {
     console.log('Error in getTeamsFromADS');
@@ -17,7 +17,7 @@ async function getTeamsFromADS(witAPI) {
   return(Constants.ReturnStatus.OK);
 }
 
-async function getSprintsFromADS(witAPI) {
+async function getIterationsFromADS(witAPI) {
   try {
     // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/iterations/systems/safe%20fixed?$depth=2
     const queryResult = await witAPI.getClassificationNode(Constants.ADSConfig.PROJECT, 'iterations', Constants.ADSConfig.ITERATION_OFFSET,2);
@@ -27,12 +27,12 @@ async function getSprintsFromADS(witAPI) {
       if (pi.hasChildren) {
         for (const sprint of pi.children) {
           const startDate = new Date(sprint.attributes.startDate);
-          Collections.SprintsCollection.insert({pi: pi.name, sprintNr: i++, sprintName: sprint.name, startDate: startDate});
+          Collections.IterationsCollection.insert({pi: pi.name, sprintNr: i++, sprint: sprint.name, startDate: startDate});
         }
       }
     }
   } catch(e) {
-    console.log('Error in getSprintsFromADS');
+    console.log('Error in getIterationsFromADS');
     throw(e);
   }
   return(Constants.ReturnStatus.OK);
@@ -60,8 +60,8 @@ async function getFeatureFromADS(witAPI,id) {
       team: teamName, project: projectName
     });
 
-    Collections.ProjectsCollection.upsert({projectName: projectName}, { $set: {projectName: projectName}});
-    Collections.TeamsCollection.upsert({teamName: teamName}, { $set: {teamName: teamName}});
+    Collections.ProjectsCollection.upsert({name: projectName}, { $set: {name: projectName}});
+    Collections.TeamsCollection.upsert({name: teamName}, { $set: {name: teamName}});
   } catch(e) {
     console.log('Error in getFeatureFromADS');
     throw(e);
@@ -86,7 +86,7 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
     }
 
     const sprintName = parts.length>4 ? parts[4] : 'undefined';
-    const sprint = Collections.SprintsCollection.findOne({sprintName: sprintName});
+    const sprint = Collections.IterationsCollection.findOne({sprint: sprintName});
 
     if (sprint) {
       Collections.FeaturesCollection.update(
@@ -194,7 +194,7 @@ export async function QueryADS() {
   const pis=['PI 21.1','PI 21.2','PI 21.3','PI 21.4'];
 
   console.log('getting sprints');
-  await getSprintsFromADS(witAPI);
+  await getIterationsFromADS(witAPI);
   //await getTeamsFromADS(witAPI);
 
   console.log('getting features');

@@ -52,26 +52,26 @@ export function App(props) {
   }
 
   function refreshADS(event) {
-    if (adsSyncState!==Constants.SyncStatus.BUSY) {
+    if (adsSyncStatus!==Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
     }
   }
 
-  function getAllocation(pi,projectName,teamName) {
+  function getAllocation(pi,project,team) {
     let alloc=0;
   
-    if (teamName !== '') {
+    if (team !== '') {
       let teamVelocity=0;
       for (const velocity of velocities) {
-        if(velocity.pi === pi && velocity.teamName === teamName) { 
+        if(velocity.pi === pi && velocity.team === team) { 
           teamVelocity = velocity.velocity;
         }
       }
   
-      if (projectName !== '') {
+      if (project !== '') {
         let teamAllocation=0;
         for (const allocation of allocations) {
-          if(allocation.pi === pi && allocation.projectName === projectName && allocation.teamName === teamName) { 
+          if(allocation.pi === pi && allocation.project === project && allocation.team === team) { 
             teamAllocation = allocation.allocation;
           }
         }
@@ -90,7 +90,7 @@ export function App(props) {
 
   function getFeatures() { return (Collections.FeaturesCollection.find({}).fetch()); }
   function getDeltaFeatures() { return (Collections.DeltaFeaturesCollection.find({}).fetch()); }
-  function getSprints() { return (Collections.SprintsCollection.find({}).fetch()); }
+  function getIterations() { return (Collections.IterationsCollection.find({}).fetch()); }
   function getTeams() { return (Collections.TeamsCollection.find({}).fetch()); }
   function getProjects() { return (Collections.ProjectsCollection.find({}).fetch()); }
   function getAllocations() { return (Collections.AllocationsCollection.find({}).fetch()); }
@@ -99,7 +99,7 @@ export function App(props) {
 
   const features = useTracker(getFeatures);
   const deltaFeatures = useTracker(getDeltaFeatures);
-  const sprints = useTracker(getSprints);
+  const iterations = useTracker(getIterations);
   const teams = useTracker(getTeams);
   const projects = useTracker(getProjects);
   const allocations = useTracker(getAllocations);
@@ -119,12 +119,12 @@ export function App(props) {
     endSprint: ''
   });
 
-  let adsSyncState=Constants.SyncStatus.NONE;
+  let adsSyncStatus=Constants.SyncStatus.NONE;
   let adsSyncDate='';
   for (const status of serverStatus) {
-    if (status.name === Constants.ServerStatus.ADS_SYNC_STATUS) { 
-      adsSyncState=status.status; 
-      adsSyncDate=status.date.toString(); 
+    if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) { 
+      adsSyncStatus=status.value; 
+      adsSyncDate=status.date.toString();
     }
   }
 
@@ -135,17 +135,17 @@ export function App(props) {
   let teamsMenu=[];
   for (const team of teams) {
     const newRef = createRef();
-    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{team.teamName}</div>);
+    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{team.name}</div>);
     teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const allocation = getAllocation(pi,projectFilter,team.teamName);
+      const allocation = getAllocation(pi,projectFilter,team.name);
 
       teamsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} sprints={sprints} 
-        pi={pi} project={projectFilter} team={team.teamName}
+        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} iterations={iterations} 
+        pi={pi} project={projectFilter} team={team.name}
         allocation={allocation}/>
       );
     }
@@ -156,30 +156,30 @@ export function App(props) {
 
   for (const project of projects) {
     const newRef = createRef();
-    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{project.projectName}</div>);
+    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{project.name}</div>);
     projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const allocation = getAllocation(pi,project.projectName,teamFilter);
+      const allocation = getAllocation(pi,project.name,teamFilter);
       
       projectsList.push(<PiView 
         key={key++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} sprints={sprints} 
-        pi={pi} project={project.projectName} team={teamFilter}
+        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} iterations={iterations} 
+        pi={pi} project={project.name} team={teamFilter}
         allocation={allocation}/>
       );
     }
   }
 
-  const loadingClassName = adsSyncState===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
-  const adsSyncClassName = adsSyncState===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+  const loadingClassName = adsSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
+  const adsSyncClassName = adsSyncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
 
   return (
     <div>
       <div className='left'>
         <div className='menu-container'>
-          <div className={adsSyncClassName} onClick={() => {refreshADS();}}>ADS Sync: {adsSyncState}</div>
+          <div className={adsSyncClassName} onClick={() => {refreshADS();}}>ADS Sync: {adsSyncStatus}</div>
           <div className={loadingClassName}>{adsSyncDate}</div>
 
           <div className='menu-heading'>Teams</div>

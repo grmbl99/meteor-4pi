@@ -37,7 +37,7 @@ export const ReturnStatus = {
 };
 
 export const ServerStatus = {
-  ADS_SYNC_STATUS: 'adssyncstatus'
+  ADS_SYNC_STATUS: 'ads-sync-status'
 };
 
 export const SyncStatus = {

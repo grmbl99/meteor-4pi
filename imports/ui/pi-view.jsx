@@ -10,7 +10,7 @@ export { PiView };
 PiView.propTypes = {
   features: PropTypes.array.isRequired,
   deltaFeatures: PropTypes.array.isRequired,
-  sprints: PropTypes.array.isRequired,
+  iterations: PropTypes.array.isRequired,
   onFeatureDropped: PropTypes.func.isRequired,
   onFeatureClicked: PropTypes.func.isRequired,
   pi: PropTypes.string.isRequired,
@@ -21,14 +21,14 @@ PiView.propTypes = {
 };
 
 // calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
-function calcRelFeatureStartAndDuration(feature,dict) {
-  const nrSprints=Object.keys(dict).length;
+function calcRelFeatureStartAndDuration(feature,sprintsDict) {
+  const nrSprints=Object.keys(sprintsDict).length;
 
   let duration=0;
   let start=0;
-  if (feature.startSprint in dict && feature.endSprint in dict) {
-    const startSprint=dict[feature.startSprint];
-    const endSprint=dict[feature.endSprint];
+  if (feature.startSprint in sprintsDict && feature.endSprint in sprintsDict) {
+    const startSprint=sprintsDict[feature.startSprint];
+    const endSprint=sprintsDict[feature.endSprint];
 
     duration=(endSprint-startSprint+1)/nrSprints*100;
     start=startSprint/nrSprints*100;  
@@ -40,7 +40,7 @@ function calcRelFeatureStartAndDuration(feature,dict) {
 function PiView(props) {  
   const features = props.features;
   const deltaFeatures = props.deltaFeatures;
-  const sprints = props.sprints;
+  const iterations = props.iterations;
 
   const [{isOver}, drop] = useDrop(() => ({
     accept: Constants.ItemTypes.FEATURE,
@@ -50,14 +50,14 @@ function PiView(props) {
     })
   }),[props]);
 
-  const dict={};
+  const sprintsDict={};
   const sprintsList=[];
   let sprintNr=0;
-  for (const sprint of sprints) {
-    if (sprint.pi === props.pi) {
-      dict[sprint.sprintName]=sprintNr;
+  for (const iteration of iterations) {
+    if (iteration.pi === props.pi) {
+      sprintsDict[iteration.sprint]=sprintNr;
       sprintNr += 1;
-      sprintsList.push(<Sprint key={sprint._id} name={sprint.sprintName}/>);
+      sprintsList.push(<Sprint key={iteration._id} name={iteration.sprint}/>);
     }
   }
   if (sprintNr===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
@@ -70,7 +70,7 @@ function PiView(props) {
     let orgDuration=Constants.NOT_SET;
     let orgSize=Constants.NOT_SET;
     let orgDone=Constants.NOT_SET;
-    const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
+    const [start,duration]=calcRelFeatureStartAndDuration(feature,sprintsDict);
 
     if (feature.pi === props.pi && 
         (props.team === '' || feature.team === props.team) &&
@@ -86,7 +86,7 @@ function PiView(props) {
               displayType=Constants.DisplayTypes.ADDED;
             }
             if (deltaFeature.type === Constants.DisplayTypes.CHANGED) {
-              [orgStart,orgDuration]=calcRelFeatureStartAndDuration(deltaFeature.feature,dict);
+              [orgStart,orgDuration]=calcRelFeatureStartAndDuration(deltaFeature.feature,sprintsDict);
               orgSize=deltaFeature.feature.size;
               orgDone=deltaFeature.feature.done;
             }
@@ -107,7 +107,7 @@ function PiView(props) {
     for (const deltaFeature of deltaFeatures) {
       if(deltaFeature.type === Constants.DisplayTypes.REMOVED) {
         const feature=deltaFeature.feature;
-        const [start,duration]=calcRelFeatureStartAndDuration(feature,dict);
+        const [start,duration]=calcRelFeatureStartAndDuration(feature,sprintsDict);
 
         if (feature.pi === props.pi && 
             (props.team === '' || feature.team === props.team) &&

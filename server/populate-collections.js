@@ -85,88 +85,88 @@ function populateFeaturesCollection() {
   ].forEach(feature => Collections.FeaturesCollection.insert(feature));
 }
 
-function populateSprintsCollection() { 
+function populateIterationsCollection() { 
   [
-    {pi: 'PI 21.1', sprintName: '2109'},
-    {pi: 'PI 21.1', sprintName: '2111'},
-    {pi: 'PI 21.1', sprintName: '2113'},
-    {pi: 'PI 21.1', sprintName: '2115'},
-    {pi: 'PI 21.1', sprintName: '2117'},
-    {pi: 'PI 21.1', sprintName: '2119'},
-    {pi: 'PI 21.1', sprintName: 'IP 21.1'},
-    {pi: 'PI 21.2', sprintName: '2123'},
-    {pi: 'PI 21.2', sprintName: '2125'},
-    {pi: 'PI 21.2', sprintName: '2127'},
-    {pi: 'PI 21.2', sprintName: '2129'},
-    {pi: 'PI 21.2', sprintName: 'IP 21.2'},
-    {pi: 'PI 21.3', sprintName: '2133'},
-    {pi: 'PI 21.3', sprintName: '2135'},
-    {pi: 'PI 21.3', sprintName: '2137'},
-    {pi: 'PI 21.3', sprintName: '2139'},
-    {pi: 'PI 21.3', sprintName: '2141'},
-    {pi: 'PI 21.3', sprintName: '2143'},
-    {pi: 'PI 21.3', sprintName: 'IP 21.3'},
-    // {pi: 'PI 21.4', sprintName: '2147'},
-    // {pi: 'PI 21.4', sprintName: '2149'},
-    // {pi: 'PI 21.4', sprintName: '2151'},
-    // {pi: 'PI 21.4', sprintName: '2201'},
-    // {pi: 'PI 21.4', sprintName: '2203'},
-    // {pi: 'PI 21.4', sprintName: '2205'},
-    // {pi: 'PI 21.4', sprintName: 'IP 21.4'}
-  ].forEach(sprint => Collections.SprintsCollection.insert(sprint));
+    {pi: 'PI 21.1', sprint: '2109'},
+    {pi: 'PI 21.1', sprint: '2111'},
+    {pi: 'PI 21.1', sprint: '2113'},
+    {pi: 'PI 21.1', sprint: '2115'},
+    {pi: 'PI 21.1', sprint: '2117'},
+    {pi: 'PI 21.1', sprint: '2119'},
+    {pi: 'PI 21.1', sprint: 'IP 21.1'},
+    {pi: 'PI 21.2', sprint: '2123'},
+    {pi: 'PI 21.2', sprint: '2125'},
+    {pi: 'PI 21.2', sprint: '2127'},
+    {pi: 'PI 21.2', sprint: '2129'},
+    {pi: 'PI 21.2', sprint: 'IP 21.2'},
+    {pi: 'PI 21.3', sprint: '2133'},
+    {pi: 'PI 21.3', sprint: '2135'},
+    {pi: 'PI 21.3', sprint: '2137'},
+    {pi: 'PI 21.3', sprint: '2139'},
+    {pi: 'PI 21.3', sprint: '2141'},
+    {pi: 'PI 21.3', sprint: '2143'},
+    {pi: 'PI 21.3', sprint: 'IP 21.3'},
+    // {pi: 'PI 21.4', sprint: '2147'},
+    // {pi: 'PI 21.4', sprint: '2149'},
+    // {pi: 'PI 21.4', sprint: '2151'},
+    // {pi: 'PI 21.4', sprint: '2201'},
+    // {pi: 'PI 21.4', sprint: '2203'},
+    // {pi: 'PI 21.4', sprint: '2205'},
+    // {pi: 'PI 21.4', sprint: 'IP 21.4'}
+  ].forEach(iteration => Collections.IterationsCollection.insert(iteration));
 }
 
 function populateTeamsCollection() { 
   [
-    {teamName: 'pegasus'},
-    {teamName: 'mushu'},
-    {teamName: 'hades'},
-    {teamName: 'hercules'}
+    {name: 'pegasus'},
+    {name: 'mushu'},
+    {name: 'hades'},
+    {name: 'hercules'}
   ].forEach(team => Collections.TeamsCollection.insert(team));
 }
 
 function populateProjectsCollection() { 
   [
-    {projectName: 'tiger'},
-    {projectName: 'puma'},
-    {projectName: 'voip'},
-    {projectName: 'bobcat'}
+    {name: 'tiger'},
+    {name: 'puma'},
+    {name: 'voip'},
+    {name: 'bobcat'}
   ].forEach(project => Collections.ProjectsCollection.insert(project));
 }
 
 function populateAllocationsCollection() { 
   [
-    {teamName: 'pegasus', projectName: 'tiger', pi: 'PI 21.1', allocation: 10},
-    {teamName: 'mushu', projectName: 'puma', pi: 'PI 21.1', allocation: 80},
-    {teamName: 'hades', projectName: 'voip', pi: 'PI 21.1', allocation: 70},
-    {teamName: 'hercules', projectName: 'bobcat', pi: 'PI 21.1', allocation: 20},
-    {teamName: 'pegasus', projectName: 'tiger', pi: 'PI 21.2', allocation: 10},
-    {teamName: 'mushu', projectName: 'puma', pi: 'PI 21.2', allocation: 80},
-    {teamName: 'hades', projectName: 'voip', pi: 'PI 21.2', allocation: 70},
-    {teamName: 'hercules', projectName: 'bobcat', pi: 'PI 21.2', allocation: 20}
+    {team: 'pegasus', project: 'tiger', pi: 'PI 21.1', allocation: 10},
+    {team: 'mushu', project: 'puma', pi: 'PI 21.1', allocation: 80},
+    {team: 'hades', project: 'voip', pi: 'PI 21.1', allocation: 70},
+    {team: 'hercules', project: 'bobcat', pi: 'PI 21.1', allocation: 20},
+    {team: 'pegasus', project: 'tiger', pi: 'PI 21.2', allocation: 10},
+    {team: 'mushu', project: 'puma', pi: 'PI 21.2', allocation: 80},
+    {team: 'hades', project: 'voip', pi: 'PI 21.2', allocation: 70},
+    {team: 'hercules', project: 'bobcat', pi: 'PI 21.2', allocation: 20}
   ].forEach(allocation => Collections.AllocationsCollection.insert(allocation));      
 }
 
 function populateVelocitiesCollection() { 
   [
-    {teamName: 'pegasus', pi: 'PI 21.1', velocity: 75},
-    {teamName: 'mushu', pi: 'PI 21.1', velocity: 60},
-    {teamName: 'hades', pi: 'PI 21.1', velocity: 80},
-    {teamName: 'hercules', pi: 'PI 21.1', velocity: 60},
-    {teamName: 'pegasus', pi: 'PI 21.2', velocity: 75},
-    {teamName: 'mushu', pi: 'PI 21.2', velocity: 60},
-    {teamName: 'hades', pi: 'PI 21.2', velocity: 80},
-    {teamName: 'hercules', pi: 'PI 21.2', velocity: 60},
-    {teamName: 'pegasus', pi: 'PI 21.3', velocity: 75},
-    {teamName: 'mushu', pi: 'PI 21.3', velocity: 60},
-    {teamName: 'hades', pi: 'PI 21.3', velocity: 80},
-    {teamName: 'hercules', pi: 'PI 21.3', velocity: 60} 
+    {team: 'pegasus', pi: 'PI 21.1', velocity: 75},
+    {team: 'mushu', pi: 'PI 21.1', velocity: 60},
+    {team: 'hades', pi: 'PI 21.1', velocity: 80},
+    {team: 'hercules', pi: 'PI 21.1', velocity: 60},
+    {team: 'pegasus', pi: 'PI 21.2', velocity: 75},
+    {team: 'mushu', pi: 'PI 21.2', velocity: 60},
+    {team: 'hades', pi: 'PI 21.2', velocity: 80},
+    {team: 'hercules', pi: 'PI 21.2', velocity: 60},
+    {team: 'pegasus', pi: 'PI 21.3', velocity: 75},
+    {team: 'mushu', pi: 'PI 21.3', velocity: 60},
+    {team: 'hades', pi: 'PI 21.3', velocity: 80},
+    {team: 'hercules', pi: 'PI 21.3', velocity: 60} 
   ].forEach(velocity => Collections.VelocitiesCollection.insert(velocity));      
 }
 
 function populateServerStatusCollection() { 
   [
-    {name: ServerStatus.ADS_SYNC_STATUS, status: SyncStatus.NONE, date: ''}
+    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: ''}
   ].forEach(status => Collections.ServerStatusCollection.insert(status));
 }
 
@@ -174,7 +174,7 @@ export function PopulateCollections() {
   if (Collections.OrgFeaturesCollection.find().count() === 0) { populateOrgFeaturesCollection(); }  
 
   // if (Collections.FeaturesCollection.find().count() === 0) { populateFeaturesCollection(); }
-  // if (Collections.SprintsCollection.find().count() === 0) { populateSprintsCollection(); }
+  // if (Collections.IterationsCollection.find().count() === 0) { populateIterationsCollection(); }
   // if (Collections.TeamsCollection.find().count() === 0) { populateTeamsCollection(); }
   // if (Collections.ProjectsCollection.find().count() === 0) { populateProjectsCollection();}
 

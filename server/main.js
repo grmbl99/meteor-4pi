@@ -37,22 +37,22 @@ function compareFeatureCollections() {
 function syncADS() {
   console.log('query ADS');
   Collections.ServerStatusCollection.update(
-    { name: Constants.ServerStatus.ADS_SYNC_STATUS },
-    { $set: { status: Constants.SyncStatus.BUSY, date: '' } }
+    { key: Constants.ServerStatus.ADS_SYNC_STATUS },
+    { $set: { value: Constants.SyncStatus.BUSY, date: '' } }
   );
 
   QueryADS().then(() => { 
     console.log('queryADS succeeded'); 
     const date = new Date();
     Collections.ServerStatusCollection.update(
-      { name: Constants.ServerStatus.ADS_SYNC_STATUS },
-      { $set: { status: Constants.SyncStatus.OK, date: date }}
+      { key: Constants.ServerStatus.ADS_SYNC_STATUS },
+      { $set: { value: Constants.SyncStatus.OK, date: date }}
     );
   }).catch((e) => { 
     console.log('queryADS failed: ' + e); 
     Collections.ServerStatusCollection.update(
-      { name: Constants.ServerStatus.ADS_SYNC_STATUS },
-      { $set: { status: Constants.SyncStatus.FAILED, date: '' }}
+      { key: Constants.ServerStatus.ADS_SYNC_STATUS },
+      { $set: { value: Constants.SyncStatus.FAILED, date: '' }}
     );
   });
 }
@@ -65,7 +65,7 @@ Meteor.methods({
 
   RefreshADS() {
     Collections.FeaturesCollection.remove({});
-    Collections.SprintsCollection.remove({});
+    Collections.IterationsCollection.remove({});
     Collections.ProjectsCollection.remove({});
     Collections.TeamsCollection.remove({});
     syncADS();
@@ -79,7 +79,7 @@ Meteor.startup(() => {
   Collections.VelocitiesCollection.remove({});
 
   Collections.FeaturesCollection.remove({});
-  Collections.SprintsCollection.remove({});
+  Collections.IterationsCollection.remove({});
   Collections.ProjectsCollection.remove({});
   Collections.TeamsCollection.remove({});
 
