@@ -21,6 +21,7 @@ Feature.propTypes = {
 function Feature(props) {
   const feature=props.feature;
 
+  // feature drag-and-drop logic
   const [{isDragging}, drag] = useDrag(() => ({
     type: Constants.ItemTypes.FEATURE,
     item: { id: feature._id },
@@ -29,10 +30,12 @@ function Feature(props) {
     })
   }));
 
+  // style the feature based on DisplayType
   let featureClassName='feature';
   if (props.displayType === Constants.DisplayTypes.ADDED) { featureClassName += ' feature-added'; }
   else if (props.displayType === Constants.DisplayTypes.REMOVED) { featureClassName += ' feature-removed'; }
 
+  // truncate feature name
   const maxLength=60;
   const trimmedName = feature.name.length > maxLength ? feature.name.substring(0, maxLength - 3) + '...' : feature.name;
 

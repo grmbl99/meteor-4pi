@@ -42,6 +42,7 @@ function PiView(props) {
   const deltaFeatures = props.deltaFeatures;
   const iterations = props.iterations;
 
+  // feature drag and drop logic
   const [{isOver}, drop] = useDrop(() => ({
     accept: Constants.ItemTypes.FEATURE,
     drop: (item) => { props.onFeatureDropped(item.id,props.pi,props.team,props.project); },
@@ -50,8 +51,8 @@ function PiView(props) {
     })
   }),[props]);
 
-  const sprintsDict={};
-  const sprintsList=[];
+  const sprintsDict={}; // to hold the sequence number per sprint 
+  const sprintsList=[]; // list of Sprint objects
   let sprintNr=0;
   for (const iteration of iterations) {
     if (iteration.pi === props.pi) {
@@ -64,7 +65,7 @@ function PiView(props) {
 
   let size=0;
   let done=0;
-  const featuresList=[];
+  const featuresList=[]; // list of Feature objects
   for (const feature of features) {
     let orgStart=Constants.NOT_SET;
     let orgDuration=Constants.NOT_SET;
@@ -78,6 +79,8 @@ function PiView(props) {
       size += feature.size;
       done += feature.done;
 
+      // check if this feature is in the delta-features collection; 
+      // if so, set additional attributes to show delta's
       let displayType=Constants.DisplayTypes.NORMAL;
       if (props.compareModeOn) {
         for (const deltaFeature of deltaFeatures) {
@@ -103,6 +106,7 @@ function PiView(props) {
     }
   }
 
+  // also add all relevant 'removed' features from the delta-features collection
   if(props.compareModeOn) {
     for (const deltaFeature of deltaFeatures) {
       if(deltaFeature.type === Constants.DisplayTypes.REMOVED) {

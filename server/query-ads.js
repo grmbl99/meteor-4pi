@@ -56,7 +56,7 @@ async function getFeatureFromADS(witAPI,id) {
 
     Collections.FeaturesCollection.insert({
       id: id, name: name, pi: pi, size: size, done: 0, 
-      startSprintNr: 9999, endSprintNr: Constants.NOT_SET, 
+      startSprintNr: Constants.START_SPRINT_NOT_SET, endSprintNr: Constants.NOT_SET, 
       team: teamName, project: projectName
     });
 
@@ -71,7 +71,8 @@ async function getFeatureFromADS(witAPI,id) {
 
 async function getStoryFromADS(witAPI,storyId,featureId) {
   try {
-    const queryResult = await witAPI.getWorkItem(storyId,[Constants.ADSFields.ITERATION_PATH, Constants.ADSFields.EFFORT, Constants.ADSFields.STATE]);
+    const queryResult = await witAPI.getWorkItem(storyId,[
+      Constants.ADSFields.ITERATION_PATH, Constants.ADSFields.EFFORT, Constants.ADSFields.STATE]);
 
     const state=queryResult.fields[Constants.ADSFields.STATE];
     const effort=queryResult.fields[Constants.ADSFields.EFFORT];
@@ -79,8 +80,10 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
 
     if (effort>0) {
       if (state===Constants.ADSFields.DONE) {
+        // adds storypoints for 'done' stories
         Collections.FeaturesCollection.update({id: featureId},{ $inc: { done: effort }});
       } else {
+        // could be used to compare total storypoint count with feature size
         // FeaturesCollection.update({id: featureId},{ $inc: {size: effort }});
       }
     }
@@ -88,6 +91,7 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
     const sprintName = parts.length>4 ? parts[4] : 'undefined';
     const sprint = Collections.IterationsCollection.findOne({sprint: sprintName});
 
+    // set startSprint/endSprint in feature to first and last sprint of child stories
     if (sprint) {
       Collections.FeaturesCollection.update(
         {id: featureId, startSprintNr: { $gt: sprint.sprintNr} },
@@ -136,6 +140,8 @@ async function getStoriesFromADS(witAPI, pis) {
     const teamContext = { project: Constants.ADSConfig.PROJECT };
     const queryResult = await witAPI.queryByWiql(query, teamContext);  
 
+    // the ADS query just returns workitem id's
+    // get the actual workitem content in parallel (async), wait for all to finish before continueing
     let p = [];
     for (const workItemLink of queryResult.workItemRelations) {
       if (workItemLink.rel==='System.LinkTypes.Hierarchy-Forward') {
@@ -173,6 +179,8 @@ async function getFeaturesFromADS(witAPI, pis) {
     const teamContext = { project: Constants.ADSConfig.PROJECT };
     const queryResult = await witAPI.queryByWiql(query, teamContext);  
 
+    // the ADS query just returns workitem id's
+    // get the actual workitem content in parallel (async), wait for all to finish before continueing
     let p = [];
     for (const workItem of queryResult.workItems) {
       p.push(getFeatureFromADS(witAPI,workItem.id));
@@ -195,7 +203,9 @@ export async function QueryADS() {
 
   console.log('getting sprints');
   await getIterationsFromADS(witAPI);
-  //await getTeamsFromADS(witAPI);
+
+  // currently not used, getting teams from workitems (features)
+  // await getTeamsFromADS(witAPI);
 
   console.log('getting features');
   await getFeaturesFromADS(witAPI, pis);

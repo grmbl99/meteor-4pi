@@ -10,6 +10,8 @@ import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
 
 export function App(props) {  
+  // move a feature between teams/projects/pi's
+  // (exectued using drag-and-drop)
   function moveFeature(featureId,pi,team,project) {
     if(!compareModeOn) {
       let updates = { 'pi': pi };
@@ -20,6 +22,8 @@ export function App(props) {
     }
   }
   
+  // store updated feature
+  // executed when closing the feature-update modal dialog
   function updateFeature(input) {
     setShowPopup(false);
     Collections.FeaturesCollection.update(
@@ -34,7 +38,9 @@ export function App(props) {
       }}
     );
   }
-  
+
+  // show feature-update modal dialog
+  // executed when clicking on a feature
   function editFeature(feature) {
     if (!compareModeOn) {
       setSelectedFeature(feature);
@@ -42,6 +48,7 @@ export function App(props) {
     }
   }
 
+  // call method on server to update delta's
   function toggleCompareMode(event) {
     if (!compareModeOn) {
       setCompareModeOn(true);
@@ -51,6 +58,7 @@ export function App(props) {
     }
   }
 
+  // call method on server to refresh data from ADS
   function refreshADS(event) {
     if (adsSyncStatus!==Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
@@ -88,37 +96,26 @@ export function App(props) {
     return(alloc);
   }
 
-  function getFeatures() { return (Collections.FeaturesCollection.find({}).fetch()); }
-  function getDeltaFeatures() { return (Collections.DeltaFeaturesCollection.find({}).fetch()); }
-  function getIterations() { return (Collections.IterationsCollection.find({}).fetch()); }
-  function getTeams() { return (Collections.TeamsCollection.find({}).fetch()); }
-  function getProjects() { return (Collections.ProjectsCollection.find({}).fetch()); }
-  function getAllocations() { return (Collections.AllocationsCollection.find({}).fetch()); }
-  function getVelocities() { return (Collections.VelocitiesCollection.find({}).fetch()); }
-  function getServerStatus() { return (Collections.ServerStatusCollection.find({}).fetch()); }
+  // useTracker to get react state tracking on meteor/mongo collections 
+  const features = useTracker(() => Collections.FeaturesCollection.find({}).fetch());
+  const deltaFeatures = useTracker(() => Collections.DeltaFeaturesCollection.find({}).fetch());
+  const iterations = useTracker(() => Collections.IterationsCollection.find({}).fetch());
+  const teams = useTracker(() => Collections.TeamsCollection.find({}).fetch());
+  const projects = useTracker(() => Collections.ProjectsCollection.find({}).fetch());
+  const allocations = useTracker(() => Collections.AllocationsCollection.find({}).fetch());
+  const velocities = useTracker(() => Collections.VelocitiesCollection.find({}).fetch());
+  const serverStatus = useTracker(() => Collections.ServerStatusCollection.find({}).fetch());
 
-  const features = useTracker(getFeatures);
-  const deltaFeatures = useTracker(getDeltaFeatures);
-  const iterations = useTracker(getIterations);
-  const teams = useTracker(getTeams);
-  const projects = useTracker(getProjects);
-  const allocations = useTracker(getAllocations);
-  const velocities = useTracker(getVelocities);
-  const serverStatus = useTracker(getServerStatus);
-
+  // react state
   const [teamFilter, setTeamFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [compareModeOn, setCompareModeOn] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState({
-    name: '',
-    pi: '',
-    size: '',
-    done: '',
-    startSprint: '',
-    endSprint: ''
+    name: '', pi: '', size: '', done: '', startSprint: '', endSprint: ''
   });
 
+  // get the azure sync status from server
   let adsSyncStatus=Constants.SyncStatus.NONE;
   let adsSyncDate='';
   for (const status of serverStatus) {
@@ -128,21 +125,22 @@ export function App(props) {
     }
   }
 
-  let key=0;
   let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
 
-  let teamsList=[];
-  let teamsMenu=[];
+  let menuEntryKey=0;
+  let teamsList=[]; // set of PIView's per team
+  let teamsMenu=[]; // used as navigation buttons on left-side of screen
+
   for (const team of teams) {
     const newRef = createRef();
-    teamsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{team.name}</div>);
-    teamsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
+    teamsMenu.push(<div className='menu-item' key={menuEntryKey} onClick={() => {newRef.current.scrollIntoView();}}>{team.name}</div>);
+    teamsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
     for (const pi of pis) {
       const allocation = getAllocation(pi,projectFilter,team.name);
 
       teamsList.push(<PiView 
-        key={key++} 
+        key={menuEntryKey++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
         features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} iterations={iterations} 
         pi={pi} project={projectFilter} team={team.name}
@@ -151,19 +149,19 @@ export function App(props) {
     }
   }
 
-  let projectsList=[];
-  let projectsMenu=[];
+  let projectsList=[]; // set of PIView's per project
+  let projectsMenu=[]; // used as navigation buttons on left-side of screen
 
   for (const project of projects) {
     const newRef = createRef();
-    projectsMenu.push(<div className='menu-item' key={key} onClick={() => {newRef.current.scrollIntoView();}}>{project.name}</div>);
-    projectsList.push(<div ref={newRef} key={key++} className='new-row'></div>);
+    projectsMenu.push(<div className='menu-item' key={menuEntryKey} onClick={() => {newRef.current.scrollIntoView();}}>{project.name}</div>);
+    projectsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
     for (const pi of pis) {
       const allocation = getAllocation(pi,project.name,teamFilter);
       
       projectsList.push(<PiView 
-        key={key++} 
+        key={menuEntryKey++} 
         onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
         features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} iterations={iterations} 
         pi={pi} project={project.name} team={teamFilter}
@@ -172,6 +170,7 @@ export function App(props) {
     }
   }
 
+  // to show/hide 'loading' indicator
   const loadingClassName = adsSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
   const adsSyncClassName = adsSyncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
 

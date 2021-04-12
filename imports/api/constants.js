@@ -1,7 +1,9 @@
+// for use with react-dnd drag and drop
 export const ItemTypes = {
   FEATURE: 'feature'
 };
 
+// to specify how to display a feature (in compare-view)
 export const DisplayTypes = {
   NORMAL: 'normal',
   ADDED: 'added',
@@ -10,7 +12,9 @@ export const DisplayTypes = {
 };
 
 export const NOT_SET = -1;
+export const START_SPRINT_NOT_SET = 9999;
 
+// fields used in Azure WIQL queries
 export const ADSFields = {
   TITLE: 'System.Title',
   NODENAME: 'System.NodeName',
@@ -21,6 +25,7 @@ export const ADSFields = {
   DONE: 'Done'
 };
 
+// Azure instance specific information
 export const ADSConfig = {
   PROJECT: 'IGT',
   URL: 'https://tfsemea1.ta.philips.com/tfs/TPC_Region22/',
@@ -31,15 +36,18 @@ export const ADSConfig = {
   ITERATION_OFFSET_WIQL: '\\Systems\\SAFe Fixed'
 };
 
+// return status for async (future/promise) functions
 export const ReturnStatus = {
   OK: true,
   NOT_OK: false
 };
 
+// keys for the ServerStatusCollection
 export const ServerStatus = {
   ADS_SYNC_STATUS: 'ads-sync-status'
 };
 
+// status of the Azure synchronization
 export const SyncStatus = {
   OK: 'ok',
   FAILED: 'failed',

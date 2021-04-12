@@ -170,15 +170,15 @@ function populateServerStatusCollection() {
   ].forEach(status => Collections.ServerStatusCollection.insert(status));
 }
 
-export function PopulateCollections() {         
+export function PopulateCollections() {    
   if (Collections.OrgFeaturesCollection.find().count() === 0) { populateOrgFeaturesCollection(); }  
+  if (Collections.AllocationsCollection.find().count() === 0) { populateAllocationsCollection(); }
+  if (Collections.VelocitiesCollection.find().count() === 0) { populateVelocitiesCollection(); }
+  if (Collections.ServerStatusCollection.find().count() === 0) { populateServerStatusCollection(); }
 
+  // these collections are now populated from ADS
   // if (Collections.FeaturesCollection.find().count() === 0) { populateFeaturesCollection(); }
   // if (Collections.IterationsCollection.find().count() === 0) { populateIterationsCollection(); }
   // if (Collections.TeamsCollection.find().count() === 0) { populateTeamsCollection(); }
   // if (Collections.ProjectsCollection.find().count() === 0) { populateProjectsCollection();}
-
-  if (Collections.AllocationsCollection.find().count() === 0) { populateAllocationsCollection(); }
-  if (Collections.VelocitiesCollection.find().count() === 0) { populateVelocitiesCollection(); }
-  if (Collections.ServerStatusCollection.find().count() === 0) { populateServerStatusCollection(); }
 }

@@ -34,56 +34,59 @@ function compareFeatureCollections() {
   }
 }
 
+function setServerStatus(key,value,date) {
+  Collections.ServerStatusCollection.update(
+    { key: key },
+    { $set: { value: value, date: date } }
+  );
+}
+
 function syncADS() {
   console.log('query ADS');
-  Collections.ServerStatusCollection.update(
-    { key: Constants.ServerStatus.ADS_SYNC_STATUS },
-    { $set: { value: Constants.SyncStatus.BUSY, date: '' } }
-  );
+  setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.BUSY, '');
 
+  // QueryADS is an async function (promise), so handle result/exceptions in then/catch
   QueryADS().then(() => { 
     console.log('queryADS succeeded'); 
     const date = new Date();
-    Collections.ServerStatusCollection.update(
-      { key: Constants.ServerStatus.ADS_SYNC_STATUS },
-      { $set: { value: Constants.SyncStatus.OK, date: date }}
-    );
+    setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.OK, date);    
   }).catch((e) => { 
     console.log('queryADS failed: ' + e); 
-    Collections.ServerStatusCollection.update(
-      { key: Constants.ServerStatus.ADS_SYNC_STATUS },
-      { $set: { value: Constants.SyncStatus.FAILED, date: '' }}
-    );
+    setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.FAILED, '');    
   });
 }
 
+// Meteor methods, called from clients
 Meteor.methods({
+
   UpdateDeltaFeatureCollection() {
     Collections.DeltaFeaturesCollection.remove({});
     compareFeatureCollections();
   },
 
   RefreshADS() {
-    Collections.FeaturesCollection.remove({});
-    Collections.IterationsCollection.remove({});
-    Collections.ProjectsCollection.remove({});
-    Collections.TeamsCollection.remove({});
+    [ Collections.FeaturesCollection,
+      Collections.IterationsCollection,
+      Collections.ProjectsCollection,
+      Collections.TeamsCollection
+    ].forEach(collection => collection.remove({}));
+
     syncADS();
   }
 });
 
+// Runs when the server is started
 Meteor.startup(() => {
-  Collections.OrgFeaturesCollection.remove({});
-  Collections.DeltaFeaturesCollection.remove({});
-  Collections.AllocationsCollection.remove({});
-  Collections.VelocitiesCollection.remove({});
-
-  Collections.FeaturesCollection.remove({});
-  Collections.IterationsCollection.remove({});
-  Collections.ProjectsCollection.remove({});
-  Collections.TeamsCollection.remove({});
-
-  Collections.ServerStatusCollection.remove({});
+  [ Collections.OrgFeaturesCollection, 
+    Collections.DeltaFeaturesCollection,
+    Collections.AllocationsCollection,
+    Collections.VelocitiesCollection,
+    Collections.FeaturesCollection,
+    Collections.IterationsCollection,
+    Collections.ProjectsCollection,
+    Collections.TeamsCollection,
+    Collections.ServerStatusCollection
+  ].forEach(collection => collection.remove({}));
 
   PopulateCollections();
   syncADS();

@@ -21,6 +21,7 @@ function ProgressBar(props) {
   const perctDone = props.size>0 ? props.done/props.size : 0;
   const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone);
 
+  // determine whether to display the 'percentage-done' delta-bar
   let orgPerctDoneStr='';
   let diffPerctDoneClassName='display-none';
 
@@ -32,6 +33,7 @@ function ProgressBar(props) {
     }  
   }
 
+  // determine whether to display the 'start-end' delta-bar
   let diffStartEndClassName='display-none';
 
   if (props.orgStart!==Constants.NOT_SET && props.orgWidth!==Constants.NOT_SET &&

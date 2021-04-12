@@ -20,12 +20,15 @@ function UpdateFeaturePopup(props) {
   const [endSprint, setEndSprint] = useState('');
 
   if (props.feature) {
-    useEffect(() => { setName(props.feature.name); },[props]);
-    useEffect(() => { setSize(props.feature.size); },[props]);
-    useEffect(() => { setPi(props.feature.pi); },[props]);
-    useEffect(() => { setDone(props.feature.done); },[props]);
-    useEffect(() => { setStartSprint(props.feature.startSprint); },[props]);
-    useEffect(() => { setEndSprint(props.feature.endSprint); },[props]);  
+    // fill the components 'state' with the prop content upon render
+    useEffect(() => { 
+      setName(props.feature.name); 
+      setSize(props.feature.size);
+      setPi(props.feature.pi);
+      setDone(props.feature.done);
+      setStartSprint(props.feature.startSprint);
+      setEndSprint(props.feature.endSprint);
+    },[props]);
   }
 
   function handleSubmit(event) {
