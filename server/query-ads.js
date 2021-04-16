@@ -44,20 +44,22 @@ async function getFeatureFromADS(witAPI,id) {
       Constants.ADSFields.TITLE, Constants.ADSFields.NODENAME, Constants.ADSFields.ITERATION_PATH, 
       Constants.ADSFields.EFFORT, Constants.ADSFields.RELEASE]);
 
-    let pi=queryResult.fields[Constants.ADSFields.ITERATION_PATH];
     let projectName=queryResult.fields[Constants.ADSFields.RELEASE];
     let teamName=queryResult.fields[Constants.ADSFields.NODENAME];
+    const parts=queryResult.fields[Constants.ADSFields.ITERATION_PATH].split('\\');
     const name=queryResult.fields[Constants.ADSFields.TITLE];
     const size=queryResult.fields[Constants.ADSFields.EFFORT];
 
-    pi = pi ? pi.split('\\')[3] : 'undefined';
     projectName = projectName ? projectName.toLowerCase() : 'undefined';
     teamName = teamName ? teamName.toLowerCase() : 'undefined';
+
+    const pi = parts.length>3 ? parts[3] : 'undefined';
+    const sprintName = parts.length>4 ? parts[4] : 'undefined';
 
     Collections.FeaturesCollection.insert({
       id: id, name: name, pi: pi, size: size, done: 0, 
       startSprintNr: Constants.START_SPRINT_NOT_SET, endSprintNr: Constants.NOT_SET, 
-      team: teamName, project: projectName
+      team: teamName, project: projectName, featureEndSprint: sprintName, storySize: 0
     });
 
     Collections.ProjectsCollection.upsert({name: projectName}, { $set: {name: projectName}});
@@ -79,12 +81,12 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
     const parts=queryResult.fields[Constants.ADSFields.ITERATION_PATH].split('\\');
 
     if (effort>0) {
+      // adds storypoints to storySize
+      Collections.FeaturesCollection.update({id: featureId},{ $inc: { storySize: effort }});
+
       if (state===Constants.ADSFields.DONE) {
         // adds storypoints for 'done' stories
         Collections.FeaturesCollection.update({id: featureId},{ $inc: { done: effort }});
-      } else {
-        // could be used to compare total storypoint count with feature size
-        // FeaturesCollection.update({id: featureId},{ $inc: {size: effort }});
       }
     }
 
