@@ -145,9 +145,10 @@ function PiView(props) {
         {sprintsList}
       </div>
       <div className='pi-progress'>
-        <ProgressBar className='pi-progress-bar' 
-                     fillStyle='pi-progress-bar-fill' 
-                     start={0} width={100} size={size} done={done}/>
+        <div className='pi-progress-bar'>
+        <ProgressBar start={0} duration={100} duration2={Constants.NOT_SET} size={size} done={done}
+                     orgStart={Constants.NOT_SET} orgDuration={Constants.NOT_SET} orgSize={Constants.NOT_SET}/>
+        </div>
       </div>
       {featuresList}
     </div>

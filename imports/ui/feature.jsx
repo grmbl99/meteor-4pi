@@ -50,11 +50,12 @@ function Feature(props) {
       }}
     >
       <div className='feature-name'>{feature.id} {trimmedName}</div>
-      <ProgressBar className='feature-progress-bar' 
-                   fillStyle='feature-progress-bar-fill' 
-                   start={props.start} width={props.duration} size={feature.size} done={feature.done}
-                   orgstart={props.orgStart} orgwidth={props.orgDuration}
-                   orgsize={props.orgSize} orgdone={props.orgDone}/>
+      <div className='feature-progress-bar'>
+        <ProgressBar start={props.start} duration={props.duration} duration2={Constants.NOT_SET}
+                    size={feature.size} done={feature.done}
+                    orgStart={props.orgStart} orgDuration={props.orgDuration}
+                    orgSize={props.orgSize}/>
+      </div>
     </div>
   );
 }
