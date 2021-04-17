@@ -172,14 +172,19 @@ function populateServerStatusCollection() {
 }
 
 export function PopulateCollections() {    
-  if (Collections.OrgFeaturesCollection.find().count() === 0) { populateOrgFeaturesCollection(); }  
+  [ Collections.AllocationsCollection,
+    Collections.VelocitiesCollection,
+    Collections.ServerStatusCollection
+  ].forEach(collection => collection.remove({}));
+
   if (Collections.AllocationsCollection.find().count() === 0) { populateAllocationsCollection(); }
   if (Collections.VelocitiesCollection.find().count() === 0) { populateVelocitiesCollection(); }
   if (Collections.ServerStatusCollection.find().count() === 0) { populateServerStatusCollection(); }
 
   // these collections are now populated from ADS
-  if (Collections.FeaturesCollection.find().count() === 0) { populateFeaturesCollection(); }
-  if (Collections.IterationsCollection.find().count() === 0) { populateIterationsCollection(); }
-  if (Collections.TeamsCollection.find().count() === 0) { populateTeamsCollection(); }
-  if (Collections.ProjectsCollection.find().count() === 0) { populateProjectsCollection();}
+  // if (Collections.FeaturesCollection.find().count() === 0) { populateFeaturesCollection(); }
+  // if (Collections.IterationsCollection.find().count() === 0) { populateIterationsCollection(); }
+  // if (Collections.TeamsCollection.find().count() === 0) { populateTeamsCollection(); }
+  // if (Collections.ProjectsCollection.find().count() === 0) { populateProjectsCollection();}
+  // if (Collections.OrgFeaturesCollection.find().count() === 0) { populateOrgFeaturesCollection(); }  
 }

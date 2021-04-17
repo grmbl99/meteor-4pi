@@ -38,11 +38,11 @@ async function getIterationsFromADS(witAPI) {
   return(Constants.ReturnStatus.OK);
 }
 
-async function getFeatureFromADS(witAPI,id) {
+async function getFeatureFromADS(witAPI,id,asOfDate) {
   try {
     const queryResult = await witAPI.getWorkItem(id,[
       Constants.ADSFields.TITLE, Constants.ADSFields.NODENAME, Constants.ADSFields.ITERATION_PATH, 
-      Constants.ADSFields.EFFORT, Constants.ADSFields.RELEASE]);
+      Constants.ADSFields.EFFORT, Constants.ADSFields.RELEASE],asOfDate);
 
     let projectName=queryResult.fields[Constants.ADSFields.RELEASE];
     let teamName=queryResult.fields[Constants.ADSFields.NODENAME];
@@ -56,7 +56,8 @@ async function getFeatureFromADS(witAPI,id) {
     const pi = parts.length>3 ? parts[3] : 'undefined';
     const sprintName = parts.length>4 ? parts[4] : 'undefined';
 
-    Collections.FeaturesCollection.insert({
+    const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
+    collection.insert({
       id: id, name: name, pi: pi, size: size, done: 0, 
       startSprintNr: Constants.START_SPRINT_NOT_SET, endSprintNr: Constants.NOT_SET, 
       team: teamName, project: projectName, featureEndSprint: sprintName, storySize: 0
@@ -71,22 +72,24 @@ async function getFeatureFromADS(witAPI,id) {
   return(Constants.ReturnStatus.OK);
 }
 
-async function getStoryFromADS(witAPI,storyId,featureId) {
+async function getStoryFromADS(witAPI,storyId,featureId,asOfDate) {
   try {
     const queryResult = await witAPI.getWorkItem(storyId,[
-      Constants.ADSFields.ITERATION_PATH, Constants.ADSFields.EFFORT, Constants.ADSFields.STATE]);
+      Constants.ADSFields.ITERATION_PATH, Constants.ADSFields.EFFORT, Constants.ADSFields.STATE],asOfDate);
 
     const state=queryResult.fields[Constants.ADSFields.STATE];
     const effort=queryResult.fields[Constants.ADSFields.EFFORT];
     const parts=queryResult.fields[Constants.ADSFields.ITERATION_PATH].split('\\');
 
+    const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
+
     if (effort>0) {
       // adds storypoints to storySize
-      Collections.FeaturesCollection.update({id: featureId},{ $inc: { storySize: effort }});
+      collection.update({id: featureId},{ $inc: { storySize: effort }});
 
       if (state===Constants.ADSFields.DONE) {
         // adds storypoints for 'done' stories
-        Collections.FeaturesCollection.update({id: featureId},{ $inc: { done: effort }});
+        collection.update({id: featureId},{ $inc: { done: effort }});
       }
     }
 
@@ -95,11 +98,11 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
 
     // set startSprint/endSprint in feature to first and last sprint of child stories
     if (sprint) {
-      Collections.FeaturesCollection.update(
+      collection.update(
         {id: featureId, startSprintNr: { $gt: sprint.sprintNr} },
         {$set: { startSprintNr: sprint.sprintNr, startSprint: sprintName }}
       );
-      Collections.FeaturesCollection.update(
+      collection.update(
         {id: featureId, endSprintNr: { $lt: sprint.sprintNr} },
         {$set: { endSprintNr: sprint.sprintNr, endSprint: sprintName }}
       );
@@ -111,12 +114,13 @@ async function getStoryFromADS(witAPI,storyId,featureId) {
   return(Constants.ReturnStatus.OK);
 }
 
-async function getStoriesFromADS(witAPI, pis) {
+async function getStoriesFromADS(witAPI, pis, asOfDate) {
   try {
     let piSubQuery='';
     for (const [i,pi] of pis.entries()) {
       piSubQuery+=`[Source].[System.IterationPath] UNDER '${Constants.ADSConfig.PROJECT}${Constants.ADSConfig.ITERATION_OFFSET_WIQL}\\${pi}' ${i!==pis.length-1 ? 'OR ' : ''}`;
     }
+    const asOfSubQuery=asOfDate ? `ASOF '${asOfDate}'` : '';
 
     const query = {query: 
       `
@@ -139,6 +143,7 @@ async function getStoriesFromADS(witAPI, pis) {
           )
       ORDER BY [System.IterationId],
           [System.Id]
+      ${asOfSubQuery}
       MODE (MayContain)`
     };
 
@@ -150,7 +155,7 @@ async function getStoriesFromADS(witAPI, pis) {
     let p = [];
     for (const workItemLink of queryResult.workItemRelations) {
       if (workItemLink.rel==='System.LinkTypes.Hierarchy-Forward') {
-        p.push(getStoryFromADS(witAPI,workItemLink.target.id,workItemLink.source.id));
+        p.push(getStoryFromADS(witAPI,workItemLink.target.id,workItemLink.source.id,asOfDate));
       }
     }
     await Promise.all(p);
@@ -162,12 +167,13 @@ async function getStoriesFromADS(witAPI, pis) {
   return(Constants.ReturnStatus.OK);
 }
 
-async function getFeaturesFromADS(witAPI, pis) {
+async function getFeaturesFromADS(witAPI, pis, asOfDate) {
   try {
     let piSubQuery='';
     for (const [i,pi] of pis.entries()) {
       piSubQuery+=`[System.IterationPath] UNDER '${Constants.ADSConfig.PROJECT}${Constants.ADSConfig.ITERATION_OFFSET_WIQL}\\${pi}' ${i!==pis.length-1 ? 'OR ' : ''}`;
     }
+    const asOfSubQuery=asOfDate ? `ASOF '${asOfDate}'` : '';
 
     const query = {query: 
       `
@@ -179,7 +185,8 @@ async function getFeaturesFromADS(witAPI, pis) {
           AND [System.WorkItemType] = 'Feature'
           AND [System.AreaPath] UNDER '${Constants.ADSConfig.PROJECT}${Constants.ADSConfig.AREA_OFFSET_WIQL}'
           AND (${piSubQuery})
-          AND [System.State] <> 'Removed'`
+          AND [System.State] <> 'Removed'
+      ${asOfSubQuery}`
     };
 
     const teamContext = { project: Constants.ADSConfig.PROJECT };
@@ -189,7 +196,7 @@ async function getFeaturesFromADS(witAPI, pis) {
     // get the actual workitem content in parallel (async), wait for all to finish before continueing
     let p = [];
     for (const workItem of queryResult.workItems) {
-      p.push(getFeatureFromADS(witAPI,workItem.id));
+      p.push(getFeatureFromADS(witAPI,workItem.id,asOfDate));
     }
     await Promise.all(p);
 
@@ -200,24 +207,24 @@ async function getFeaturesFromADS(witAPI, pis) {
   return(Constants.ReturnStatus.OK);
 }
 
-export async function QueryADS() {
+export async function QueryADS(asOfDate) {
   const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(Constants.ADSConfig.TOKEN); 
   const connection = new vsoNodeApi.WebApi(Constants.ADSConfig.URL, authHandler);  
   const witAPI = await connection.getWorkItemTrackingApi();
 
   const pis=['PI 21.1','PI 21.2','PI 21.3','PI 21.4'];
 
-  console.log('getting sprints');
-  await getIterationsFromADS(witAPI);
-
-  // currently not used, getting teams from workitems (features)
-  // await getTeamsFromADS(witAPI);
+  // no need to get the iterations on every as-of query
+  if (!asOfDate) {
+    console.log('getting sprints');
+    await getIterationsFromADS(witAPI);
+  }
 
   console.log('getting features');
-  await getFeaturesFromADS(witAPI, pis);
+  await getFeaturesFromADS(witAPI, pis, asOfDate);
 
   console.log('getting stories');
-  await getStoriesFromADS(witAPI, pis);
+  await getStoriesFromADS(witAPI, pis, asOfDate);
 
   return(Constants.ReturnStatus.OK);
 }

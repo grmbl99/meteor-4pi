@@ -41,64 +41,49 @@ function setServerStatus(key,value,date) {
   );
 }
 
-function syncADS() {
-  console.log('query ADS');
-  setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.BUSY, '');
+function syncADS(asOfDate) {
+  console.log('query ADS ' + asOfDate);
+  const status = asOfDate ? Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS : Constants.ServerStatus.ADS_SYNC_STATUS;
+  setServerStatus(status, Constants.SyncStatus.BUSY, '');
 
   // QueryADS is an async function (promise), so handle result/exceptions in then/catch
-  QueryADS().then(() => { 
+  QueryADS(asOfDate).then(() => { 
     console.log('queryADS succeeded'); 
     const date = new Date();
-    setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.OK, date);    
+    setServerStatus(status, Constants.SyncStatus.OK, date);    
   }).catch((e) => { 
     console.log('queryADS failed: ' + e); 
-    setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.FAILED, '');    
+    setServerStatus(status, Constants.SyncStatus.FAILED, '');    
   });
 }
 
 // Meteor methods, called from clients
 Meteor.methods({
 
-  UpdateDeltaFeatureCollection() {
-    Collections.DeltaFeaturesCollection.remove({});
+  RefreshCompareADS(date) {
+    [ Collections.OrgFeaturesCollection,
+      Collections.DeltaFeaturesCollection,
+    ].forEach(collection => collection.remove({}));
+
+    syncADS(date);
     compareFeatureCollections();
   },
 
   RefreshADS() {
-    console.log('refreshing ADS');
+    [ Collections.OrgFeaturesCollection,
+      Collections.FeaturesCollection,
+      Collections.IterationsCollection,
+      Collections.ProjectsCollection,
+      Collections.TeamsCollection
+    ].forEach(collection => collection.remove({}));
 
-    // [ Collections.OrgFeaturesCollection,
-    // ].forEach(collection => collection.remove({}));
-
-    // syncCompareADS();
-  },
-
-  RefreshCompareADS(date) {
-    console.log('refreshing ADS compare data ' + date);
-
-    // [ Collections.FeaturesCollection,
-    //   Collections.IterationsCollection,
-    //   Collections.ProjectsCollection,
-    //   Collections.TeamsCollection
-    // ].forEach(collection => collection.remove({}));
-
-    // syncADS();
+    setServerStatus(Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS, Constants.SyncStatus.NONE, '');
+    syncADS();
   }
 });
 
 // Runs when the server is started
 Meteor.startup(() => {
-  [ Collections.OrgFeaturesCollection, 
-    Collections.DeltaFeaturesCollection,
-    Collections.AllocationsCollection,
-    Collections.VelocitiesCollection,
-    Collections.FeaturesCollection,
-    Collections.IterationsCollection,
-    Collections.ProjectsCollection,
-    Collections.TeamsCollection,
-    Collections.ServerStatusCollection
-  ].forEach(collection => collection.remove({}));
-
   PopulateCollections();
-  // syncADS();
+  syncADS();
 });
