@@ -65,13 +65,24 @@ Meteor.methods({
   },
 
   RefreshADS() {
-    [ Collections.FeaturesCollection,
-      Collections.IterationsCollection,
-      Collections.ProjectsCollection,
-      Collections.TeamsCollection
-    ].forEach(collection => collection.remove({}));
+    console.log('refreshing ADS');
 
-    syncADS();
+    // [ Collections.OrgFeaturesCollection,
+    // ].forEach(collection => collection.remove({}));
+
+    // syncCompareADS();
+  },
+
+  RefreshCompareADS(date) {
+    console.log('refreshing ADS compare data ' + date);
+
+    // [ Collections.FeaturesCollection,
+    //   Collections.IterationsCollection,
+    //   Collections.ProjectsCollection,
+    //   Collections.TeamsCollection
+    // ].forEach(collection => collection.remove({}));
+
+    // syncADS();
   }
 });
 
@@ -89,5 +100,5 @@ Meteor.startup(() => {
   ].forEach(collection => collection.remove({}));
 
   PopulateCollections();
-  syncADS();
+  // syncADS();
 });

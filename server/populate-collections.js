@@ -166,7 +166,8 @@ function populateVelocitiesCollection() {
 
 function populateServerStatusCollection() { 
   [
-    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: ''}
+    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'},
+    {key: ServerStatus.ADS_COMPARE_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'}
   ].forEach(status => Collections.ServerStatusCollection.insert(status));
 }
 
@@ -177,8 +178,8 @@ export function PopulateCollections() {
   if (Collections.ServerStatusCollection.find().count() === 0) { populateServerStatusCollection(); }
 
   // these collections are now populated from ADS
-  // if (Collections.FeaturesCollection.find().count() === 0) { populateFeaturesCollection(); }
-  // if (Collections.IterationsCollection.find().count() === 0) { populateIterationsCollection(); }
-  // if (Collections.TeamsCollection.find().count() === 0) { populateTeamsCollection(); }
-  // if (Collections.ProjectsCollection.find().count() === 0) { populateProjectsCollection();}
+  if (Collections.FeaturesCollection.find().count() === 0) { populateFeaturesCollection(); }
+  if (Collections.IterationsCollection.find().count() === 0) { populateIterationsCollection(); }
+  if (Collections.TeamsCollection.find().count() === 0) { populateTeamsCollection(); }
+  if (Collections.ProjectsCollection.find().count() === 0) { populateProjectsCollection();}
 }

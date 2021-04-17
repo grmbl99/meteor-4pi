@@ -1,13 +1,17 @@
-import React, { useState, createRef } from 'react';
+import React, { useState, createRef, forwardRef } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import DatePicker from 'react-datepicker';
+import PropTypes from 'prop-types';
 import { Meteor } from 'meteor/meteor';
 import * as Constants from '/imports/api/constants';
 import * as Collections from '/imports/api/collections';
 import { PiView } from './pi-view';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 export function App(props) {  
   // move a feature between teams/projects/pi's
@@ -65,6 +69,14 @@ export function App(props) {
     }
   }
 
+  // call method on server to refresh compare data from ADS
+  function refreshCompareADS(date) {
+    if (adsCompareSyncStatus!==Constants.SyncStatus.BUSY) {
+      setStartDate(date);
+      Meteor.call('RefreshCompareADS', date);
+    }
+  }
+  
   function getAllocation(pi,project,team) {
     let alloc=0;
   
@@ -114,14 +126,20 @@ export function App(props) {
   const [selectedFeature, setSelectedFeature] = useState({
     name: '', pi: '', size: '', done: '', startSprint: '', endSprint: ''
   });
+  const [startDate, setStartDate] = useState('');
 
   // get the azure sync status from server
   let adsSyncStatus=Constants.SyncStatus.NONE;
+  let adsCompareSyncStatus=Constants.SyncStatus.NONE;
   let adsSyncDate='';
+  let adsCompareSyncDate='';
   for (const status of serverStatus) {
     if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) { 
       adsSyncStatus=status.value; 
       adsSyncDate=status.date.toString();
+    } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS) {
+      adsCompareSyncStatus=status.value; 
+      adsCompareSyncDate=status.date.toString();
     }
   }
 
@@ -170,24 +188,52 @@ export function App(props) {
     }
   }
 
-  // to show/hide 'loading' indicator
+  // to show/hide 'loading' indicators
   const loadingClassName = adsSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
+  const compareLoadingClassName = adsCompareSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
   const adsSyncClassName = adsSyncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+
+  // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
+  const PickDateButton = forwardRef(
+    ({ value, onClick, syncStatus }, ref) => {
+
+      const adsCompareSyncClassName = syncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+      const statusStr = syncStatus===Constants.SyncStatus.OK ? value : syncStatus;
+    
+      return(<div className={adsCompareSyncClassName} ref={ref} onClick={onClick}>Compare: {statusStr}</div>);
+    }
+  );
+  PickDateButton.propTypes = {
+    onClick: PropTypes.func,
+    value: PropTypes.string,
+    syncStatus: PropTypes.string.isRequired
+  };
+  PickDateButton.displayName = 'PickDateButton';
 
   return (
     <div>
       <div className='left'>
         <div className='menu-container'>
-          <div className={adsSyncClassName} onClick={() => {refreshADS();}}>ADS Sync: {adsSyncStatus}</div>
+          <div className={adsSyncClassName} onClick={refreshADS}>ADS Sync: {adsSyncStatus}</div>
           <div className={loadingClassName}>{adsSyncDate}</div>
 
+          <DatePicker 
+            selected={startDate} 
+            showWeekNumbers 
+            onChange={date => refreshCompareADS(date)}
+            customInput={<PickDateButton syncStatus={adsCompareSyncStatus}/>}
+          />
+          <div>show: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
+          <div className={compareLoadingClassName}>{adsCompareSyncDate}</div>
+
           <div className='menu-heading'>Teams</div>
-          <FilterForm text='Project filter' onSubmit={(input) => {setProjectFilter(input.filterName);}}/>
+          <FilterForm text='Project filter' onSubmit={input => setProjectFilter(input.filterName)}/>
           {teamsMenu}
+
           <div className='menu-heading'>Projects</div>
-          <FilterForm text='Team filter' onSubmit={(input) => {setTeamFilter(input.filterName);}}/>
+          <FilterForm text='Team filter' onSubmit={input => setTeamFilter(input.filterName)}/>
           {projectsMenu}
-          <div>compare: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
+
         </div>
       </div>
       <div className='right'>
