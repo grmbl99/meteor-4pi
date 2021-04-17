@@ -236,11 +236,13 @@ input[type='submit']:hover {
 .feature-added {
   box-shadow: 3px 3px 5px green;
   text-decoration: underline;
+  border-left: 4px solid green;
 }
 
 .feature-removed {
   box-shadow: 3px 3px 5px red;
   text-decoration: line-through;
+  border-left: 4px solid red;
 }
 
 .feature-name {

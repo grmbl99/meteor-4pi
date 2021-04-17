@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
+import { format } from 'date-fns';
 import { Meteor } from 'meteor/meteor';
 import * as Constants from '/imports/api/constants';
 import * as Collections from '/imports/api/collections';
@@ -65,14 +66,15 @@ export function App(props) {
   function refreshADS(event) {
     if (adsSyncStatus!==Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
+      setCompareModeOn(false);
     }
   }
 
   // call method on server to refresh compare data from ADS
   function refreshCompareADS(date) {
     if (adsCompareSyncStatus!==Constants.SyncStatus.BUSY) {
-      setStartDate(date);
       Meteor.call('RefreshCompareADS', date);
+      setCompareModeOn(true);
     }
   }
   
@@ -125,20 +127,22 @@ export function App(props) {
   const [selectedFeature, setSelectedFeature] = useState({
     name: '', pi: '', size: '', done: '', startSprint: '', endSprint: ''
   });
-  const [startDate, setStartDate] = useState('');
 
-  // get the azure sync status from server
+  // get the server state (azure sync status & dates) from server
   let adsSyncStatus=Constants.SyncStatus.NONE;
   let adsCompareSyncStatus=Constants.SyncStatus.NONE;
   let adsSyncDate='';
   let adsCompareSyncDate='';
+  let startDate='';
   for (const status of serverStatus) {
     if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) { 
       adsSyncStatus=status.value; 
-      adsSyncDate=status.date.toString();
+      adsSyncDate=format(status.date, 'EEE MMM d yyyy HH:mm.ss');
     } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS) {
       adsCompareSyncStatus=status.value; 
-      adsCompareSyncDate=status.date.toString();
+      adsCompareSyncDate=format(status.date, 'EEE MMM d yyyy HH:mm.ss');
+    } else if (status.key === Constants.ServerStatus.ADS_COMPARE_DATE) {
+      startDate=status.value;
     }
   }
 

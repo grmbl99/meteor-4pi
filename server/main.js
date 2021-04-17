@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { format } from 'date-fns';
 import * as Collections from '/imports/api/collections';
 import * as Constants from '/imports/api/constants';
 import { QueryADS } from './query-ads';
@@ -50,7 +51,8 @@ function syncADS(asOfDate) {
   QueryADS(asOfDate).then(() => { 
     console.log('queryADS succeeded'); 
     const date = new Date();
-    setServerStatus(status, Constants.SyncStatus.OK, date);    
+    setServerStatus(status, Constants.SyncStatus.OK, date);
+    compareFeatureCollections();
   }).catch((e) => { 
     console.log('queryADS failed: ' + e); 
     setServerStatus(status, Constants.SyncStatus.FAILED, '');    
@@ -65,12 +67,13 @@ Meteor.methods({
       Collections.DeltaFeaturesCollection,
     ].forEach(collection => collection.remove({}));
 
-    syncADS(date);
-    compareFeatureCollections();
+    syncADS(format(date, 'MM/dd/yyyy'));
+    setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, date, '');
   },
 
   RefreshADS() {
     [ Collections.OrgFeaturesCollection,
+      Collections.DeltaFeaturesCollection,
       Collections.FeaturesCollection,
       Collections.IterationsCollection,
       Collections.ProjectsCollection,
@@ -84,6 +87,17 @@ Meteor.methods({
 
 // Runs when the server is started
 Meteor.startup(() => {
+  [ Collections.OrgFeaturesCollection,
+    Collections.FeaturesCollection,
+    Collections.DeltaFeaturesCollection,
+    Collections.IterationsCollection,
+    Collections.ProjectsCollection,
+    Collections.TeamsCollection,
+    Collections.AllocationsCollection,
+    Collections.VelocitiesCollection,
+    Collections.ServerStatusCollection
+  ].forEach(collection => collection.remove({}));
+
   PopulateCollections();
   syncADS();
 });

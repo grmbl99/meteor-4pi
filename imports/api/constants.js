@@ -45,7 +45,8 @@ export const ReturnStatus = {
 // keys for the ServerStatusCollection
 export const ServerStatus = {
   ADS_SYNC_STATUS: 'ads-sync-status',
-  ADS_COMPARE_SYNC_STATUS: 'ads-compare-sync-status'
+  ADS_COMPARE_SYNC_STATUS: 'ads-compare-sync-status',
+  ADS_COMPARE_DATE: 'ads-compare-date'
 };
 
 // status of the Azure synchronization

@@ -167,16 +167,12 @@ function populateVelocitiesCollection() {
 function populateServerStatusCollection() { 
   [
     {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'},
-    {key: ServerStatus.ADS_COMPARE_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'}
+    {key: ServerStatus.ADS_COMPARE_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'},
+    {key: ServerStatus.ADS_COMPARE_DATE, value: '', date: ''}
   ].forEach(status => Collections.ServerStatusCollection.insert(status));
 }
 
 export function PopulateCollections() {    
-  [ Collections.AllocationsCollection,
-    Collections.VelocitiesCollection,
-    Collections.ServerStatusCollection
-  ].forEach(collection => collection.remove({}));
-
   if (Collections.AllocationsCollection.find().count() === 0) { populateAllocationsCollection(); }
   if (Collections.VelocitiesCollection.find().count() === 0) { populateVelocitiesCollection(); }
   if (Collections.ServerStatusCollection.find().count() === 0) { populateServerStatusCollection(); }
