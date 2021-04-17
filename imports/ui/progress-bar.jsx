@@ -18,6 +18,8 @@ ProgressBar.propTypes = {
 function ProgressBar(props) {
   const perctDone = props.size>0 ? props.done/props.size : 0;
   const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone);
+  const sizeStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.size);
+  const doneStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.done);
 
   // determine wether to display the progress bar
   let progressBar='';
@@ -35,10 +37,11 @@ function ProgressBar(props) {
   let deltaBadge='';
   if (props.orgSize!==Constants.NOT_SET) {
     const delta=props.size - props.orgSize;
+    const deltaStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(delta);
     if (delta<0) {
-      deltaBadge=<span className='inline-badge inline-badge-red'> {delta}</span>;
+      deltaBadge=<span className='inline-badge inline-badge-red'> {deltaStr}</span>;
     } else if (delta>0) {
-      deltaBadge=<span className='inline-badge inline-badge-green'> +{delta}</span>;
+      deltaBadge=<span className='inline-badge inline-badge-green'> +{deltaStr}</span>;
     }
   }
 
@@ -60,7 +63,7 @@ function ProgressBar(props) {
         {progressBar}
 
         <div className='progress-text' style={{left: props.start+'%', width: width+'%'}}>
-          {perctDoneStr} [{props.done}/{props.size}{deltaBadge}]
+          {perctDoneStr} [{doneStr}/{sizeStr}{deltaBadge}]
         </div>
 
         {deltaBar}

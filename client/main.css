@@ -15,7 +15,8 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
+  font-family: Verdana, sans-serif;
   background-color: var(--my-page-background-color);
 }
 
@@ -147,7 +148,7 @@ input[type='submit']:hover {
   position: relative;
   height: 45px;
   line-height: 45px;
-  padding-left: 5px;
+  padding-left: 15px;
   background-color: var(--my-accent-color);
   color: var(--my-light-text-color);
   font-weight: bold;
@@ -190,7 +191,7 @@ input[type='submit']:hover {
   text-align: center;
   line-height: 35px;
   outline-offset: -1px;
-  font-size: 11pt;
+  font-size: 9pt;
   outline: 1px solid var(--my-accent-color);
   background-color: var(--my-background-color);
 }
@@ -222,8 +223,8 @@ input[type='submit']:hover {
 
 .feature {
   position: relative;
-  height: 53px;
-  margin-top: 10px;
+  height: 45px;
+  margin-top: 2px;
   padding-left: 5px;
   padding-right: 5px;
   background-color: var(--my-feature-background-color);
@@ -245,16 +246,15 @@ input[type='submit']:hover {
   left: 5px;
   top: 3px;
   text-decoration: inherit;
-  font-size: 10pt;
-  font-family: Arial, sans-serif;
+  font-size: 8pt;
 }
 
 .feature-progress-bar {
   height: 20px;
-  font-size: 8pt;
-  padding-top: 25px;
+  font-size: 7pt;
+  padding-top: 20px;
   color: var(--my-dark-text-color);
-  --fill-style: linear-gradient(to right, rgb(255, 255, 255), rgb(0, 139, 253));
+  --fill-style: linear-gradient(to right, rgb(255, 255, 255), rgb(0, 139, 253)); 
 }
 
 .progress-bar {
@@ -267,14 +267,14 @@ input[type='submit']:hover {
   position: absolute;
   height: inherit;
   background-color: var(--my-progress-background-color);
-  box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
+  /* box-shadow: inset 1px 1px 3px rgb(50, 50, 50); */
 }
 
 .progress-bar-done {
   position: absolute;
   height: inherit;
   background-image: var(--fill-style);
-  box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
+  /* box-shadow: inset 1px 1px 3px rgb(50, 50, 50); */
 }
 
 .delta-bar {

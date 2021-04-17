@@ -129,14 +129,17 @@ async function getStoriesFromADS(witAPI, pis) {
               AND [Source].[System.WorkItemType] = 'Feature'
               AND [Source].[System.AreaPath] UNDER '${Constants.ADSConfig.PROJECT}${Constants.ADSConfig.AREA_OFFSET_WIQL}'
               AND (${piSubQuery})
+              AND [Source].[System.State] <> 'Removed'
           )
           AND (
               [Target].[System.TeamProject] = @project
               AND [Target].[System.WorkItemType] = 'Story'
+              AND NOT [Target].[System.Tags] CONTAINS 'refinementStory'
+              AND [Target].[System.State] <> 'Removed'
           )
       ORDER BY [System.IterationId],
           [System.Id]
-      MODE (MustContain)`
+      MODE (MayContain)`
     };
 
     const teamContext = { project: Constants.ADSConfig.PROJECT };
@@ -175,7 +178,8 @@ async function getFeaturesFromADS(witAPI, pis) {
           [System.TeamProject] = @project
           AND [System.WorkItemType] = 'Feature'
           AND [System.AreaPath] UNDER '${Constants.ADSConfig.PROJECT}${Constants.ADSConfig.AREA_OFFSET_WIQL}'
-          AND (${piSubQuery})`
+          AND (${piSubQuery})
+          AND [System.State] <> 'Removed'`
     };
 
     const teamContext = { project: Constants.ADSConfig.PROJECT };
