@@ -9,7 +9,7 @@ function compareFeatureCollections() {
   const features = Collections.FeaturesCollection.find({}).fetch();  
 
   for (const feature of features) {
-    // perform some cleaning-up
+    // some checks & updates on feature values
     // (as we are iterating over features here anyway)
     if (feature.storySize===0) {
       Collections.FeaturesCollection.update({id: feature.id},{ $set: { storySize: feature.size }});
@@ -25,7 +25,7 @@ function compareFeatureCollections() {
         Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.REMOVED, feature: orgFeature});
       }
       if(feature.size!==orgFeature.size || feature.progress!==orgFeature.progress || 
-         feature.startsprint!==orgFeature.startsprint || feature.endsprint!==orgFeature.endsprint) {
+         feature.startSprint!==orgFeature.startSprint || feature.endSprint!==orgFeature.endSprint) {
         orgFeature._id=feature._id; // store org data, but allow searching on (current) feature-id
         Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.CHANGED, feature: orgFeature});
       }

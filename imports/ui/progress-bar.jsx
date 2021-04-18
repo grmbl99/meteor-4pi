@@ -16,8 +16,8 @@ ProgressBar.propTypes = {
 };
 
 function ProgressBar(props) {
-  const perctDone = props.size>0 ? props.progress/props.size : 0;
-  const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone);
+  let perctDone = props.size>0 ? props.progress/props.size : 0;
+  const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone > 1 ? 1 : perctDone);
   const sizeStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.size);
   const progressStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.progress);
 
@@ -25,7 +25,7 @@ function ProgressBar(props) {
   let progressBar='';
   let width = props.duration;
   if (props.start===0 && props.duration===0) {
-    width=100; //no bar is displayed, use 100% of the width so text is nicly right-aligned
+    width=100; //no bar is displayed, use 100% of the width so text is nicely right-aligned
   } else {
     progressBar=
       <div className='progress-bar-total' style={{left: props.start+'%', width: width+'%'}}>
