@@ -57,6 +57,7 @@ export function App(props) {
   function toggleCompareMode(event) {
     if (!compareModeOn) {
       setCompareModeOn(true);
+      Meteor.call('UpdateDeltaFeatureCollection');
     } else {
       setCompareModeOn(false);
     }

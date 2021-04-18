@@ -2,6 +2,7 @@ import * as vsoNodeApi from 'azure-devops-node-api';
 import * as Collections from '/imports/api/collections';
 import * as Constants from '/imports/api/constants';
 
+/*
 async function getTeamsFromADS(witAPI) {
   try {
     // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/areas/systems/portfolio%20fixed/solution/art%20imaging%20chain?$depth=1
@@ -16,6 +17,7 @@ async function getTeamsFromADS(witAPI) {
   }
   return(Constants.ReturnStatus.OK);
 }
+*/
 
 async function getIterationsFromADS(witAPI) {
   try {
@@ -225,6 +227,14 @@ export async function QueryADS(asOfDate) {
 
   console.log('getting stories');
   await getStoriesFromADS(witAPI, pis, asOfDate);
+
+  // if this is no as-of query: copy FeaturesCollection to OrgFeaturesCollection
+  if (!asOfDate) {
+    const features = Collections.FeaturesCollection.find({}).fetch();  
+    for (const feature of features) {
+      Collections.OrgFeaturesCollection.insert(feature);
+    }
+  }
 
   return(Constants.ReturnStatus.OK);
 }

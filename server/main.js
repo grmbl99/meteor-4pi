@@ -36,39 +36,46 @@ function compareFeatureCollections() {
 }
 
 function setServerStatus(key,value,date) {
-  Collections.ServerStatusCollection.update(
-    { key: key },
-    { $set: { value: value, date: date } }
+  return (
+    Collections.ServerStatusCollection.update({key: key, value: { $ne: value} },{ $set: { value: value, date: date }})
   );
 }
 
 function syncADS(asOfDate) {
-  console.log('query ADS ' + asOfDate);
   const status = asOfDate ? Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS : Constants.ServerStatus.ADS_SYNC_STATUS;
-  setServerStatus(status, Constants.SyncStatus.BUSY, '');
 
-  // QueryADS is an async function (promise), so handle result/exceptions in then/catch
-  QueryADS(asOfDate).then(() => { 
-    console.log('queryADS succeeded'); 
-    const date = new Date();
-    setServerStatus(status, Constants.SyncStatus.OK, date);
-    compareFeatureCollections();
-  }).catch((e) => { 
-    console.log('queryADS failed: ' + e); 
-    setServerStatus(status, Constants.SyncStatus.FAILED, '');    
-  });
+  // prevent running multiple ADS syncs at the same time
+  if (setServerStatus(status,Constants.SyncStatus.BUSY,'')) {
+    console.log('query ADS ' + asOfDate);
+
+    // QueryADS is an async function (promise), so handle result/exceptions in then/catch
+    QueryADS(asOfDate).then(() => { 
+      console.log('queryADS succeeded'); 
+      const date = new Date();
+      setServerStatus(status, Constants.SyncStatus.OK, date);
+      compareFeatureCollections();
+    }).catch((e) => { 
+      console.log('queryADS failed: ' + e); 
+      setServerStatus(status, Constants.SyncStatus.FAILED, '');    
+    });  
+  }
 }
 
 // Meteor methods, called from clients
 Meteor.methods({
+
+  UpdateDeltaFeatureCollection() {
+    Collections.DeltaFeaturesCollection.remove({});
+    compareFeatureCollections();
+  },
 
   RefreshCompareADS(date) {
     [ Collections.OrgFeaturesCollection,
       Collections.DeltaFeaturesCollection,
     ].forEach(collection => collection.remove({}));
 
-    syncADS(format(date, 'MM/dd/yyyy'));
     setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, date, '');
+    syncADS(format(date, 'MM/dd/yyyy'));
   },
 
   RefreshADS() {
