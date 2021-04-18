@@ -166,8 +166,8 @@ function populateVelocitiesCollection() {
 
 function populateServerStatusCollection() { 
   [
-    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'},
-    {key: ServerStatus.ADS_COMPARE_SYNC_STATUS, value: SyncStatus.NONE, date: 'data not synced with ADS'},
+    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: ''},
+    {key: ServerStatus.ADS_COMPARE_SYNC_STATUS, value: SyncStatus.NONE, date: ''},
     {key: ServerStatus.ADS_COMPARE_DATE, value: '', date: ''}
   ].forEach(status => Collections.ServerStatusCollection.insert(status));
 }

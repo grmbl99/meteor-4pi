@@ -39,9 +39,9 @@ function ProgressBar(props) {
     const delta=props.size - props.orgSize;
     const deltaStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(delta);
     if (delta<0) {
-      deltaBadge=<span className='inline-badge inline-badge-red'> {deltaStr}</span>;
+      deltaBadge=<span className='inline-badge inline-badge-green'> {deltaStr}</span>;
     } else if (delta>0) {
-      deltaBadge=<span className='inline-badge inline-badge-green'> +{deltaStr}</span>;
+      deltaBadge=<span className='inline-badge inline-badge-red'> +{deltaStr}</span>;
     }
   }
 

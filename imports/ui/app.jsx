@@ -138,10 +138,10 @@ export function App(props) {
   for (const status of serverStatus) {
     if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) { 
       adsSyncStatus=status.value; 
-      adsSyncDate=format(status.date, 'EEE MMM d yyyy HH:mm.ss');
+      adsSyncDate=status.date ? format(status.date, 'EEE MMM d yyyy HH:mm.ss') : '';
     } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS) {
       adsCompareSyncStatus=status.value; 
-      adsCompareSyncDate=format(status.date, 'EEE MMM d yyyy HH:mm.ss');
+      adsCompareSyncDate=status.date ? format(status.date, 'EEE MMM d yyyy HH:mm.ss') : '';
     } else if (status.key === Constants.ServerStatus.ADS_COMPARE_DATE) {
       startDate=status.value;
     }
