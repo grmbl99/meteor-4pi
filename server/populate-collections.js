@@ -166,9 +166,10 @@ function populateVelocitiesCollection() {
 
 function populateServerStatusCollection() { 
   [
-    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE, date: ''},
-    {key: ServerStatus.ADS_COMPARE_SYNC_STATUS, value: SyncStatus.NONE, date: ''},
-    {key: ServerStatus.ADS_COMPARE_DATE, value: '', date: ''}
+    {key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE},
+    {key: ServerStatus.ADS_SYNC_DATE, value: ''},
+    {key: ServerStatus.ADS_COMPARE_SYNC_DATE, value: ''},
+    {key: ServerStatus.ADS_COMPARE_DATE, value: ''}
   ].forEach(status => Collections.ServerStatusCollection.insert(status));
 }
 

@@ -1,6 +1,7 @@
 import * as vsoNodeApi from 'azure-devops-node-api';
 import * as Collections from '/imports/api/collections';
 import * as Constants from '/imports/api/constants';
+import { format } from 'date-fns';
 
 /*
 async function getTeamsFromADS(witAPI) {
@@ -209,12 +210,13 @@ async function getFeaturesFromADS(witAPI, pis, asOfDate) {
   return(Constants.ReturnStatus.OK);
 }
 
-export async function QueryADS(asOfDate) {
+export async function QueryADS(date) {
   const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(Constants.ADSConfig.TOKEN); 
   const connection = new vsoNodeApi.WebApi(Constants.ADSConfig.URL, authHandler);  
   const witAPI = await connection.getWorkItemTrackingApi();
 
   const pis=['PI 21.1','PI 21.2','PI 21.3','PI 21.4'];
+  const asOfDate = date ? format(date, 'MM/dd/yyyy') : '';
 
   // no need to get the iterations on every as-of query
   if (!asOfDate) {
@@ -227,14 +229,6 @@ export async function QueryADS(asOfDate) {
 
   console.log('getting stories');
   await getStoriesFromADS(witAPI, pis, asOfDate);
-
-  // if this is no as-of query: copy FeaturesCollection to OrgFeaturesCollection
-  if (!asOfDate) {
-    const features = Collections.FeaturesCollection.find({}).fetch();  
-    for (const feature of features) {
-      Collections.OrgFeaturesCollection.insert(feature);
-    }
-  }
 
   return(Constants.ReturnStatus.OK);
 }

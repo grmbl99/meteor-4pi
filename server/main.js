@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { format } from 'date-fns';
 import * as Collections from '/imports/api/collections';
 import * as Constants from '/imports/api/constants';
 import { QueryADS } from './query-ads';
@@ -35,28 +34,44 @@ function compareFeatureCollections() {
   }
 }
 
-function setServerStatus(key,value,date) {
+function setServerStatus(key,value) {
   return (
-    Collections.ServerStatusCollection.update({key: key, value: { $ne: value} },{ $set: { value: value, date: date }})
+    Collections.ServerStatusCollection.update({key: key, value: { $ne: value} },{ $set: { value: value }})
   );
 }
 
-function syncADS(asOfDate) {
-  const status = asOfDate ? Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS : Constants.ServerStatus.ADS_SYNC_STATUS;
+function syncADS(date) {
 
   // prevent running multiple ADS syncs at the same time
-  if (setServerStatus(status,Constants.SyncStatus.BUSY,'')) {
-    console.log('query ADS ' + asOfDate);
+  if (setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS,Constants.SyncStatus.BUSY)) {
+    console.log('query ADS ' + date);
 
     // QueryADS is an async function (promise), so handle result/exceptions in then/catch
-    QueryADS(asOfDate).then(() => { 
+    QueryADS(date).then(() => { 
       console.log('queryADS succeeded'); 
-      const date = new Date();
-      setServerStatus(status, Constants.SyncStatus.OK, date);
+
+      const today = new Date();
+      if (date) {
+        setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, date);
+        setServerStatus(Constants.ServerStatus.ADS_COMPARE_SYNC_DATE, today);
+      } else {
+        setServerStatus(Constants.ServerStatus.ADS_SYNC_DATE, today);
+        setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, today);
+        setServerStatus(Constants.ServerStatus.ADS_COMPARE_SYNC_DATE, today);
+
+        // not querying by date: fill OrgFeaturesCollection with FeaturesCollection
+        const features = Collections.FeaturesCollection.find({}).fetch();  
+        for (const feature of features) {
+          Collections.OrgFeaturesCollection.insert(feature);
+        }
+      }
+
       compareFeatureCollections();
+      setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.OK);
+
     }).catch((e) => { 
       console.log('queryADS failed: ' + e); 
-      setServerStatus(status, Constants.SyncStatus.FAILED, '');    
+      setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.FAILED);    
     });  
   }
 }
@@ -74,8 +89,7 @@ Meteor.methods({
       Collections.DeltaFeaturesCollection,
     ].forEach(collection => collection.remove({}));
 
-    setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, date, '');
-    syncADS(format(date, 'MM/dd/yyyy'));
+    syncADS(date);
   },
 
   RefreshADS() {
@@ -87,7 +101,6 @@ Meteor.methods({
       Collections.TeamsCollection
     ].forEach(collection => collection.remove({}));
 
-    setServerStatus(Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS, Constants.SyncStatus.NONE, '');
     syncADS();
   }
 });

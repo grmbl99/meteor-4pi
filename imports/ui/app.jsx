@@ -73,7 +73,7 @@ export function App(props) {
 
   // call method on server to refresh compare data from ADS
   function refreshCompareADS(date) {
-    if (adsCompareSyncStatus!==Constants.SyncStatus.BUSY) {
+    if (adsSyncStatus!==Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshCompareADS', date);
       setCompareModeOn(true);
     }
@@ -131,19 +131,18 @@ export function App(props) {
 
   // get the server state (azure sync status & dates) from server
   let adsSyncStatus=Constants.SyncStatus.NONE;
-  let adsCompareSyncStatus=Constants.SyncStatus.NONE;
   let adsSyncDate='';
   let adsCompareSyncDate='';
-  let startDate='';
+  let compareDate='';
   for (const status of serverStatus) {
     if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) { 
       adsSyncStatus=status.value; 
-      adsSyncDate=status.date ? format(status.date, 'EEE MMM d yyyy HH:mm.ss') : '';
-    } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_STATUS) {
-      adsCompareSyncStatus=status.value; 
-      adsCompareSyncDate=status.date ? format(status.date, 'EEE MMM d yyyy HH:mm.ss') : '';
+    } else if (status.key === Constants.ServerStatus.ADS_SYNC_DATE) {
+      adsSyncDate=status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
+    } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_DATE) {
+      adsCompareSyncDate=status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
     } else if (status.key === Constants.ServerStatus.ADS_COMPARE_DATE) {
-      startDate=status.value;
+      compareDate=status.value;
     }
   }
 
@@ -193,18 +192,13 @@ export function App(props) {
   }
 
   // to show/hide 'loading' indicators
-  const loadingClassName = adsSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
-  const compareLoadingClassName = adsCompareSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-sync-date';
+  const loadingClassName = adsSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-loading-empty';
   const adsSyncClassName = adsSyncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
 
   // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
   const PickDateButton = forwardRef(
-    ({ value, onClick, syncStatus }, ref) => {
-
-      const adsCompareSyncClassName = syncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
-      const statusStr = syncStatus===Constants.SyncStatus.OK ? value : syncStatus;
-    
-      return(<div className={adsCompareSyncClassName} ref={ref} onClick={onClick}>Compare: {statusStr}</div>);
+    ({ value, onClick }, ref) => {
+      return(<div className='menu-item' ref={ref} onClick={onClick}>Compare: {value}</div>);
     }
   );
   PickDateButton.propTypes = {
@@ -219,16 +213,17 @@ export function App(props) {
       <div className='left'>
         <div className='menu-container'>
           <div className={adsSyncClassName} onClick={refreshADS}>ADS Sync: {adsSyncStatus}</div>
-          <div className={loadingClassName}>{adsSyncDate}</div>
+          <div className='ads-sync-date'>{adsSyncDate}</div>
 
           <DatePicker 
-            selected={startDate} 
+            selected={compareDate} 
             showWeekNumbers 
             onChange={date => refreshCompareADS(date)}
-            customInput={<PickDateButton syncStatus={adsCompareSyncStatus}/>}
+            customInput={<PickDateButton />}
           />
-          <div>show: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
-          <div className={compareLoadingClassName}>{adsCompareSyncDate}</div>
+          <div className='ads-sync-date'>{adsCompareSyncDate}</div>
+          <div>Compare: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
+          <div className={loadingClassName}/>
 
           <div className='menu-heading'>Teams</div>
           <FilterForm text='Project filter' onSubmit={input => setProjectFilter(input.filterName)}/>
