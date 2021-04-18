@@ -15,7 +15,7 @@ function compareFeatureCollections() {
         Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.ADDED, feature: feature});
         Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.REMOVED, feature: orgFeature});
       }
-      if(feature.size!==orgFeature.size || feature.done!==orgFeature.done || 
+      if(feature.size!==orgFeature.size || feature.progress!==orgFeature.progress || 
          feature.startsprint!==orgFeature.startsprint || feature.endsprint!==orgFeature.endsprint) {
         orgFeature._id=feature._id; // store org data, but allow searching on (current) feature-id
         Collections.DeltaFeaturesCollection.insert({type: Constants.DisplayTypes.CHANGED, feature: orgFeature});
@@ -119,5 +119,5 @@ Meteor.startup(() => {
   ].forEach(collection => collection.remove({}));
 
   PopulateCollections();
-  syncADS();
+  // syncADS();
 });

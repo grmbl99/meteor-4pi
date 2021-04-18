@@ -14,7 +14,7 @@ function UpdateFeaturePopup(props) {
 
   const [name, setName] = useState('');
   const [size, setSize] = useState('');
-  const [done, setDone] = useState('');
+  const [progress, setProgress] = useState('');
   const [pi, setPi] = useState('');
   const [startSprint, setStartSprint] = useState('');
   const [endSprint, setEndSprint] = useState('');
@@ -25,14 +25,14 @@ function UpdateFeaturePopup(props) {
       setName(props.feature.name); 
       setSize(props.feature.size);
       setPi(props.feature.pi);
-      setDone(props.feature.done);
+      setProgress(props.feature.progress);
       setStartSprint(props.feature.startSprint);
       setEndSprint(props.feature.endSprint);
     },[props]);
   }
 
   function handleSubmit(event) {
-    props.onSubmit({_id: props.feature._id, name: name, size: size, done: done, pi: pi, startSprint: startSprint, endSprint: endSprint});
+    props.onSubmit({_id: props.feature._id, name: name, size: size, progress: progress, pi: pi, startSprint: startSprint, endSprint: endSprint});
     event.preventDefault();
   }
 
@@ -42,7 +42,7 @@ function UpdateFeaturePopup(props) {
         <form className='popup-grid-container' onSubmit={handleSubmit}>
           <label>Name:</label> <input type='text' value={name} onChange={(event) => setName(event.target.value)} />
           <label>Size:</label> <input type='text' value={size} onChange={(event) => setSize(event.target.value)} />
-          <label>Done:</label> <input type='text' value={done} onChange={(event) => setDone(event.target.value)} />
+          <label>Progress:</label> <input type='text' value={progress} onChange={(event) => setProgress(event.target.value)} />
           <label>PI:</label> <input type='text' value={pi} onChange={(event) => setPi(event.target.value)} />
           <label>Start:</label> <input type='text' value={startSprint} onChange={(event) => setStartSprint(event.target.value)} />
           <label>End:</label> <input type='text' value={endSprint} onChange={(event) => setEndSprint(event.target.value)} />

@@ -61,7 +61,7 @@ async function getFeatureFromADS(witAPI,id,asOfDate) {
 
     const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
     collection.insert({
-      id: id, name: name, pi: pi, size: size, done: 0, 
+      id: id, name: name, pi: pi, size: size, progress: 0, 
       startSprintNr: Constants.START_SPRINT_NOT_SET, endSprintNr: Constants.NOT_SET, 
       team: teamName, project: projectName, featureEndSprint: sprintName, storySize: 0
     });
@@ -92,7 +92,7 @@ async function getStoryFromADS(witAPI,storyId,featureId,asOfDate) {
 
       if (state===Constants.ADSFields.DONE) {
         // adds storypoints for 'done' stories
-        collection.update({id: featureId},{ $inc: { done: effort }});
+        collection.update({id: featureId},{ $inc: { progress: effort }});
       }
     }
 

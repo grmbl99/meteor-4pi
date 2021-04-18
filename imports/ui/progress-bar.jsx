@@ -9,17 +9,17 @@ ProgressBar.propTypes = {
   duration: PropTypes.number.isRequired,
   duration2: PropTypes.number.isRequired,
   size: PropTypes.number.isRequired,
-  done: PropTypes.number.isRequired,
+  progress: PropTypes.number.isRequired,
   orgStart: PropTypes.number.isRequired,
   orgDuration: PropTypes.number.isRequired,
   orgSize: PropTypes.number.isRequired
 };
 
 function ProgressBar(props) {
-  const perctDone = props.size>0 ? props.done/props.size : 0;
+  const perctDone = props.size>0 ? props.progress/props.size : 0;
   const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone);
   const sizeStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.size);
-  const doneStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.done);
+  const progressStr=Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.progress);
 
   // determine wether to display the progress bar
   let progressBar='';
@@ -63,7 +63,7 @@ function ProgressBar(props) {
         {progressBar}
 
         <div className='progress-text' style={{left: props.start+'%', width: width+'%'}}>
-          {perctDoneStr} [{doneStr}/{sizeStr}{deltaBadge}]
+          {perctDoneStr} [{progressStr}/{sizeStr}{deltaBadge}]
         </div>
 
         {deltaBar}

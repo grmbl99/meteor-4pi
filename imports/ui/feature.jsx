@@ -15,7 +15,7 @@ Feature.propTypes = {
   orgStart: PropTypes.number.isRequired,
   orgDuration: PropTypes.number.isRequired,
   orgSize: PropTypes.number.isRequired,
-  orgDone: PropTypes.number.isRequired
+  orgProgress: PropTypes.number.isRequired
 };
 
 function Feature(props) {
@@ -52,7 +52,7 @@ function Feature(props) {
       <div className='feature-name'>{feature.id} {trimmedName}</div>
       <div className='feature-progress-bar'>
         <ProgressBar start={props.start} duration={props.duration} duration2={Constants.NOT_SET}
-                    size={feature.size} done={feature.done}
+                    size={feature.size} progress={feature.progress}
                     orgStart={props.orgStart} orgDuration={props.orgDuration}
                     orgSize={props.orgSize}/>
       </div>

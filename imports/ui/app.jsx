@@ -36,7 +36,7 @@ export function App(props) {
       {$set: {
         'name': input.name, 
         'size': parseInt(input.size), 
-        'done': parseInt(input.done), 
+        'progress': parseInt(input.progress), 
         'pi': input.pi, 
         'startSprint': input.startSprint,
         'endSprint': input.endSprint 
@@ -126,7 +126,7 @@ export function App(props) {
   const [showPopup, setShowPopup] = useState(false);
   const [compareModeOn, setCompareModeOn] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState({
-    name: '', pi: '', size: '', done: '', startSprint: '', endSprint: ''
+    name: '', pi: '', size: '', progress: '', startSprint: '', endSprint: ''
   });
 
   // get the server state (azure sync status & dates) from server

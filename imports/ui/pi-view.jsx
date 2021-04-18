@@ -64,20 +64,20 @@ function PiView(props) {
   if (sprintNr===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
 
   let size=0;
-  let done=0;
+  let progress=0;
   const featuresList=[]; // list of Feature objects
   for (const feature of features) {
     let orgStart=Constants.NOT_SET;
     let orgDuration=Constants.NOT_SET;
     let orgSize=Constants.NOT_SET;
-    let orgDone=Constants.NOT_SET;
+    let orgProgress=Constants.NOT_SET;
     const [start,duration]=calcRelFeatureStartAndDuration(feature,sprintsDict);
 
     if (feature.pi === props.pi && 
         (props.team === '' || feature.team === props.team) &&
         (props.project === '' || feature.project === props.project)) {
       size += feature.size;
-      done += feature.done;
+      progress += feature.progress;
 
       // check if this feature is in the delta-features collection; 
       // if so, set additional attributes to show delta's
@@ -91,7 +91,7 @@ function PiView(props) {
             if (deltaFeature.type === Constants.DisplayTypes.CHANGED) {
               [orgStart,orgDuration]=calcRelFeatureStartAndDuration(deltaFeature.feature,sprintsDict);
               orgSize=deltaFeature.feature.size;
-              orgDone=deltaFeature.feature.done;
+              orgProgress=deltaFeature.feature.progress;
             }
           }
         }    
@@ -101,7 +101,7 @@ function PiView(props) {
                                  displayType={displayType} 
                                  start={start} duration={duration}
                                  orgStart={orgStart} orgDuration={orgDuration}
-                                 orgSize={orgSize} orgDone={orgDone}
+                                 orgSize={orgSize} orgProgress={orgProgress}
                                  onFeatureClicked={props.onFeatureClicked}/>);
     }
   }
@@ -121,7 +121,7 @@ function PiView(props) {
                                      displayType={displayType} 
                                      start={start} duration={duration}
                                      orgStart={Constants.NOT_SET} orgDuration={Constants.NOT_SET}
-                                     orgSize={Constants.NOT_SET} orgDone={Constants.NOT_SET}
+                                     orgSize={Constants.NOT_SET} orgProgress={Constants.NOT_SET}
                                      onFeatureClicked={props.onFeatureClicked}/>);
         }  
       }
@@ -146,7 +146,7 @@ function PiView(props) {
       </div>
       <div className='pi-progress'>
         <div className='pi-progress-bar'>
-        <ProgressBar start={0} duration={100} duration2={Constants.NOT_SET} size={size} done={done}
+        <ProgressBar start={0} duration={100} duration2={Constants.NOT_SET} size={size} progress={progress}
                      orgStart={Constants.NOT_SET} orgDuration={Constants.NOT_SET} orgSize={Constants.NOT_SET}/>
         </div>
       </div>
