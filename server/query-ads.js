@@ -44,7 +44,8 @@ async function getIterationsFromADS(witAPI) {
 async function getFeatureFromADS(witAPI,id,asOfDate) {
   try {
     const queryResult = await witAPI.getWorkItem(id,[
-      Constants.ADSFields.TITLE, Constants.ADSFields.NODENAME, Constants.ADSFields.ITERATION_PATH, 
+      Constants.ADSFields.TITLE, Constants.ADSFields.NODENAME, Constants.ADSFields.ITERATION_PATH,
+      Constants.ADSFields.STATE, Constants.ADSFields.TAGS, Constants.ADSFields.PRIORITY,
       Constants.ADSFields.EFFORT, Constants.ADSFields.RELEASE],asOfDate);
 
     let projectName=queryResult.fields[Constants.ADSFields.RELEASE];
@@ -52,6 +53,9 @@ async function getFeatureFromADS(witAPI,id,asOfDate) {
     const parts=queryResult.fields[Constants.ADSFields.ITERATION_PATH].split('\\');
     const name=queryResult.fields[Constants.ADSFields.TITLE];
     const size=queryResult.fields[Constants.ADSFields.EFFORT];
+    const state=queryResult.fields[Constants.ADSFields.STATE];
+    const tags=queryResult.fields[Constants.ADSFields.TAGS];
+    const priority=queryResult.fields[Constants.ADSFields.PRIORITY];
 
     projectName = projectName ? projectName.toLowerCase() : 'undefined';
     teamName = teamName ? teamName.toLowerCase() : 'undefined';
@@ -63,7 +67,8 @@ async function getFeatureFromADS(witAPI,id,asOfDate) {
     collection.insert({
       id: id, name: name, pi: pi, size: size, progress: 0, 
       startSprintNr: Constants.START_SPRINT_NOT_SET, endSprintNr: Constants.NOT_SET, 
-      team: teamName, project: projectName, featureEndSprint: sprintName, storySize: 0
+      team: teamName, project: projectName, featureEndSprint: sprintName, storySize: 0,
+      state: state, tags: tags, priority: priority
     });
 
     Collections.ProjectsCollection.upsert({name: projectName}, { $set: {name: projectName}});

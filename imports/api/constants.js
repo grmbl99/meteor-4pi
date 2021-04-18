@@ -22,6 +22,8 @@ export const ADSFields = {
   EFFORT: 'Microsoft.VSTS.Scheduling.Effort',
   RELEASE: 'Philips.Planning.Release',
   STATE: 'System.State',
+  TAGS: 'System.Tags',
+  PRIORITY: 'Microsoft.VSTS.Common.BacklogPriority',
   DONE: 'Done'
 };
 

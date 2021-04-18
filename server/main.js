@@ -9,6 +9,15 @@ function compareFeatureCollections() {
   const features = Collections.FeaturesCollection.find({}).fetch();  
 
   for (const feature of features) {
+    // perform some cleaning-up
+    // (as we are iterating over features here anyway)
+    if (feature.storySize===0) {
+      Collections.FeaturesCollection.update({id: feature.id},{ $set: { storySize: feature.size }});
+    }
+    if (feature.state===Constants.ADSFields.DONE) {
+      Collections.FeaturesCollection.update({id: feature.id},{ $set: { progress: feature.size }});
+    }
+
     const orgFeature = Collections.OrgFeaturesCollection.findOne({id: feature.id});
     if (orgFeature) {
       if(feature.pi!==orgFeature.pi || feature.team!==orgFeature.team || feature.project!==orgFeature.project) {
