@@ -20,21 +20,56 @@ PiView.propTypes = {
   allocation: PropTypes.number.isRequired
 };
 
-// calculate feature-start and feature-duration as percentace of nr-of-sprints in a PI
-function calcRelFeatureStartAndDuration(feature,sprintsDict) {
-  const nrSprints=Object.keys(sprintsDict).length;
+// determine how feature-start&end fall within a PI; 
+// returns start/end relative to PI-start (i.e. 0=first sprint of PI)
+function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
+  let start=Constants.NOT_SET;
+  let end=Constants.NOT_SET;
+  let fEnd=Constants.NOT_SET;
 
-  let duration=0;
-  let start=0;
-  if (feature.startSprint in sprintsDict && feature.endSprint in sprintsDict) {
-    const startSprint=sprintsDict[feature.startSprint];
-    const endSprint=sprintsDict[feature.endSprint];
+  if (piStartSprint!==Constants.START_SPRINT_NOT_SET &&
+      piEndSprint!==Constants.NOT_SET) {
 
-    duration=(endSprint-startSprint+1)/nrSprints*100;
-    start=startSprint/nrSprints*100;  
+    if (feature.startSprint!==Constants.START_SPRINT_NOT_SET && 
+        feature.endSprint!==Constants.NOT_SET && 
+        feature.startSprint<=feature.endSprint) {
+
+      if (feature.startSprint<piStartSprint && feature.endSprint<piStartSprint) {
+        // before
+      } else if (feature.startSprint<piStartSprint && feature.endSprint<=piEndSprint) {
+        // before-in
+        start=0;
+        end=feature.endSprint-piStartSprint;
+      } else if (feature.startSprint<=piEndSprint && feature.endSprint<=piEndSprint) {
+        // in
+        start=feature.startSprint-piStartSprint;
+        end=feature.endSprint-piStartSprint;
+      } else if (feature.startSprint<piStartSprint && feature.endSprint>piEndSprint) {
+        // before-after
+        start=0;
+        end=piEndSprint-piStartSprint;
+      } else if (feature.startSprint<=piEndSprint && feature.endSprint>piEndSprint) {
+        // in-after
+        start=feature.startSprint-piStartSprint;
+        end=piEndSprint-piStartSprint;
+      } else if (feature.startSprint>piEndSprint && feature.endSprint>piEndSprint) {
+        // after
+      }
+    }
+
+    if (feature.featureEndSprint!==Constants.NOT_SET) {
+      if (feature.featureEndSprint<piStartSprint) {
+        // before
+      } else if (feature.featureEndSprint<=piEndSprint) {
+        // in
+        fEnd=feature.featureEndSprint-piStartSprint;
+      } else if (fEnd>piEndSprint) {
+        // after
+      }
+    }
   }
 
-  return([start,duration]);
+  return([start,end,fEnd]);
 }
 
 function PiView(props) {  
@@ -51,27 +86,29 @@ function PiView(props) {
     })
   }),[props]);
 
-  const sprintsDict={}; // to hold the sequence number per sprint 
   const sprintsList=[]; // list of Sprint objects
-  let sprintNr=0;
+  let piStart=Constants.START_SPRINT_NOT_SET;
+  let piEnd=Constants.NOT_SET;
   for (const iteration of iterations) {
     if (iteration.pi === props.pi) {
-      sprintsDict[iteration.sprint]=sprintNr;
-      sprintNr += 1;
-      sprintsList.push(<Sprint key={iteration._id} name={iteration.sprint}/>);
+      if (iteration.sprint<piStart) { piStart = iteration.sprint; }
+      if (iteration.sprint>piEnd) { piEnd = iteration.sprint; }
+      sprintsList.push(<Sprint key={iteration._id} name={iteration.sprintName}/>);
     }
   }
-  if (sprintNr===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
+  const nrSprints=sprintsList.length;
+  if (nrSprints===0) { sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined'/>); }
 
   let size=0;
   let progress=0;
   const featuresList=[]; // list of Feature objects
   for (const feature of features) {
-    let orgStart=Constants.NOT_SET;
-    let orgDuration=Constants.NOT_SET;
-    let orgSize=Constants.NOT_SET;
-    let orgProgress=Constants.NOT_SET;
-    const [start,duration]=calcRelFeatureStartAndDuration(feature,sprintsDict);
+    let orgStartSprint = Constants.NOT_SET;
+    let orgEndSprint = Constants.NOT_SET;
+    let orgFeatureEndSprint = Constants.NOT_SET;
+    let orgSize = Constants.NOT_SET;
+    let orgProgress = Constants.NOT_SET;
+    const [startSprint, endSprint, featureEndSprint]=calcRelFeatureStartEnd(feature, piStart, piEnd);
 
     if (feature.pi === props.pi && 
         (props.team === '' || feature.team === props.team) &&
@@ -89,7 +126,7 @@ function PiView(props) {
               displayType=Constants.DisplayTypes.ADDED;
             }
             if (deltaFeature.type === Constants.DisplayTypes.CHANGED) {
-              [orgStart,orgDuration]=calcRelFeatureStartAndDuration(deltaFeature.feature,sprintsDict);
+              [orgStartSprint, orgEndSprint, orgFeatureEndSprint]=calcRelFeatureStartEnd(deltaFeature.feature, piStart, piEnd);
               orgSize=deltaFeature.feature.size;
               orgProgress=deltaFeature.feature.progress;
             }
@@ -99,9 +136,10 @@ function PiView(props) {
 
       featuresList.push(<Feature key={feature._id} feature={feature} 
                                  displayType={displayType} 
-                                 start={start} duration={duration}
-                                 orgStart={orgStart} orgDuration={orgDuration}
-                                 orgSize={orgSize} orgProgress={orgProgress}
+                                 startSprint={startSprint} endSprint={endSprint} featureEndSprint={featureEndSprint}
+                                 orgStartSprint={orgStartSprint} orgEndSprint={orgEndSprint} orgFeatureEndSprint={orgFeatureEndSprint}
+                                 orgSize={orgSize} orgProgress={orgProgress} 
+                                 nrSprints={nrSprints}
                                  onFeatureClicked={props.onFeatureClicked}/>);
     }
   }
@@ -111,7 +149,7 @@ function PiView(props) {
     for (const deltaFeature of deltaFeatures) {
       if(deltaFeature.type === Constants.DisplayTypes.REMOVED) {
         const feature=deltaFeature.feature;
-        const [start,duration]=calcRelFeatureStartAndDuration(feature,sprintsDict);
+        const [startSprint,endSprint,featureEndSprint]=calcRelFeatureStartEnd(feature,piStart,piEnd);
 
         if (feature.pi === props.pi && 
             (props.team === '' || feature.team === props.team) &&
@@ -119,9 +157,10 @@ function PiView(props) {
           let displayType=Constants.DisplayTypes.REMOVED;
           featuresList.push(<Feature key={feature._id} feature={feature} 
                                      displayType={displayType} 
-                                     start={start} duration={duration}
-                                     orgStart={Constants.NOT_SET} orgDuration={Constants.NOT_SET}
+                                     startSprint={startSprint} endSprint={endSprint} featureEndSprint={featureEndSprint}
+                                     orgStartSprint={Constants.NOT_SET} orgEndSprint={Constants.NOT_SET} orgFeatureEndSprint={Constants.NOT_SET}
                                      orgSize={Constants.NOT_SET} orgProgress={Constants.NOT_SET}
+                                     nrSprints={nrSprints}
                                      onFeatureClicked={props.onFeatureClicked}/>);
         }  
       }
@@ -146,8 +185,9 @@ function PiView(props) {
       </div>
       <div className='pi-progress'>
         <div className='pi-progress-bar'>
-        <ProgressBar start={0} duration={100} duration2={Constants.NOT_SET} size={size} progress={progress}
-                     orgStart={Constants.NOT_SET} orgDuration={Constants.NOT_SET} orgSize={Constants.NOT_SET}/>
+        <ProgressBar startSprint={0} endSprint={nrSprints-1} featureEndSprint={Constants.NOT_SET} size={size} progress={progress}
+                     orgStartSprint={Constants.NOT_SET} orgEndSprint={Constants.NOT_SET} orgFeatureEndSprint={Constants.NOT_SET}
+                     orgSize={Constants.NOT_SET} nrSprints={nrSprints}/>
         </div>
       </div>
       {featuresList}

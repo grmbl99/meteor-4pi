@@ -4,15 +4,30 @@ import * as Constants from '/imports/api/constants';
 
 export { ProgressBar };
 
+// calculate start & duration as percentace of nr-of-sprints in a PI
+function calcDuration(startSprint,endSprint,nrSprints) {
+  let pDuration=0;
+  let pStart=0;
+
+  if (startSprint!==Constants.NOT_SET && endSprint!==Constants.NOT_SET && nrSprints!==0) {
+    pDuration=(endSprint-startSprint+1)/nrSprints*100;
+    pStart=startSprint/nrSprints*100;
+  }
+
+  return([pStart,pDuration]);
+}
+
+
 ProgressBar.propTypes = {
-  start: PropTypes.number.isRequired,
-  duration: PropTypes.number.isRequired,
-  duration2: PropTypes.number.isRequired,
+  startSprint: PropTypes.number.isRequired,
+  endSprint: PropTypes.number.isRequired,
+  featureEndSprint: PropTypes.number.isRequired,
   size: PropTypes.number.isRequired,
   progress: PropTypes.number.isRequired,
-  orgStart: PropTypes.number.isRequired,
-  orgDuration: PropTypes.number.isRequired,
-  orgSize: PropTypes.number.isRequired
+  orgStartSprint: PropTypes.number.isRequired,
+  orgEndSprint: PropTypes.number.isRequired,
+  orgSize: PropTypes.number.isRequired,
+  nrSprints: PropTypes.number.isRequired
 };
 
 function ProgressBar(props) {
@@ -23,12 +38,12 @@ function ProgressBar(props) {
 
   // determine wether to display the progress bar
   let progressBar='';
-  let width = props.duration;
-  if (props.start===0 && props.duration===0) {
+  let [start,width] = calcDuration(props.startSprint,props.endSprint,props.nrSprints);
+  if (width===0) {
     width=100; //no bar is displayed, use 100% of the width so text is nicely right-aligned
   } else {
     progressBar=
-      <div className='progress-bar-total' style={{left: props.start+'%', width: width+'%'}}>
+      <div className='progress-bar-total' style={{left: start+'%', width: width+'%'}}>
         <div className='progress-bar-done' style={{width: perctDoneStr}}/>
       </div>;
   }
@@ -47,22 +62,24 @@ function ProgressBar(props) {
 
   // determine whether to display the delta-bar
   let deltaBar='';  
-  if (props.orgStart!==Constants.NOT_SET && props.orgDuration!==Constants.NOT_SET &&
-    (props.orgDuration!==props.duration || props.orgStart!==props.start)) {
-      deltaBar=<div className='delta-bar' style={{left: props.orgStart+'%', width: props.orgDuration+'%'}}/>;
+  if (props.orgStartSprint!==Constants.NOT_SET && props.orgEndSprint!==Constants.NOT_SET &&
+    (props.orgStartSprint!==props.startSprint || props.orgEndSprint!==props.endSprint)) {
+      let [start,width] = calcDuration(props.orgStartSprint,props.orgEndSprint,props.nrSprints);
+      deltaBar=<div className='delta-bar' style={{left: start+'%', width: width+'%'}}/>;
   }
 
   // determine whether to display the feature end marker
   let endMarker='';
-  if (props.duration2!==Constants.NOT_SET) {
-    endMarker=<div className='end-marker' style={{left: props.start+'%', width: props.duration2+'%'}}/>;
+  if (props.featureEndSprint!==Constants.NOT_SET && props.featureEndSprint!==props.endSprint) {
+    let [start,width] = calcDuration(props.startSprint,props.featureEndSprint,props.nrSprints);
+    endMarker=<div className='end-marker' style={{left: start+'%', width: width+'%'}}/>;
   }
 
   return (
       <div className='progress-bar'>
         {progressBar}
 
-        <div className='progress-text' style={{left: props.start+'%', width: width+'%'}}>
+        <div className='progress-text' style={{left: start+'%', width: width+'%'}}>
           {perctDoneStr} [{progressStr}/{sizeStr}{deltaBadge}]
         </div>
 

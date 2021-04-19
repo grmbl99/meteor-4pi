@@ -10,17 +10,20 @@ Feature.propTypes = {
   feature: PropTypes.object.isRequired,
   displayType: PropTypes.string.isRequired,
   onFeatureClicked: PropTypes.func.isRequired,
-  start: PropTypes.number.isRequired,
-  duration: PropTypes.number.isRequired,
-  orgStart: PropTypes.number.isRequired,
-  orgDuration: PropTypes.number.isRequired,
+  startSprint: PropTypes.number.isRequired,
+  endSprint: PropTypes.number.isRequired,
+  featureEndSprint: PropTypes.number.isRequired,
+  orgStartSprint: PropTypes.number.isRequired,
+  orgEndSprint: PropTypes.number.isRequired,
+  orgFeatureEndSprint: PropTypes.number.isRequired, //not used to display anything at the moment
   orgSize: PropTypes.number.isRequired,
-  orgProgress: PropTypes.number.isRequired
+  orgProgress: PropTypes.number.isRequired,
+  nrSprints: PropTypes.number.isRequired
 };
 
 function Feature(props) {
   const feature=props.feature;
-
+  
   // feature drag-and-drop logic
   const [{isDragging}, drag] = useDrag(() => ({
     type: Constants.ItemTypes.FEATURE,
@@ -51,10 +54,10 @@ function Feature(props) {
     >
       <div className='feature-name'>{feature.id} {trimmedName}</div>
       <div className='feature-progress-bar'>
-        <ProgressBar start={props.start} duration={props.duration} duration2={Constants.NOT_SET}
+        <ProgressBar startSprint={props.startSprint} endSprint={props.endSprint} featureEndSprint={props.featureEndSprint}
                     size={feature.size} progress={feature.progress}
-                    orgStart={props.orgStart} orgDuration={props.orgDuration}
-                    orgSize={props.orgSize}/>
+                    orgStartSprint={props.orgStartSprint} orgEndSprint={props.orgEndSprint}
+                    orgSize={props.orgSize} nrSprints={props.nrSprints}/>
       </div>
     </div>
   );

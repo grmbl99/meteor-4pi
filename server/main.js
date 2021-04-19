@@ -4,20 +4,24 @@ import * as Constants from '/imports/api/constants';
 import { QueryADS } from './query-ads';
 import { PopulateCollections } from './populate-collections';
 
+function featurePostProcessing() {
+  const features = Collections.FeaturesCollection.find({}).fetch();  
+
+  for (const feature of features) {
+    if (feature.size===0) {
+      Collections.FeaturesCollection.update({id: feature.id},{ $set: { size: feature.featureSize }});
+    }
+    if (feature.state===Constants.ADSFields.DONE) {
+      Collections.FeaturesCollection.update({id: feature.id},{ $set: { progress: feature.featureSize }});
+    }
+  }
+}
+
 // compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
 function compareFeatureCollections() {
   const features = Collections.FeaturesCollection.find({}).fetch();  
 
   for (const feature of features) {
-    // some checks & updates on feature values
-    // (as we are iterating over features here anyway)
-    if (feature.storySize===0) {
-      Collections.FeaturesCollection.update({id: feature.id},{ $set: { storySize: feature.size }});
-    }
-    if (feature.state===Constants.ADSFields.DONE) {
-      Collections.FeaturesCollection.update({id: feature.id},{ $set: { progress: feature.size }});
-    }
-
     const orgFeature = Collections.OrgFeaturesCollection.findOne({id: feature.id});
     if (orgFeature) {
       if(feature.pi!==orgFeature.pi || feature.team!==orgFeature.team || feature.project!==orgFeature.project) {
@@ -58,6 +62,8 @@ function syncADS(date) {
     // QueryADS is an async function (promise), so handle result/exceptions in then/catch
     QueryADS(date).then(() => { 
       console.log('queryADS succeeded'); 
+
+      featurePostProcessing();
 
       const today = new Date();
       if (date) {
@@ -128,5 +134,5 @@ Meteor.startup(() => {
   ].forEach(collection => collection.remove({}));
 
   PopulateCollections();
-  // syncADS();
+  syncADS();
 });

@@ -204,7 +204,7 @@ export function App(props) {
   PickDateButton.propTypes = {
     onClick: PropTypes.func,
     value: PropTypes.string,
-    syncStatus: PropTypes.string.isRequired
+    syncStatus: PropTypes.string
   };
   PickDateButton.displayName = 'PickDateButton';
 

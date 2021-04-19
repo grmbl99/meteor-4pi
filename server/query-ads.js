@@ -30,7 +30,7 @@ async function getIterationsFromADS(witAPI) {
       if (pi.hasChildren) {
         for (const sprint of pi.children) {
           const startDate = new Date(sprint.attributes.startDate);
-          Collections.IterationsCollection.insert({pi: pi.name, sprintNr: i++, sprint: sprint.name, startDate: startDate});
+          Collections.IterationsCollection.insert({pi: pi.name, sprint: i++, sprintName: sprint.name, startDate: startDate});
         }
       }
     }
@@ -63,12 +63,15 @@ async function getFeatureFromADS(witAPI,id,asOfDate) {
     const pi = parts.length>3 ? parts[3] : 'undefined';
     const sprintName = parts.length>4 ? parts[4] : 'undefined';
 
+    const iteration = Collections.IterationsCollection.findOne({sprintName: sprintName});
+    const sprint = iteration ? iteration.sprint : Constants.NOT_SET;
+
     const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
     collection.insert({
-      id: id, name: name, pi: pi, size: size, progress: 0, 
-      startSprintNr: Constants.START_SPRINT_NOT_SET, endSprintNr: Constants.NOT_SET, 
-      team: teamName, project: projectName, featureEndSprint: sprintName, storySize: 0,
-      state: state, tags: tags, priority: priority
+      id: id, name: name, pi: pi, featureSize: size ? size : 0, progress: 0, 
+      startSprint: Constants.START_SPRINT_NOT_SET, endSprint: Constants.NOT_SET, 
+      team: teamName, project: projectName, featureEndSprint: sprint, featureEndSprintName: sprintName,
+      size: 0, state: state, tags: tags, priority: priority
     });
 
     Collections.ProjectsCollection.upsert({name: projectName}, { $set: {name: projectName}});
@@ -92,8 +95,8 @@ async function getStoryFromADS(witAPI,storyId,featureId,asOfDate) {
     const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
 
     if (effort>0) {
-      // adds storypoints to storySize
-      collection.update({id: featureId},{ $inc: { storySize: effort }});
+      // adds storypoints to size
+      collection.update({id: featureId},{ $inc: { size: effort }});
 
       if (state===Constants.ADSFields.DONE) {
         // adds storypoints for 'done' stories
@@ -102,17 +105,17 @@ async function getStoryFromADS(witAPI,storyId,featureId,asOfDate) {
     }
 
     const sprintName = parts.length>4 ? parts[4] : 'undefined';
-    const sprint = Collections.IterationsCollection.findOne({sprint: sprintName});
+    const iteration = Collections.IterationsCollection.findOne({sprintName: sprintName});
 
     // set startSprint/endSprint in feature to first and last sprint of child stories
-    if (sprint) {
+    if (iteration) {
       collection.update(
-        {id: featureId, startSprintNr: { $gt: sprint.sprintNr} },
-        {$set: { startSprintNr: sprint.sprintNr, startSprint: sprintName }}
+        {id: featureId, startSprint: { $gt: iteration.sprint} },
+        {$set: { startSprint: iteration.sprint, startSprintName: sprintName }}
       );
       collection.update(
-        {id: featureId, endSprintNr: { $lt: sprint.sprintNr} },
-        {$set: { endSprintNr: sprint.sprintNr, endSprint: sprintName }}
+        {id: featureId, endSprint: { $lt: iteration.sprint} },
+        {$set: { endSprint: iteration.sprint, endSprintName: sprintName }}
       );
     }
   } catch(e) {
