@@ -134,5 +134,5 @@ Meteor.startup(() => {
   ].forEach(collection => collection.remove({}));
 
   PopulateCollections();
-  syncADS();
+  // syncADS();
 });
