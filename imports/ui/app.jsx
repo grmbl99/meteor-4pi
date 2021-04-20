@@ -117,11 +117,11 @@ export function App(props) {
   }
 
   // useTracker to get react state tracking on meteor/mongo collections
-  const features = useTracker(() => Collections.FeaturesCollection.find({}).fetch());
+  const features = useTracker(() => Collections.FeaturesCollection.find({},{ sort: { priority: 1 } }).fetch());
   const deltaFeatures = useTracker(() => Collections.DeltaFeaturesCollection.find({}).fetch());
   const iterations = useTracker(() => Collections.IterationsCollection.find({}).fetch());
-  const teams = useTracker(() => Collections.TeamsCollection.find({}).fetch());
-  const projects = useTracker(() => Collections.ProjectsCollection.find({}).fetch());
+  const teams = useTracker(() => Collections.TeamsCollection.find({}, { sort: { name: 1 } }).fetch());
+  const projects = useTracker(() => Collections.ProjectsCollection.find({}, { sort: { name: 1 } }).fetch());
   const allocations = useTracker(() => Collections.AllocationsCollection.find({}).fetch());
   const velocities = useTracker(() => Collections.VelocitiesCollection.find({}).fetch());
   const serverStatus = useTracker(() => Collections.ServerStatusCollection.find({}).fetch());
