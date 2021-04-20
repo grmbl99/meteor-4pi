@@ -14,33 +14,39 @@ import { UpdateFeaturePopup } from './popups';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-export function App(props) {  
+export function App(props) {
   // move a feature between teams/projects/pi's
   // (exectued using drag-and-drop)
-  function moveFeature(featureId,pi,team,project) {
-    if(!compareModeOn) {
-      let updates = { 'pi': pi };
-      if (project !== '') { updates['project']=project; }
-      if (team !== '') { updates['team']=team; }
-    
-      Collections.FeaturesCollection.update({ _id: featureId },{ $set: updates});  
+  function moveFeature(featureId, pi, team, project) {
+    if (!compareModeOn) {
+      let updates = { pi: pi };
+      if (project !== '') {
+        updates['project'] = project;
+      }
+      if (team !== '') {
+        updates['team'] = team;
+      }
+
+      Collections.FeaturesCollection.update({ _id: featureId }, { $set: updates });
     }
   }
-  
+
   // store updated feature
   // executed when closing the feature-update modal dialog
   function updateFeature(input) {
     setShowPopup(false);
     Collections.FeaturesCollection.update(
-      {_id: input._id},
-      {$set: {
-        'name': input.name, 
-        'size': parseInt(input.size), 
-        'progress': parseInt(input.progress), 
-        'pi': input.pi, 
-        'startSprint': input.startSprint,
-        'endSprint': input.endSprint 
-      }}
+      { _id: input._id },
+      {
+        $set: {
+          name: input.name,
+          size: parseInt(input.size),
+          progress: parseInt(input.progress),
+          pi: input.pi,
+          startSprint: input.startSprint,
+          endSprint: input.endSprint
+        }
+      }
     );
   }
 
@@ -65,7 +71,7 @@ export function App(props) {
 
   // call method on server to refresh data from ADS
   function refreshADS(event) {
-    if (adsSyncStatus!==Constants.SyncStatus.BUSY) {
+    if (adsSyncStatus !== Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
       setCompareModeOn(false);
     }
@@ -73,44 +79,44 @@ export function App(props) {
 
   // call method on server to refresh compare data from ADS
   function refreshCompareADS(date) {
-    if (adsSyncStatus!==Constants.SyncStatus.BUSY) {
+    if (adsSyncStatus !== Constants.SyncStatus.BUSY) {
       Meteor.call('RefreshCompareADS', date);
       setCompareModeOn(true);
     }
   }
-  
-  function getAllocation(pi,project,team) {
-    let alloc=0;
-  
+
+  function getAllocation(pi, project, team) {
+    let alloc = 0;
+
     if (team !== '') {
-      let teamVelocity=0;
+      let teamVelocity = 0;
       for (const velocity of velocities) {
-        if(velocity.pi === pi && velocity.team === team) { 
+        if (velocity.pi === pi && velocity.team === team) {
           teamVelocity = velocity.velocity;
         }
       }
-  
+
       if (project !== '') {
-        let teamAllocation=0;
+        let teamAllocation = 0;
         for (const allocation of allocations) {
-          if(allocation.pi === pi && allocation.project === project && allocation.team === team) { 
+          if (allocation.pi === pi && allocation.project === project && allocation.team === team) {
             teamAllocation = allocation.allocation;
           }
         }
-  
+
         // percentage of the team-velocity allocated to a project
-        alloc = teamAllocation === 0 ? 0 : teamVelocity/100*teamAllocation;
+        alloc = teamAllocation === 0 ? 0 : (teamVelocity / 100) * teamAllocation;
       } else {
         alloc = teamVelocity;
       }
     } else {
-      alloc=Constants.NOT_SET;
+      alloc = Constants.NOT_SET;
     }
-        
-    return(alloc);
+
+    return alloc;
   }
 
-  // useTracker to get react state tracking on meteor/mongo collections 
+  // useTracker to get react state tracking on meteor/mongo collections
   const features = useTracker(() => Collections.FeaturesCollection.find({}).fetch());
   const deltaFeatures = useTracker(() => Collections.DeltaFeaturesCollection.find({}).fetch());
   const iterations = useTracker(() => Collections.IterationsCollection.find({}).fetch());
@@ -126,81 +132,124 @@ export function App(props) {
   const [showPopup, setShowPopup] = useState(false);
   const [compareModeOn, setCompareModeOn] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState({
-    name: '', pi: '', size: '', progress: '', startSprint: '', endSprint: ''
+    name: '',
+    pi: '',
+    size: '',
+    progress: '',
+    startSprint: '',
+    endSprint: ''
   });
 
   // get the server state (azure sync status & dates) from server
-  let adsSyncStatus=Constants.SyncStatus.NONE;
-  let adsSyncDate='';
-  let adsCompareSyncDate='';
-  let compareDate='';
+  let adsSyncStatus = Constants.SyncStatus.NONE;
+  let adsSyncDate = '';
+  let adsCompareSyncDate = '';
+  let compareDate = '';
   for (const status of serverStatus) {
-    if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) { 
-      adsSyncStatus=status.value; 
+    if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) {
+      adsSyncStatus = status.value;
     } else if (status.key === Constants.ServerStatus.ADS_SYNC_DATE) {
-      adsSyncDate=status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
+      adsSyncDate = status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
     } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_DATE) {
-      adsCompareSyncDate=status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
+      adsCompareSyncDate = status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
     } else if (status.key === Constants.ServerStatus.ADS_COMPARE_DATE) {
-      compareDate=status.value;
+      compareDate = status.value;
     }
   }
 
   let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
 
-  let menuEntryKey=0;
-  let teamsList=[]; // set of PIView's per team
-  let teamsMenu=[]; // used as navigation buttons on left-side of screen
+  let menuEntryKey = 0;
+  let teamsList = []; // set of PIView's per team
+  let teamsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const team of teams) {
     const newRef = createRef();
-    teamsMenu.push(<div className='menu-item' key={menuEntryKey} onClick={() => {newRef.current.scrollIntoView();}}>{team.name}</div>);
+    teamsMenu.push(
+      <div
+        className='menu-item'
+        key={menuEntryKey}
+        onClick={() => {
+          newRef.current.scrollIntoView();
+        }}
+      >
+        {team.name}
+      </div>
+    );
     teamsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const allocation = getAllocation(pi,projectFilter,team.name);
+      const allocation = getAllocation(pi, projectFilter, team.name);
 
-      teamsList.push(<PiView 
-        key={menuEntryKey++} 
-        onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} iterations={iterations} 
-        pi={pi} project={projectFilter} team={team.name}
-        allocation={allocation}/>
+      teamsList.push(
+        <PiView
+          key={menuEntryKey++}
+          onFeatureDropped={moveFeature}
+          onFeatureClicked={editFeature}
+          features={features}
+          deltaFeatures={deltaFeatures}
+          compareModeOn={compareModeOn}
+          iterations={iterations}
+          pi={pi}
+          project={projectFilter}
+          team={team.name}
+          allocation={allocation}
+        />
       );
     }
   }
 
-  let projectsList=[]; // set of PIView's per project
-  let projectsMenu=[]; // used as navigation buttons on left-side of screen
+  let projectsList = []; // set of PIView's per project
+  let projectsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const project of projects) {
     const newRef = createRef();
-    projectsMenu.push(<div className='menu-item' key={menuEntryKey} onClick={() => {newRef.current.scrollIntoView();}}>{project.name}</div>);
+    projectsMenu.push(
+      <div
+        className='menu-item'
+        key={menuEntryKey}
+        onClick={() => {
+          newRef.current.scrollIntoView();
+        }}
+      >
+        {project.name}
+      </div>
+    );
     projectsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
     for (const pi of pis) {
-      const allocation = getAllocation(pi,project.name,teamFilter);
-      
-      projectsList.push(<PiView 
-        key={menuEntryKey++} 
-        onFeatureDropped={moveFeature} onFeatureClicked={editFeature} 
-        features={features} deltaFeatures={deltaFeatures} compareModeOn={compareModeOn} iterations={iterations} 
-        pi={pi} project={project.name} team={teamFilter}
-        allocation={allocation}/>
+      const allocation = getAllocation(pi, project.name, teamFilter);
+
+      projectsList.push(
+        <PiView
+          key={menuEntryKey++}
+          onFeatureDropped={moveFeature}
+          onFeatureClicked={editFeature}
+          features={features}
+          deltaFeatures={deltaFeatures}
+          compareModeOn={compareModeOn}
+          iterations={iterations}
+          pi={pi}
+          project={project.name}
+          team={teamFilter}
+          allocation={allocation}
+        />
       );
     }
   }
 
   // to show/hide 'loading' indicators
-  const loadingClassName = adsSyncStatus===Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-loading-empty';
-  const adsSyncClassName = adsSyncStatus===Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+  const loadingClassName = adsSyncStatus === Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-loading-empty';
+  const adsSyncClassName = adsSyncStatus === Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
 
   // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
-  const PickDateButton = forwardRef(
-    ({ value, onClick }, ref) => {
-      return(<div className='menu-item' ref={ref} onClick={onClick}>Compare: {value}</div>);
-    }
-  );
+  const PickDateButton = forwardRef(({ value, onClick }, ref) => {
+    return (
+      <div className='menu-item' ref={ref} onClick={onClick}>
+        Compare: {value}
+      </div>
+    );
+  });
   PickDateButton.propTypes = {
     onClick: PropTypes.func,
     value: PropTypes.string,
@@ -212,27 +261,30 @@ export function App(props) {
     <div>
       <div className='left'>
         <div className='menu-container'>
-          <div className={adsSyncClassName} onClick={refreshADS}>ADS Sync: {adsSyncStatus}</div>
+          <div className={adsSyncClassName} onClick={refreshADS}>
+            ADS Sync: {adsSyncStatus}
+          </div>
           <div className='ads-sync-date'>{adsSyncDate}</div>
 
-          <DatePicker 
-            selected={compareDate} 
-            showWeekNumbers 
-            onChange={date => refreshCompareADS(date)}
+          <DatePicker
+            selected={compareDate}
+            showWeekNumbers
+            onChange={(date) => refreshCompareADS(date)}
             customInput={<PickDateButton />}
           />
           <div className='ads-sync-date'>{adsCompareSyncDate}</div>
-          <div>Compare: <input type="checkbox" checked={compareModeOn} onChange={toggleCompareMode}/></div>
-          <div className={loadingClassName}/>
+          <div>
+            Compare: <input type='checkbox' checked={compareModeOn} onChange={toggleCompareMode} />
+          </div>
+          <div className={loadingClassName} />
 
           <div className='menu-heading'>Teams</div>
-          <FilterForm text='Project filter' onSubmit={input => setProjectFilter(input.filterName)}/>
+          <FilterForm text='Project filter' onSubmit={(input) => setProjectFilter(input.filterName)} />
           {teamsMenu}
 
           <div className='menu-heading'>Projects</div>
-          <FilterForm text='Team filter' onSubmit={input => setTeamFilter(input.filterName)}/>
+          <FilterForm text='Team filter' onSubmit={(input) => setTeamFilter(input.filterName)} />
           {projectsMenu}
-
         </div>
       </div>
       <div className='right'>
@@ -244,8 +296,8 @@ export function App(props) {
             {projectsList}
           </div>
         </DndProvider>
-        <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature}/>
+        <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature} />
       </div>
     </div>
-  );  
+  );
 }

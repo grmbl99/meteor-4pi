@@ -1,12 +1,18 @@
 @keyframes loading {
-  0% { left: 0px; }
-  50% { left: 130px; }
-  100% { left: 0px; }
+  0% {
+    left: 0px;
+  }
+  50% {
+    left: 130px;
+  }
+  100% {
+    left: 0px;
+  }
 }
 
 :root {
-  --my-page-background-color: rgb(245, 245, 245); 
-  --my-menu-background-color: rgb(245, 245, 245); 
+  --my-page-background-color: rgb(245, 245, 245);
+  --my-menu-background-color: rgb(245, 245, 245);
   --my-background-color: rgb(170, 170, 170);
   --my-accent-color: rgb(110, 110, 110);
   --my-progress-background-color: rgb(230, 230, 230);
@@ -79,7 +85,7 @@ body {
   height: 85px;
   padding-left: 10px;
   padding-top: 5px;
-  outline-offset:  -1px;
+  outline-offset: -1px;
   color: var(--my-light-text-color);
   outline: 1px solid var(--my-accent-color);
   background-color: var(--my-background-color);
@@ -97,7 +103,7 @@ body {
 input[type='submit'] {
   border: none;
   padding: 5px 5px;
-  outline-offset:  -1px;
+  outline-offset: -1px;
   outline: 1px solid var(--my-accent-color);
   color: var(--my-light-text-color);
   background-color: var(--my-background-color);
@@ -112,7 +118,7 @@ input[type='submit']:hover {
   width: 150px;
   padding-left: 10px;
   padding-top: 5px;
-  outline-offset:  -1px;
+  outline-offset: -1px;
   outline: 1px solid var(--my-accent-color);
   color: var(--my-light-text-color);
   background-color: var(--my-background-color);
@@ -173,7 +179,7 @@ input[type='submit']:hover {
   line-height: initial;
   font-size: 8pt;
   font-weight: normal;
-  background-color:green;
+  background-color: green;
 }
 .pi-load-badge {
   top: 5px;
@@ -251,7 +257,7 @@ input[type='submit']:hover {
 }
 
 .feature-name {
-  position:absolute;
+  position: absolute;
   left: 5px;
   top: 3px;
   text-decoration: inherit;
@@ -263,7 +269,7 @@ input[type='submit']:hover {
   font-size: 7pt;
   padding-top: 20px;
   color: var(--my-dark-text-color);
-  --fill-style: linear-gradient(to right, rgb(255, 255, 255), rgb(0, 139, 253)); 
+  --fill-style: linear-gradient(to right, rgb(255, 255, 255), rgb(0, 139, 253));
 }
 
 .progress-bar {
@@ -333,26 +339,26 @@ input[type='submit']:hover {
 }
 
 .popup {
-  position: fixed;  
-  width: 100%;  
-  height: 100%;  
-  top: 0;  
-  left: 0;  
-  right: 0;  
-  bottom: 0;  
-  margin: auto;  
-  background-color: rgba(0,0,0, 0.5);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .popup-main {
-  position: absolute;  
+  position: absolute;
   width: 600px;
   height: 400px;
-  left: 30%;  
-  top: 30%;  
-  margin: auto;  
-  border-radius: 20px;  
-  background: var(--my-menu-background-color); 
+  left: 30%;
+  top: 30%;
+  margin: auto;
+  border-radius: 20px;
+  background: var(--my-menu-background-color);
 }
 
 .display-block {
