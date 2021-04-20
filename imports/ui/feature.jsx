@@ -58,7 +58,11 @@ function Feature(props) {
       }}
     >
       <div className='feature-name'>
-        {feature.id} {trimmedName}
+        <span className='tooltip'>
+          {feature.id}
+          <span className='tooltip-text'>Tags: {feature.tags}</span>
+        </span>{' '}
+        {trimmedName}
       </div>
       <div className='feature-progress-bar'>
         <ProgressBar
