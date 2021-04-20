@@ -55,25 +55,25 @@ export function PopulateCollections() {
   }
 
   // eslint-disable-next-line no-undef
-  let data = EJSON.parse(Assets.getText('teams.json'));
-  data.forEach((team) => Collections.TeamsCollection.insert(team));
+  const teams = EJSON.parse(Assets.getText('teams.json'));
+  teams.forEach((team) => Collections.TeamsCollection.insert(team));
 
   // eslint-disable-next-line no-undef
-  data = EJSON.parse(Assets.getText('features.json'));
-  data.forEach((feature) => Collections.FeaturesCollection.insert(feature));
+  const features = EJSON.parse(Assets.getText('features.json'));
+  features.forEach((feature) => Collections.FeaturesCollection.insert(feature));
 
   // eslint-disable-next-line no-undef
-  data = EJSON.parse(Assets.getText('iterations.json'));
-  data.forEach((iteration) => Collections.IterationsCollection.insert(iteration));
+  const iterations = EJSON.parse(Assets.getText('iterations.json'));
+  iterations.forEach((iteration) => Collections.IterationsCollection.insert(iteration));
 
   // eslint-disable-next-line no-undef
-  data = EJSON.parse(Assets.getText('projects.json'));
-  data.forEach((project) => Collections.ProjectsCollection.insert(project));
+  const projects = EJSON.parse(Assets.getText('projects.json'));
+  projects.forEach((project) => Collections.ProjectsCollection.insert(project));
 
   // eslint-disable-next-line no-undef
-  data = EJSON.parse(Assets.getText('orgfeatures.json'));
-  data.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
+  const orgfeatures = EJSON.parse(Assets.getText('orgfeatures.json'));
+  orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
 
-  // var data = JSON.parse(Assets.getText('deltafeatures.json'));
-  // data.forEach(feature => Collections.DeltaFeaturesCollection.insert(feature));
+  // const deltafeatures = JSON.parse(Assets.getText('deltafeatures.json'));
+  // deltafeatures.forEach(feature => Collections.DeltaFeaturesCollection.insert(feature));
 }
