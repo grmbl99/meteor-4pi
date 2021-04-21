@@ -27,7 +27,7 @@ export function App(props) {
         updates['team'] = team;
       }
 
-      Collections.FeaturesCollection.update({ _id: featureId }, { $set: updates });
+      Meteor.call('feature.move', featureId, updates);
     }
   }
 
@@ -35,19 +35,7 @@ export function App(props) {
   // executed when closing the feature-update modal dialog
   function updateFeature(input) {
     setShowPopup(false);
-    Collections.FeaturesCollection.update(
-      { _id: input._id },
-      {
-        $set: {
-          name: input.name,
-          size: parseInt(input.size),
-          progress: parseInt(input.progress),
-          pi: input.pi,
-          startSprint: input.startSprint,
-          endSprint: input.endSprint
-        }
-      }
-    );
+    Meteor.call('feature.update', input);
   }
 
   // show feature-update modal dialog
@@ -117,14 +105,47 @@ export function App(props) {
   }
 
   // useTracker to get react state tracking on meteor/mongo collections
-  const features = useTracker(() => Collections.FeaturesCollection.find({},{ sort: { priority: 1 } }).fetch());
-  const deltaFeatures = useTracker(() => Collections.DeltaFeaturesCollection.find({}).fetch());
-  const iterations = useTracker(() => Collections.IterationsCollection.find({}).fetch());
-  const teams = useTracker(() => Collections.TeamsCollection.find({}, { sort: { name: 1 } }).fetch());
-  const projects = useTracker(() => Collections.ProjectsCollection.find({}, { sort: { name: 1 } }).fetch());
-  const allocations = useTracker(() => Collections.AllocationsCollection.find({}).fetch());
-  const velocities = useTracker(() => Collections.VelocitiesCollection.find({}).fetch());
-  const serverStatus = useTracker(() => Collections.ServerStatusCollection.find({}).fetch());
+  // const features = useTracker(() => Collections.FeaturesCollection.find({},{ sort: { priority: 1 } }).fetch());
+  // const deltaFeatures = useTracker(() => Collections.DeltaFeaturesCollection.find({}).fetch());
+  // const iterations = useTracker(() => Collections.IterationsCollection.find({}).fetch());
+  // const teams = useTracker(() => Collections.TeamsCollection.find({}, { sort: { name: 1 } }).fetch());
+  // const projects = useTracker(() => Collections.ProjectsCollection.find({}, { sort: { name: 1 } }).fetch());
+  // const allocations = useTracker(() => Collections.AllocationsCollection.find({}).fetch());
+  // const velocities = useTracker(() => Collections.VelocitiesCollection.find({}).fetch());
+  // const serverStatus = useTracker(() => Collections.ServerStatusCollection.find({}).fetch());
+
+  const features = useTracker(() => {
+    Meteor.subscribe('features');
+    return Collections.FeaturesCollection.find({}, { sort: { priority: 1 } }).fetch();
+  });
+  const deltaFeatures = useTracker(() => {
+    Meteor.subscribe('deltafeatures');
+    return Collections.DeltaFeaturesCollection.find({}).fetch();
+  });
+  const iterations = useTracker(() => {
+    Meteor.subscribe('iterations');
+    return Collections.IterationsCollection.find({}).fetch();
+  });
+  const teams = useTracker(() => {
+    Meteor.subscribe('teams');
+    return Collections.TeamsCollection.find({}, { sort: { name: 1 } }).fetch();
+  });
+  const projects = useTracker(() => {
+    Meteor.subscribe('projects');
+    return Collections.ProjectsCollection.find({}, { sort: { name: 1 } }).fetch();
+  });
+  const allocations = useTracker(() => {
+    Meteor.subscribe('allocations');
+    return Collections.AllocationsCollection.find({}).fetch();
+  });
+  const velocities = useTracker(() => {
+    Meteor.subscribe('velocities');
+    return Collections.VelocitiesCollection.find({}).fetch();
+  });
+  const serverStatus = useTracker(() => {
+    Meteor.subscribe('serverstatus');
+    return Collections.ServerStatusCollection.find({}).fetch();
+  });
 
   // react state
   const [teamFilter, setTeamFilter] = useState('');

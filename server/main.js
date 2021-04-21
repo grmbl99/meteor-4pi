@@ -3,6 +3,7 @@ import * as Collections from '/imports/api/collections';
 import * as Constants from '/imports/api/constants';
 import { QueryADS } from './query-ads';
 import { PopulateCollections } from './populate-collections';
+import '/imports/api/app-methods.js';
 
 function featurePostProcessing() {
   const features = Collections.FeaturesCollection.find({}).fetch();
@@ -111,6 +112,32 @@ function syncADS(date) {
       });
   }
 }
+
+// not using arrow function, as we might need to use 'this' inside the function
+Meteor.publish('features', function publishFeatures() {
+  return Collections.FeaturesCollection.find();
+});
+Meteor.publish('deltafeatures', function publishDeltaFeatures() {
+  return Collections.DeltaFeaturesCollection.find();
+});
+Meteor.publish('iterations', function publishIterations() {
+  return Collections.IterationsCollection.find();
+});
+Meteor.publish('teams', function publishTeams() {
+  return Collections.TeamsCollection.find();
+});
+Meteor.publish('projects', function publishProjects() {
+  return Collections.ProjectsCollection.find();
+});
+Meteor.publish('allocations', function publishAllocations() {
+  return Collections.AllocationsCollection.find();
+});
+Meteor.publish('velocities', function publishVelocities() {
+  return Collections.VelocitiesCollection.find();
+});
+Meteor.publish('serverstatus', function publishServerStatus() {
+  return Collections.ServerStatusCollection.find();
+});
 
 // Meteor methods, called from clients
 Meteor.methods({
