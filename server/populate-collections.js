@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
+import { ServerStatus, SyncStatus } from '/imports/api/constants';
 import * as Collections from '/imports/api/collections';
-import * as Constants from '/imports/api/constants';
 
 function populateAllocationsCollection() {
   [
@@ -36,10 +36,10 @@ function populateVelocitiesCollection() {
 
 function populateServerStatusCollection() {
   [
-    { key: Constants.ServerStatus.ADS_SYNC_STATUS, value: Constants.SyncStatus.NONE },
-    { key: Constants.ServerStatus.ADS_SYNC_DATE, value: '' },
-    { key: Constants.ServerStatus.ADS_COMPARE_SYNC_DATE, value: '' },
-    { key: Constants.ServerStatus.ADS_COMPARE_DATE, value: '' }
+    { key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE },
+    { key: ServerStatus.ADS_SYNC_DATE, value: '' },
+    { key: ServerStatus.ADS_COMPARE_SYNC_DATE, value: '' },
+    { key: ServerStatus.ADS_COMPARE_DATE, value: '' }
   ].forEach((status) => Collections.ServerStatusCollection.insert(status));
 }
 
@@ -73,7 +73,4 @@ export function PopulateCollections() {
   // eslint-disable-next-line no-undef
   const orgfeatures = EJSON.parse(Assets.getText('orgfeatures.json'));
   orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
-
-  // const deltafeatures = JSON.parse(Assets.getText('deltafeatures.json'));
-  // deltafeatures.forEach(feature => Collections.DeltaFeaturesCollection.insert(feature));
 }

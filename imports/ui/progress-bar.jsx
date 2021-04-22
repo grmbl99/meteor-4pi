@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as Constants from '/imports/api/constants';
+import { NOT_SET } from '/imports/api/constants';
 
 export { ProgressBar };
 
@@ -9,7 +9,7 @@ function calcDuration(startSprint, endSprint, nrSprints) {
   let pDuration = 0;
   let pStart = 0;
 
-  if (startSprint !== Constants.NOT_SET && endSprint !== Constants.NOT_SET && nrSprints !== 0) {
+  if (startSprint !== NOT_SET && endSprint !== NOT_SET && nrSprints !== 0) {
     pDuration = ((endSprint - startSprint + 1) / nrSprints) * 100;
     pStart = (startSprint / nrSprints) * 100;
   }
@@ -52,7 +52,7 @@ function ProgressBar(props) {
 
   // determine whether to display the 'delta-size' badge
   let deltaBadge = '';
-  if (props.orgSize !== Constants.NOT_SET) {
+  if (props.orgSize !== NOT_SET) {
     const delta = props.size - props.orgSize;
     const deltaStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(delta);
     if (delta < 0) {
@@ -65,8 +65,8 @@ function ProgressBar(props) {
   // determine whether to display the delta-bar
   let deltaBar = '';
   if (
-    props.orgStartSprint !== Constants.NOT_SET &&
-    props.orgEndSprint !== Constants.NOT_SET &&
+    props.orgStartSprint !== NOT_SET &&
+    props.orgEndSprint !== NOT_SET &&
     (props.orgStartSprint !== props.startSprint || props.orgEndSprint !== props.endSprint)
   ) {
     let [start, width] = calcDuration(props.orgStartSprint, props.orgEndSprint, props.nrSprints);
@@ -75,7 +75,7 @@ function ProgressBar(props) {
 
   // determine whether to display the feature end marker
   let endMarker = '';
-  if (props.featureEndSprint !== Constants.NOT_SET && props.featureEndSprint !== props.endSprint) {
+  if (props.featureEndSprint !== NOT_SET && props.featureEndSprint !== props.endSprint) {
     let [start, width] = calcDuration(props.startSprint, props.featureEndSprint, props.nrSprints);
     endMarker = <div className='end-marker' style={{ left: start + '%', width: width + '%' }} />;
   }

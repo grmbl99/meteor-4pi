@@ -1,28 +1,25 @@
-import * as Collections from '/imports/api/collections';
-import * as Constants from '/imports/api/constants';
+import { FeaturesCollection, OrgFeaturesCollection } from '/imports/api/collections';
+import { ServerStatus, SyncStatus, ADSFields } from '/imports/api/constants';
+import { setServerStatus } from '/imports/api/server-status';
 import { CompareFeatureCollections } from './compare-feature-collections';
 import { QueryADS } from './query-ads';
 
 function featurePostProcessing() {
-  const features = Collections.FeaturesCollection.find({}).fetch();
+  const features = FeaturesCollection.find({}).fetch();
 
   for (const feature of features) {
     if (feature.size === 0) {
-      Collections.FeaturesCollection.update({ id: feature.id }, { $set: { size: feature.featureSize } });
+      FeaturesCollection.update({ id: feature.id }, { $set: { size: feature.featureSize } });
     }
-    if (feature.state === Constants.ADSFields.DONE) {
-      Collections.FeaturesCollection.update({ id: feature.id }, { $set: { progress: feature.featureSize } });
+    if (feature.state === ADSFields.DONE) {
+      FeaturesCollection.update({ id: feature.id }, { $set: { progress: feature.featureSize } });
     }
   }
 }
 
-function setServerStatus(key, value) {
-  return Collections.ServerStatusCollection.update({ key: key, value: { $ne: value } }, { $set: { value: value } });
-}
-
 export function SyncADS(date) {
   // prevent running multiple ADS syncs at the same time
-  if (setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.BUSY)) {
+  if (setServerStatus(ServerStatus.ADS_SYNC_STATUS, SyncStatus.BUSY)) {
     console.log('query ADS ' + date);
 
     // QueryADS is an async function (promise), so handle result/exceptions in then/catch
@@ -34,26 +31,26 @@ export function SyncADS(date) {
 
         const today = new Date();
         if (date) {
-          setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, date);
-          setServerStatus(Constants.ServerStatus.ADS_COMPARE_SYNC_DATE, today);
+          setServerStatus(ServerStatus.ADS_COMPARE_DATE, date);
+          setServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE, today);
         } else {
-          setServerStatus(Constants.ServerStatus.ADS_SYNC_DATE, today);
-          setServerStatus(Constants.ServerStatus.ADS_COMPARE_DATE, today);
-          setServerStatus(Constants.ServerStatus.ADS_COMPARE_SYNC_DATE, today);
+          setServerStatus(ServerStatus.ADS_SYNC_DATE, today);
+          setServerStatus(ServerStatus.ADS_COMPARE_DATE, today);
+          setServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE, today);
 
           // not querying by date: fill OrgFeaturesCollection with FeaturesCollection
-          const features = Collections.FeaturesCollection.find({}).fetch();
+          const features = FeaturesCollection.find({}).fetch();
           for (const feature of features) {
-            Collections.OrgFeaturesCollection.insert(feature);
+            OrgFeaturesCollection.insert(feature);
           }
         }
 
         CompareFeatureCollections();
-        setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.OK);
+        setServerStatus(ServerStatus.ADS_SYNC_STATUS, SyncStatus.OK);
       })
       .catch((e) => {
         console.log('queryADS failed: ' + e);
-        setServerStatus(Constants.ServerStatus.ADS_SYNC_STATUS, Constants.SyncStatus.FAILED);
+        setServerStatus(ServerStatus.ADS_SYNC_STATUS, SyncStatus.FAILED);
       });
   }
 }

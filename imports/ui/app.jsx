@@ -6,11 +6,21 @@ import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import { Meteor } from 'meteor/meteor';
-import * as Constants from '/imports/api/constants';
-import * as Collections from '/imports/api/collections';
 import { PiView } from './pi-view';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
+import { SyncStatus, ServerStatus, NOT_SET } from '/imports/api/constants';
+import { getServerStatus } from '/imports/api/server-status';
+import {
+  FeaturesCollection,
+  DeltaFeaturesCollection,
+  IterationsCollection,
+  ProjectsCollection,
+  TeamsCollection,
+  AllocationsCollection,
+  VelocitiesCollection,
+  ServerStatusCollection
+} from '/imports/api/collections';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -59,7 +69,7 @@ export function App(props) {
 
   // call method on server to refresh data from ADS
   function refreshADS(event) {
-    if (adsSyncStatus !== Constants.SyncStatus.BUSY) {
+    if (adsSyncStatus !== SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
       setCompareModeOn(false);
     }
@@ -67,7 +77,7 @@ export function App(props) {
 
   // call method on server to refresh compare data from ADS
   function refreshCompareADS(date) {
-    if (adsSyncStatus !== Constants.SyncStatus.BUSY) {
+    if (adsSyncStatus !== SyncStatus.BUSY) {
       Meteor.call('RefreshCompareADS', date);
       setCompareModeOn(true);
     }
@@ -98,43 +108,44 @@ export function App(props) {
         alloc = teamVelocity;
       }
     } else {
-      alloc = Constants.NOT_SET;
+      alloc = NOT_SET;
     }
 
     return alloc;
   }
 
+  // subscribe to server collections, with useTracker for 'reactiveness'
   const features = useTracker(() => {
     Meteor.subscribe('features');
-    return Collections.FeaturesCollection.find({}, { sort: { priority: 1 } }).fetch();
+    return FeaturesCollection.find({}, { sort: { priority: 1 } }).fetch();
   });
   const deltaFeatures = useTracker(() => {
     Meteor.subscribe('deltafeatures');
-    return Collections.DeltaFeaturesCollection.find({}).fetch();
+    return DeltaFeaturesCollection.find({}).fetch();
   });
   const iterations = useTracker(() => {
     Meteor.subscribe('iterations');
-    return Collections.IterationsCollection.find({}).fetch();
+    return IterationsCollection.find({}).fetch();
   });
   const teams = useTracker(() => {
     Meteor.subscribe('teams');
-    return Collections.TeamsCollection.find({}, { sort: { name: 1 } }).fetch();
+    return TeamsCollection.find({}, { sort: { name: 1 } }).fetch();
   });
   const projects = useTracker(() => {
     Meteor.subscribe('projects');
-    return Collections.ProjectsCollection.find({}, { sort: { name: 1 } }).fetch();
+    return ProjectsCollection.find({}, { sort: { name: 1 } }).fetch();
   });
   const allocations = useTracker(() => {
     Meteor.subscribe('allocations');
-    return Collections.AllocationsCollection.find({}).fetch();
+    return AllocationsCollection.find({}).fetch();
   });
   const velocities = useTracker(() => {
     Meteor.subscribe('velocities');
-    return Collections.VelocitiesCollection.find({}).fetch();
+    return VelocitiesCollection.find({}).fetch();
   });
-  const serverStatus = useTracker(() => {
+  useTracker(() => {
     Meteor.subscribe('serverstatus');
-    return Collections.ServerStatusCollection.find({}).fetch();
+    return ServerStatusCollection.find({}).fetch();
   });
 
   // react state
@@ -152,21 +163,12 @@ export function App(props) {
   });
 
   // get the server state (azure sync status & dates) from server
-  let adsSyncStatus = Constants.SyncStatus.NONE;
-  let adsSyncDate = '';
-  let adsCompareSyncDate = '';
-  let compareDate = '';
-  for (const status of serverStatus) {
-    if (status.key === Constants.ServerStatus.ADS_SYNC_STATUS) {
-      adsSyncStatus = status.value;
-    } else if (status.key === Constants.ServerStatus.ADS_SYNC_DATE) {
-      adsSyncDate = status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
-    } else if (status.key === Constants.ServerStatus.ADS_COMPARE_SYNC_DATE) {
-      adsCompareSyncDate = status.value ? format(status.value, 'EEE MMM d yyyy HH:mm.ss') : '';
-    } else if (status.key === Constants.ServerStatus.ADS_COMPARE_DATE) {
-      compareDate = status.value;
-    }
-  }
+  const adsSyncStatus = getServerStatus(ServerStatus.ADS_SYNC_STATUS);
+  const compareDate = getServerStatus(ServerStatus.ADS_COMPARE_DATE);
+  let adsSyncDate = getServerStatus(ServerStatus.ADS_SYNC_DATE);
+  adsSyncDate = adsSyncDate ? format(adsSyncDate, 'EEE MMM d yyyy HH:mm.ss') : '';
+  let adsCompareSyncDate = getServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE);
+  adsCompareSyncDate = adsCompareSyncDate ? format(adsCompareSyncDate, 'EEE MMM d yyyy HH:mm.ss') : '';
 
   let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
 
@@ -250,8 +252,8 @@ export function App(props) {
   }
 
   // to show/hide 'loading' indicators
-  const loadingClassName = adsSyncStatus === Constants.SyncStatus.BUSY ? 'ads-loading' : 'ads-loading-empty';
-  const adsSyncClassName = adsSyncStatus === Constants.SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
+  const loadingClassName = adsSyncStatus === SyncStatus.BUSY ? 'ads-loading' : 'ads-loading-empty';
+  const adsSyncClassName = adsSyncStatus === SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
 
   // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
   const PickDateButton = forwardRef(({ value, onClick }, ref) => {

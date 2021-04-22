@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import * as Constants from '/imports/api/constants';
+import { DisplayTypes, ItemTypes } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
 
 export { Feature };
@@ -26,7 +26,7 @@ function Feature(props) {
 
   // feature drag-and-drop logic
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: Constants.ItemTypes.FEATURE,
+    type: ItemTypes.FEATURE,
     item: { id: feature._id },
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
@@ -35,9 +35,9 @@ function Feature(props) {
 
   // style the feature based on DisplayType
   let featureClassName = 'feature';
-  if (props.displayType === Constants.DisplayTypes.ADDED) {
+  if (props.displayType === DisplayTypes.ADDED) {
     featureClassName += ' feature-added';
-  } else if (props.displayType === Constants.DisplayTypes.REMOVED) {
+  } else if (props.displayType === DisplayTypes.REMOVED) {
     featureClassName += ' feature-removed';
   }
 
