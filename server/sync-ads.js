@@ -11,7 +11,7 @@ function featurePostProcessing() {
     if (feature.size === 0) {
       FeaturesCollection.update({ id: feature.id }, { $set: { size: feature.featureSize } });
     }
-    if (feature.state === ADSFields.DONE) {
+    if (feature.state === ADSFields.DONE && feature.progress === 0) {
       FeaturesCollection.update({ id: feature.id }, { $set: { progress: feature.featureSize } });
     }
   }

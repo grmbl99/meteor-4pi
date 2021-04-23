@@ -116,7 +116,7 @@ async function getFeatureFromADS(witAPI, id, asOfDate) {
   return ReturnStatus.OK;
 }
 
-async function getStoryFromADS(witAPI, storyId, featureId, asOfDate) {
+async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
   try {
     const queryResult = await witAPI.getWorkItem(
       storyId,
@@ -128,33 +128,38 @@ async function getStoryFromADS(witAPI, storyId, featureId, asOfDate) {
     const effort = queryResult.fields[ADSFields.EFFORT];
     const parts = queryResult.fields[ADSFields.ITERATION_PATH].split('\\');
 
-    const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
+    const pi = parts.length > 3 ? parts[3] : 'undefined';
 
-    if (effort > 0) {
-      // adds storypoints to size
-      collection.update({ id: featureId }, { $inc: { size: effort } });
+    // only include stories in our current pi scope
+    if (pis.includes(pi)) {
+      const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
 
-      if (state === ADSFields.DONE) {
-        // adds storypoints for 'done' stories
-        collection.update({ id: featureId }, { $inc: { progress: effort } });
+      if (effort > 0) {
+        // adds storypoints to size
+        collection.update({ id: featureId }, { $inc: { size: effort } });
+
+        if (state === ADSFields.DONE) {
+          // adds storypoints for 'done' stories
+          collection.update({ id: featureId }, { $inc: { progress: effort } });
+        }
       }
-    }
 
-    const sprintName = parts.length > 4 ? parts[4] : 'undefined';
-    const iteration = Collections.IterationsCollection.findOne({
-      sprintName: sprintName
-    });
+      const sprintName = parts.length > 4 ? parts[4] : 'undefined';
+      const iteration = Collections.IterationsCollection.findOne({
+        sprintName: sprintName
+      });
 
-    // set startSprint/endSprint in feature to first and last sprint of child stories
-    if (iteration) {
-      collection.update(
-        { id: featureId, startSprint: { $gt: iteration.sprint } },
-        { $set: { startSprint: iteration.sprint, startSprintName: sprintName } }
-      );
-      collection.update(
-        { id: featureId, endSprint: { $lt: iteration.sprint } },
-        { $set: { endSprint: iteration.sprint, endSprintName: sprintName } }
-      );
+      // set startSprint/endSprint in feature to first and last sprint of child stories
+      if (iteration) {
+        collection.update(
+          { id: featureId, startSprint: { $gt: iteration.sprint } },
+          { $set: { startSprint: iteration.sprint, startSprintName: sprintName } }
+        );
+        collection.update(
+          { id: featureId, endSprint: { $lt: iteration.sprint } },
+          { $set: { endSprint: iteration.sprint, endSprintName: sprintName } }
+        );
+      }
     }
   } catch (e) {
     console.log('Error in getStoryFromADS');
@@ -206,7 +211,7 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
     let p = [];
     for (const workItemLink of queryResult.workItemRelations) {
       if (workItemLink.rel === 'System.LinkTypes.Hierarchy-Forward') {
-        p.push(getStoryFromADS(witAPI, workItemLink.target.id, workItemLink.source.id, asOfDate));
+        p.push(getStoryFromADS(witAPI, workItemLink.target.id, workItemLink.source.id, asOfDate, pis));
       }
     }
     await Promise.all(p);

@@ -76,7 +76,7 @@ function ProgressBar(props) {
   // determine whether to display the feature end marker
   let endMarker = '';
   if (props.featureEndSprint !== NOT_SET && props.featureEndSprint !== props.endSprint) {
-    let [start, width] = calcDuration(props.startSprint, props.featureEndSprint, props.nrSprints);
+    let [start, width] = calcDuration(0, props.featureEndSprint, props.nrSprints);
     endMarker = <div className='end-marker' style={{ left: start + '%', width: width + '%' }} />;
   }
 
