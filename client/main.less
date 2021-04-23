@@ -10,25 +10,27 @@
   }
 }
 
+@page-background-color: rgb(245, 245, 245);
+@menu-background-color: rgb(245, 245, 245);
+@background-color: rgb(170, 170, 170);
+@accent-color: rgb(110, 110, 110);
+@progress-background-color: rgb(230, 230, 230);
+@feature-background-color: rgb(252, 252, 250);
+@light-text-color: white;
+@dark-text-color: rgb(50, 50, 50);
+@main-font: Verdana, sans-serif;
+
 :root {
-  --my-page-background-color: rgb(245, 245, 245);
-  --my-menu-background-color: rgb(245, 245, 245);
-  --my-background-color: rgb(170, 170, 170);
-  --my-accent-color: rgb(110, 110, 110);
-  --my-progress-background-color: rgb(230, 230, 230);
-  --my-feature-background-color: rgb(252, 252, 250);
-  --my-light-text-color: white;
-  --my-dark-text-color: rgb(50, 50, 50);
-  font-family: Verdana, sans-serif;
+  font-family: @main-font;
   font-size: 9pt;
 }
 
 .react-datepicker {
-  font-family: Verdana, sans-serif;
+  font-family: @main-font;
 }
 
 body {
-  background-color: var(--my-page-background-color);
+  background-color: @page-background-color;
 }
 
 .left {
@@ -38,7 +40,7 @@ body {
   width: 180px;
   height: 100vh;
   z-index: 10;
-  background-color: var(--my-menu-background-color);
+  background-color: @menu-background-color;
   box-shadow: 3px 3px 5px gray;
 }
 
@@ -86,9 +88,9 @@ body {
   padding-left: 10px;
   padding-top: 5px;
   outline-offset: -1px;
-  color: var(--my-light-text-color);
-  outline: 1px solid var(--my-accent-color);
-  background-color: var(--my-background-color);
+  color: @light-text-color;
+  outline: 1px solid @accent-color;
+  background-color: @background-color;
 }
 
 .filter-grid-container {
@@ -104,13 +106,13 @@ input[type='submit'] {
   border: none;
   padding: 5px 5px;
   outline-offset: -1px;
-  outline: 1px solid var(--my-accent-color);
-  color: var(--my-light-text-color);
-  background-color: var(--my-background-color);
+  outline: 1px solid @accent-color;
+  color: @light-text-color;
+  background-color: @background-color;
 }
 
 input[type='submit']:hover {
-  background-color: var(--my-accent-color);
+  background-color: @accent-color;
 }
 
 .menu-item {
@@ -119,9 +121,9 @@ input[type='submit']:hover {
   padding-left: 10px;
   padding-top: 5px;
   outline-offset: -1px;
-  outline: 1px solid var(--my-accent-color);
-  color: var(--my-light-text-color);
-  background-color: var(--my-background-color);
+  outline: 1px solid @accent-color;
+  color: @light-text-color;
+  background-color: @background-color;
 }
 
 .menu-item-red {
@@ -129,7 +131,7 @@ input[type='submit']:hover {
 }
 
 .menu-item:hover {
-  background-color: var(--my-accent-color);
+  background-color: @accent-color;
 }
 
 .pi-grid-container {
@@ -154,7 +156,7 @@ input[type='submit']:hover {
 .pi-view {
   float: left;
   margin: 10px;
-  background-color: var(--my-menu-background-color);
+  background-color: @menu-background-color;
   box-shadow: 3px 3px 5px gray;
 }
 
@@ -163,8 +165,8 @@ input[type='submit']:hover {
   height: 45px;
   line-height: 45px;
   padding-left: 15px;
-  background-color: var(--my-accent-color);
-  color: var(--my-light-text-color);
+  background-color: @accent-color;
+  color: @light-text-color;
   font-weight: bold;
   font-size: 13pt;
 }
@@ -206,8 +208,8 @@ input[type='submit']:hover {
   line-height: 35px;
   outline-offset: -1px;
   font-size: 9pt;
-  outline: 1px solid var(--my-accent-color);
-  background-color: var(--my-background-color);
+  outline: 1px solid @accent-color;
+  background-color: @background-color;
 }
 
 .sprint-placeholder {
@@ -218,19 +220,19 @@ input[type='submit']:hover {
   outline-offset: -1px;
   color: gray;
   font-size: 8pt;
-  outline: 1px solid var(--my-accent-color);
-  background-color: var(--my-background-color);
+  outline: 1px solid @accent-color;
+  background-color: @background-color;
 }
 
 .pi-progress {
   height: 60px;
-  background-color: var(--my-background-color);
+  background-color: @background-color;
 }
 
 .pi-progress-bar {
   height: 30px;
   padding-top: 15px;
-  color: var(--my-dark-text-color);
+  color: @dark-text-color;
   --fill-style: linear-gradient(to right, rgb(111, 0, 255), rgb(207, 128, 253));
 }
 
@@ -240,7 +242,7 @@ input[type='submit']:hover {
   margin-top: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: var(--my-feature-background-color);
+  background-color: @feature-background-color;
   box-shadow: 3px 3px 5px gray;
 }
 
@@ -268,7 +270,7 @@ input[type='submit']:hover {
   height: 20px;
   font-size: 7pt;
   padding-top: 20px;
-  color: var(--my-dark-text-color);
+  color: @dark-text-color;
   --fill-style: linear-gradient(to right, rgb(255, 255, 255), rgb(0, 139, 253));
 }
 
@@ -281,15 +283,15 @@ input[type='submit']:hover {
 .progress-bar-total {
   position: absolute;
   height: inherit;
-  background-color: var(--my-progress-background-color);
-  /* box-shadow: inset 1px 1px 3px rgb(50, 50, 50); */
+  background-color: @progress-background-color;
+  //box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .progress-bar-done {
   position: absolute;
   height: inherit;
-  background-image: var(--fill-style);
-  /* box-shadow: inset 1px 1px 3px rgb(50, 50, 50); */
+  background-image: --fill-style;
+  //box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .delta-bar {
@@ -306,7 +308,7 @@ input[type='submit']:hover {
   position: absolute;
   height: inherit;
   box-sizing: border-box;
-  border-right: 8px solid gray;
+  border-right: 5px solid @background-color;
 }
 
 .progress-text {
@@ -329,12 +331,12 @@ input[type='submit']:hover {
 }
 
 .inline-badge-red {
-  color: var(--my-light-text-color);
+  color: @light-text-color;
   background: red;
 }
 
 .inline-badge-green {
-  color: var(--my-light-text-color);
+  color: @light-text-color;
   background: green;
 }
 
@@ -358,7 +360,7 @@ input[type='submit']:hover {
   top: 30%;
   margin: auto;
   border-radius: 20px;
-  background: var(--my-menu-background-color);
+  background: @menu-background-color;
 }
 
 .display-block {
