@@ -169,28 +169,46 @@ input[type='submit']:hover {
   font-size: 13pt;
 }
 
-.pi-badge {
+.pi-info {
   position: absolute;
-  right: 5px;
+  right: 3px;
   height: 15px;
-  border-radius: 3px;
   padding-left: 3px;
   padding-right: 3px;
   line-height: initial;
   font-size: 8pt;
   font-weight: normal;
-  background-color: green;
 }
-.pi-load-badge {
+
+.pi-load-info {
+  .pi-info;
   top: 5px;
 }
-.pi-allocation-badge {
+
+.pi-allocation-info {
+  .pi-info;
   top: 25px;
 }
-.pi-badge-alert {
-  color: darkred;
-  font-weight: bold;
-  background-color: darksalmon;
+
+.pi-info-badge {
+  display: inline-block;
+  border-radius: 4px;
+  padding-right: 3px;
+  padding-left: 3px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+}
+
+.pi-info-badge-red {
+  .pi-info-badge;
+  color: @light-text-color;
+  background: red;
+}
+
+.pi-info-badge-green {
+  .pi-info-badge;
+  color: @light-text-color;
+  background: green;
 }
 
 .sprint-grid-container {
@@ -266,7 +284,6 @@ input[type='submit']:hover {
 
 .feature-icons {
   position: absolute;
-  top: 3px;
   right: 5px;
   text-decoration: inherit;
   font-size: 8pt;
@@ -340,7 +357,7 @@ input[type='submit']:hover {
   white-space: nowrap;
 }
 
-.inline-badge {
+.delta-badge {
   display: inline-block;
   border-radius: 50%;
   text-align: center;
@@ -350,12 +367,14 @@ input[type='submit']:hover {
   font-size: smaller;
 }
 
-.inline-badge-red {
+.delta-badge-red {
+  .delta-badge;
   color: @light-text-color;
   background: red;
 }
 
-.inline-badge-green {
+.delta-badge-green {
+  .delta-badge;
   color: @light-text-color;
   background: green;
 }

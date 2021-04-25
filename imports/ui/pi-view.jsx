@@ -88,7 +88,7 @@ function PiView(props) {
   // used to let parent (PiViewRow) know how many features are displayed
   React.useEffect(() => {
     props.onFeaturesDisplayed(props.pi, featuresList.length);
-  }, [props]); 
+  }, [props]);
 
   const sprintsList = []; // list of Sprint objects
   let piStart = START_SPRINT_NOT_SET;
@@ -215,8 +215,8 @@ function PiView(props) {
     >
       <div className='pi-header'>
         {props.pi} {props.team} {props.project}
-        <LoadBadge allocation={props.allocation} size={size} />
-        <AllocationBadge allocation={props.allocation} />
+        <LoadInfo allocation={props.allocation} size={size} />
+        <AllocationInfo allocation={props.allocation} />
       </div>
       <div className='sprint-grid-container'>{sprintsList}</div>
       <div className='pi-progress'>
@@ -256,12 +256,12 @@ function SprintPlaceholder(props) {
   return <div className='sprint-placeholder'>{props.name}</div>;
 }
 
-AllocationBadge.propTypes = {
+AllocationInfo.propTypes = {
   allocation: PropTypes.number
 };
 
-function AllocationBadge(props) {
-  let className = 'pi-badge pi-allocation-badge';
+function AllocationInfo(props) {
+  let className = 'pi-allocation-info';
   let allocStr = '';
 
   if (props.allocation !== NOT_SET) {
@@ -273,16 +273,21 @@ function AllocationBadge(props) {
     className += ' display-none';
   }
 
-  return <div className={className}>Alloc: {allocStr}SP</div>;
+  return (
+    <div className={className}>
+      Alloc: <span className='pi-info-badge-green'>{allocStr}SP</span>
+    </div>
+  );
 }
 
-LoadBadge.propTypes = {
+LoadInfo.propTypes = {
   allocation: PropTypes.number,
   size: PropTypes.number
 };
 
-function LoadBadge(props) {
-  let className = 'pi-badge pi-load-badge';
+function LoadInfo(props) {
+  let className = 'pi-load-info';
+  let badgeClassName = 'pi-info-badge-green';
   let loadStr = '';
 
   if (props.allocation !== NOT_SET) {
@@ -293,19 +298,23 @@ function LoadBadge(props) {
         useGrouping: false
       }).format(load);
       if (load > 100) {
-        className += ' pi-badge-alert';
+        badgeClassName = 'pi-info-badge-red';
       }
     } else {
       if (props.size === 0) {
         loadStr = '0';
       } else {
         loadStr = String.fromCharCode(8734); // infinity sign
-        className += ' pi-badge-alert';
+        badgeClassName = 'pi-info-badge-red';
       }
     }
   } else {
     className += ' display-none';
   }
 
-  return <div className={className}>Load: {loadStr}%</div>;
+  return (
+    <div className={className}>
+      Load: <span className={badgeClassName}>{loadStr}%</span>
+    </div>
+  );
 }
