@@ -1,16 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
 import { NOT_SET, START_SPRINT_NOT_SET, ItemTypes, DisplayTypes } from '/imports/api/constants';
 import { Feature } from './feature';
 import { ProgressBar } from './progress-bar';
+import { CollectionContext } from './context';
 
 export { PiView };
 
 PiView.propTypes = {
-  features: PropTypes.array.isRequired,
-  deltaFeatures: PropTypes.array.isRequired,
-  iterations: PropTypes.array.isRequired,
   onFeatureDropped: PropTypes.func.isRequired,
   onFeatureClicked: PropTypes.func.isRequired,
   pi: PropTypes.string.isRequired,
@@ -72,6 +70,8 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
 }
 
 function PiView(props) {
+  const { iterations, features, deltaFeatures } = useContext(CollectionContext);
+
   // feature drag and drop logic
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -87,7 +87,7 @@ function PiView(props) {
   const sprintsList = []; // list of Sprint objects
   let piStart = START_SPRINT_NOT_SET;
   let piEnd = NOT_SET;
-  for (const iteration of props.iterations) {
+  for (const iteration of iterations) {
     if (iteration.pi === props.pi) {
       if (iteration.sprint < piStart) {
         piStart = iteration.sprint;
@@ -106,7 +106,7 @@ function PiView(props) {
   let size = 0;
   let progress = 0;
   const featuresList = []; // list of Feature objects
-  for (const feature of props.features) {
+  for (const feature of features) {
     let orgStartSprint = NOT_SET;
     let orgEndSprint = NOT_SET;
     let orgFeatureEndSprint = NOT_SET;
@@ -126,7 +126,7 @@ function PiView(props) {
       // if so, set additional attributes to show delta's
       let displayType = DisplayTypes.NORMAL;
       if (props.compareModeOn) {
-        for (const deltaFeature of props.deltaFeatures) {
+        for (const deltaFeature of deltaFeatures) {
           if (deltaFeature.feature._id === feature._id) {
             if (deltaFeature.type === DisplayTypes.ADDED) {
               displayType = DisplayTypes.ADDED;
@@ -166,7 +166,7 @@ function PiView(props) {
 
   // also add all relevant 'removed' features from the delta-features collection
   if (props.compareModeOn) {
-    for (const deltaFeature of props.deltaFeatures) {
+    for (const deltaFeature of deltaFeatures) {
       if (deltaFeature.type === DisplayTypes.REMOVED) {
         const feature = deltaFeature.feature;
         const [startSprint, endSprint, featureEndSprint] = calcRelFeatureStartEnd(feature, piStart, piEnd);

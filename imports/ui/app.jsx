@@ -11,6 +11,7 @@ import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
 import { SyncStatus, ServerStatus } from '/imports/api/constants';
 import { getServerStatus } from '/imports/api/server-status';
+import { CollectionContext } from './context';
 import {
   FeaturesCollection,
   DeltaFeaturesCollection,
@@ -159,22 +160,17 @@ export function App(props) {
         {team.name}
       </div>
     );
-    teamsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
     teamsList.push(
       <PiViewRow
         key={menuEntryKey++}
+        ref={newRef}
         onFeatureDropped={moveFeature}
         onFeatureClicked={editFeature}
-        features={features}
-        deltaFeatures={deltaFeatures}
         compareModeOn={compareModeOn}
-        iterations={iterations}
         pis={pis}
         projectName={projectFilter}
         teamName={team.name}
-        allocations={allocations}
-        velocities={velocities}
       />
     );
   }
@@ -196,22 +192,16 @@ export function App(props) {
       </div>
     );
 
-    projectsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
-
     projectsList.push(
       <PiViewRow
         key={menuEntryKey++}
+        ref={newRef}
         onFeatureDropped={moveFeature}
         onFeatureClicked={editFeature}
-        features={features}
-        deltaFeatures={deltaFeatures}
         compareModeOn={compareModeOn}
-        iterations={iterations}
         pis={pis}
         projectName={project.name}
         teamName={teamFilter}
-        allocations={allocations}
-        velocities={velocities}
       />
     );
   }
@@ -219,21 +209,6 @@ export function App(props) {
   // to show/hide 'loading' indicators
   const loadingClassName = adsSyncStatus === SyncStatus.BUSY ? 'ads-loading' : 'ads-loading-empty';
   const adsSyncClassName = adsSyncStatus === SyncStatus.FAILED ? 'menu-item menu-item-red' : 'menu-item';
-
-  // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
-  const PickDateButton = forwardRef(({ value, onClick }, ref) => {
-    return (
-      <div className='menu-item' ref={ref} onClick={onClick}>
-        Compare: {value}
-      </div>
-    );
-  });
-  PickDateButton.propTypes = {
-    onClick: PropTypes.func,
-    value: PropTypes.string,
-    syncStatus: PropTypes.string
-  };
-  PickDateButton.displayName = 'PickDateButton';
 
   return (
     <div>
@@ -267,13 +242,29 @@ export function App(props) {
       </div>
       <div className='right'>
         <DndProvider backend={HTML5Backend}>
-          <div className='heading'>Project Manager View</div>
-          {teamsList}
-          <div className='heading'>Product Owner View</div>
-          {projectsList}
+          <CollectionContext.Provider value={{ allocations, velocities, iterations, features, deltaFeatures }}>
+            <div className='heading'>Project Manager View</div>
+            {teamsList}
+            <div className='heading'>Product Owner View</div>
+            {projectsList}
+          </CollectionContext.Provider>
         </DndProvider>
         <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature} />
       </div>
     </div>
   );
 }
+
+// to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
+const PickDateButton = forwardRef((props, ref) => {
+  return (
+    <div className='menu-item' ref={ref} onClick={props.onClick}>
+      Compare: {props.value}
+    </div>
+  );
+});
+PickDateButton.propTypes = {
+  onClick: PropTypes.func,
+  value: PropTypes.string
+};
+PickDateButton.displayName = 'PickDateButton';

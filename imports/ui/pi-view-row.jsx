@@ -1,32 +1,20 @@
-import React from 'react';
+import React, { useContext, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { PiView } from './pi-view';
 import { NOT_SET } from '/imports/api/constants';
+import { CollectionContext } from './context';
 
 export { PiViewRow };
 
-PiViewRow.propTypes = {
-  pis: PropTypes.array.isRequired,
-  iterations: PropTypes.array.isRequired,
-  features: PropTypes.array.isRequired,
-  deltaFeatures: PropTypes.array.isRequired,
-  allocations: PropTypes.array.isRequired,
-  velocities: PropTypes.array.isRequired,
+const PiViewRow = forwardRef((props, ref) => {
+  const { allocations, velocities } = useContext(CollectionContext);
 
-  projectName: PropTypes.string.isRequired,
-  teamName: PropTypes.string.isRequired,
-  onFeatureDropped: PropTypes.func.isRequired,
-  onFeatureClicked: PropTypes.func.isRequired,
-  compareModeOn: PropTypes.bool.isRequired
-};
-
-function PiViewRow(props) {
   function getAllocation(pi, project, team) {
     let alloc = 0;
 
     if (team !== '') {
       let teamVelocity = 0;
-      for (const velocity of props.velocities) {
+      for (const velocity of velocities) {
         if (velocity.pi === pi && velocity.team === team) {
           teamVelocity = velocity.velocity;
         }
@@ -34,7 +22,7 @@ function PiViewRow(props) {
 
       if (project !== '') {
         let teamAllocation = 0;
-        for (const allocation of props.allocations) {
+        for (const allocation of allocations) {
           if (allocation.pi === pi && allocation.project === project && allocation.team === team) {
             teamAllocation = allocation.allocation;
           }
@@ -62,10 +50,7 @@ function PiViewRow(props) {
         key={key++}
         onFeatureDropped={props.onFeatureDropped}
         onFeatureClicked={props.onFeatureClicked}
-        features={props.features}
-        deltaFeatures={props.deltaFeatures}
         compareModeOn={props.compareModeOn}
-        iterations={props.iterations}
         pi={pi}
         project={props.projectName}
         team={props.teamName}
@@ -74,5 +59,20 @@ function PiViewRow(props) {
     );
   }
 
-  return <div className='pi-grid-container'>{piRow}</div>;
-}
+  return (
+    <div ref={ref} className='pi-grid-container'>
+      {piRow}
+    </div>
+  );
+});
+
+PiViewRow.propTypes = {
+  pis: PropTypes.array.isRequired,
+  projectName: PropTypes.string.isRequired,
+  teamName: PropTypes.string.isRequired,
+  onFeatureDropped: PropTypes.func.isRequired,
+  onFeatureClicked: PropTypes.func.isRequired,
+  compareModeOn: PropTypes.bool.isRequired
+};
+
+PiViewRow.displayName = 'PiViewRow';
