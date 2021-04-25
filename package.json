@@ -11,6 +11,7 @@
     "@babel/runtime": "^7.11.2",
     "azure-devops-node-api": "^10.2.2",
     "date-fns": "^2.21.1",
+    "font-awesome": "^4.7.0",
     "meteor-node-stubs": "^1.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",

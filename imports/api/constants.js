@@ -24,7 +24,8 @@ export const ADSFields = {
   STATE: 'System.State',
   TAGS: 'System.Tags',
   PRIORITY: 'Microsoft.VSTS.Common.BacklogPriority',
-  DONE: 'Done'
+  DONE: 'Done',
+  STRETCH: 'stretch'
 };
 
 // Azure instance specific information

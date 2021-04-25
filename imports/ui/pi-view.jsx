@@ -72,10 +72,6 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
 }
 
 function PiView(props) {
-  const features = props.features;
-  const deltaFeatures = props.deltaFeatures;
-  const iterations = props.iterations;
-
   // feature drag and drop logic
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -83,9 +79,7 @@ function PiView(props) {
       drop: (item) => {
         props.onFeatureDropped(item.id, props.pi, props.team, props.project);
       },
-      collect: (monitor) => ({
-        isOver: monitor.isOver()
-      })
+      collect: (monitor) => ({ isOver: monitor.isOver() })
     }),
     [props]
   );
@@ -93,7 +87,7 @@ function PiView(props) {
   const sprintsList = []; // list of Sprint objects
   let piStart = START_SPRINT_NOT_SET;
   let piEnd = NOT_SET;
-  for (const iteration of iterations) {
+  for (const iteration of props.iterations) {
     if (iteration.pi === props.pi) {
       if (iteration.sprint < piStart) {
         piStart = iteration.sprint;
@@ -112,7 +106,7 @@ function PiView(props) {
   let size = 0;
   let progress = 0;
   const featuresList = []; // list of Feature objects
-  for (const feature of features) {
+  for (const feature of props.features) {
     let orgStartSprint = NOT_SET;
     let orgEndSprint = NOT_SET;
     let orgFeatureEndSprint = NOT_SET;
@@ -132,7 +126,7 @@ function PiView(props) {
       // if so, set additional attributes to show delta's
       let displayType = DisplayTypes.NORMAL;
       if (props.compareModeOn) {
-        for (const deltaFeature of deltaFeatures) {
+        for (const deltaFeature of props.deltaFeatures) {
           if (deltaFeature.feature._id === feature._id) {
             if (deltaFeature.type === DisplayTypes.ADDED) {
               displayType = DisplayTypes.ADDED;
@@ -172,7 +166,7 @@ function PiView(props) {
 
   // also add all relevant 'removed' features from the delta-features collection
   if (props.compareModeOn) {
-    for (const deltaFeature of deltaFeatures) {
+    for (const deltaFeature of props.deltaFeatures) {
       if (deltaFeature.type === DisplayTypes.REMOVED) {
         const feature = deltaFeature.feature;
         const [startSprint, endSprint, featureEndSprint] = calcRelFeatureStartEnd(feature, piStart, piEnd);

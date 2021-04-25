@@ -266,6 +266,28 @@ input[type='submit']:hover {
   font-size: 8pt;
 }
 
+.feature-icons {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  text-decoration: inherit;
+  font-size: 8pt;
+}
+
+// invert font-awesome icon-stack on hover
+.fa-stack .fa-circle {
+    color: white;
+}
+.fa-stack .fa-inverse {
+    color: black;
+}
+.fa-stack:hover .fa-circle {
+  color: black;
+}
+.fa-stack:hover .fa-inverse {
+    color: white;
+}
+
 .feature-progress-bar {
   height: 20px;
   font-size: 7pt;
@@ -290,7 +312,7 @@ input[type='submit']:hover {
 .progress-bar-done {
   position: absolute;
   height: inherit;
-  background-image: --fill-style;
+  background-image: var(--fill-style);
   //box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 

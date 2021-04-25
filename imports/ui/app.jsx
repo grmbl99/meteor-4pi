@@ -6,10 +6,10 @@ import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import { Meteor } from 'meteor/meteor';
-import { PiView } from './pi-view';
+import { PiViewRow } from './pi-view-row';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
-import { SyncStatus, ServerStatus, NOT_SET } from '/imports/api/constants';
+import { SyncStatus, ServerStatus } from '/imports/api/constants';
 import { getServerStatus } from '/imports/api/server-status';
 import {
   FeaturesCollection,
@@ -23,6 +23,7 @@ import {
 } from '/imports/api/collections';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import 'font-awesome/css/font-awesome.min.css';
 
 export function App(props) {
   // move a feature between teams/projects/pi's
@@ -81,37 +82,6 @@ export function App(props) {
       Meteor.call('RefreshCompareADS', date);
       setCompareModeOn(true);
     }
-  }
-
-  function getAllocation(pi, project, team) {
-    let alloc = 0;
-
-    if (team !== '') {
-      let teamVelocity = 0;
-      for (const velocity of velocities) {
-        if (velocity.pi === pi && velocity.team === team) {
-          teamVelocity = velocity.velocity;
-        }
-      }
-
-      if (project !== '') {
-        let teamAllocation = 0;
-        for (const allocation of allocations) {
-          if (allocation.pi === pi && allocation.project === project && allocation.team === team) {
-            teamAllocation = allocation.allocation;
-          }
-        }
-
-        // percentage of the team-velocity allocated to a project
-        alloc = teamAllocation === 0 ? 0 : (teamVelocity / 100) * teamAllocation;
-      } else {
-        alloc = teamVelocity;
-      }
-    } else {
-      alloc = NOT_SET;
-    }
-
-    return alloc;
   }
 
   // subscribe to server collections, with useTracker for 'reactiveness'
@@ -191,25 +161,22 @@ export function App(props) {
     );
     teamsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
-    for (const pi of pis) {
-      const allocation = getAllocation(pi, projectFilter, team.name);
-
-      teamsList.push(
-        <PiView
-          key={menuEntryKey++}
-          onFeatureDropped={moveFeature}
-          onFeatureClicked={editFeature}
-          features={features}
-          deltaFeatures={deltaFeatures}
-          compareModeOn={compareModeOn}
-          iterations={iterations}
-          pi={pi}
-          project={projectFilter}
-          team={team.name}
-          allocation={allocation}
-        />
-      );
-    }
+    teamsList.push(
+      <PiViewRow
+        key={menuEntryKey++}
+        onFeatureDropped={moveFeature}
+        onFeatureClicked={editFeature}
+        features={features}
+        deltaFeatures={deltaFeatures}
+        compareModeOn={compareModeOn}
+        iterations={iterations}
+        pis={pis}
+        projectName={projectFilter}
+        teamName={team.name}
+        allocations={allocations}
+        velocities={velocities}
+      />
+    );
   }
 
   let projectsList = []; // set of PIView's per project
@@ -228,27 +195,25 @@ export function App(props) {
         {project.name}
       </div>
     );
+
     projectsList.push(<div ref={newRef} key={menuEntryKey++} className='new-row'></div>);
 
-    for (const pi of pis) {
-      const allocation = getAllocation(pi, project.name, teamFilter);
-
-      projectsList.push(
-        <PiView
-          key={menuEntryKey++}
-          onFeatureDropped={moveFeature}
-          onFeatureClicked={editFeature}
-          features={features}
-          deltaFeatures={deltaFeatures}
-          compareModeOn={compareModeOn}
-          iterations={iterations}
-          pi={pi}
-          project={project.name}
-          team={teamFilter}
-          allocation={allocation}
-        />
-      );
-    }
+    projectsList.push(
+      <PiViewRow
+        key={menuEntryKey++}
+        onFeatureDropped={moveFeature}
+        onFeatureClicked={editFeature}
+        features={features}
+        deltaFeatures={deltaFeatures}
+        compareModeOn={compareModeOn}
+        iterations={iterations}
+        pis={pis}
+        projectName={project.name}
+        teamName={teamFilter}
+        allocations={allocations}
+        velocities={velocities}
+      />
+    );
   }
 
   // to show/hide 'loading' indicators
@@ -302,12 +267,10 @@ export function App(props) {
       </div>
       <div className='right'>
         <DndProvider backend={HTML5Backend}>
-          <div className='pi-grid-container'>
-            <div className='heading'>Project Manager View</div>
-            {teamsList}
-            <div className='heading'>Product Owner View</div>
-            {projectsList}
-          </div>
+          <div className='heading'>Project Manager View</div>
+          {teamsList}
+          <div className='heading'>Product Owner View</div>
+          {projectsList}
         </DndProvider>
         <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature} />
       </div>

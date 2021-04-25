@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { DisplayTypes, ItemTypes } from '/imports/api/constants';
+import { DisplayTypes, ItemTypes, ADSFields } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
 
 export { Feature };
@@ -28,10 +28,15 @@ function Feature(props) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.FEATURE,
     item: { id: feature._id },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
-    })
+    collect: (monitor) => ({ isDragging: monitor.isDragging()})
   }));
+
+  const tags = feature.tags ? feature.tags.toLowerCase().split('; ') : [];
+  const stretchIcon = tags.includes(ADSFields.STRETCH) ? <i className='fa fa-gift' /> : '';
+
+  const tagsIcon = tags.length > 0 ? <Icon name='fa-tags' value={'Tags: ' + feature.tags} /> : '';
+  const warningIcon = !feature.warning ? <Icon name='fa-exclamation-triangle' value='this is some warning' /> : '';
+  const iterationIcon = tags.length > 0 ? <Icon name='fa-calendar' value={'no start/end'} /> : '';
 
   // style the feature based on DisplayType
   let featureClassName = 'feature';
@@ -54,15 +59,16 @@ function Feature(props) {
       ref={drag}
       style={{
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'move'
+        // cursor: 'move'
       }}
     >
       <div className='feature-name'>
-        <span className='tooltip'>
-          {feature.id}
-          <span className='tooltip-text'>Tags: {feature.tags}</span>
-        </span>{' '}
-        {trimmedName}
+        {stretchIcon} {feature.id} {trimmedName}
+      </div>
+      <div className='feature-icons'>
+        {warningIcon}
+        {tagsIcon}
+        {iterationIcon}
       </div>
       <div className='feature-progress-bar'>
         <ProgressBar
@@ -78,5 +84,23 @@ function Feature(props) {
         />
       </div>
     </div>
+  );
+}
+
+Icon.propTypes = {
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired
+};
+
+// returns a 'font-awesome' icon-stack with a popover tooltip
+function Icon(props) {
+  return (
+    <span className='tooltip'>
+      <span className='fa-stack'>
+        <i className='fa fa-circle fa-stack-2x' />
+        <i className={props.name + ' fa fa-stack-1x fa-inverse'} />
+      </span>
+      <span className='tooltip-text'>{props.value}</span>
+    </span>
   );
 }
