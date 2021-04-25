@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
 import { NOT_SET, START_SPRINT_NOT_SET, ItemTypes, DisplayTypes } from '/imports/api/constants';
@@ -15,7 +15,8 @@ PiView.propTypes = {
   team: PropTypes.string.isRequired,
   project: PropTypes.string.isRequired,
   compareModeOn: PropTypes.bool.isRequired,
-  allocation: PropTypes.number.isRequired
+  allocation: PropTypes.number.isRequired,
+  onFeaturesDisplayed: PropTypes.func.isRequired
 };
 
 // determine how feature-start&end fall within a PI;
@@ -83,6 +84,11 @@ function PiView(props) {
     }),
     [props]
   );
+
+  // used to let parent (PiViewRow) know how many features are displayed
+  useEffect(() => {
+    props.onFeaturesDisplayed(props.pi, featuresList.length);
+  }, [props]); 
 
   const sprintsList = []; // list of Sprint objects
   let piStart = START_SPRINT_NOT_SET;

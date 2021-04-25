@@ -1,4 +1,4 @@
-import React, { useContext, forwardRef } from 'react';
+import React, { useContext, forwardRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { PiView } from './pi-view';
 import { NOT_SET } from '/imports/api/constants';
@@ -8,6 +8,18 @@ export { PiViewRow };
 
 const PiViewRow = forwardRef((props, ref) => {
   const { allocations, velocities } = useContext(CollectionContext);
+  const [piFeaturesDisplayed, setPiFeaturesDisplayed] = useState({});
+  const [featuresDisplayed, setFeaturedDisplayed] = useState(0);
+
+  // callback from 'PiView' to get the number of displayed features per PI
+  // this is used to hide the complete row when there are no features to display 
+  // (i.e. maxFeatures === 0)
+  function onFeaturesDisplayed(pi, nr) {
+    const pfd = piFeaturesDisplayed;
+    pfd[pi] = nr;
+    setPiFeaturesDisplayed(pfd);
+    setFeaturedDisplayed(Object.values(pfd).reduce((a, b) => (a > b ? a : b)));
+  }
 
   function getAllocation(pi, project, team) {
     let alloc = 0;
@@ -55,12 +67,13 @@ const PiViewRow = forwardRef((props, ref) => {
         project={props.projectName}
         team={props.teamName}
         allocation={allocation}
+        onFeaturesDisplayed={onFeaturesDisplayed}
       />
     );
   }
 
   return (
-    <div ref={ref} className='pi-grid-container'>
+    <div ref={ref} className={featuresDisplayed === 0 ? 'hidden pi-grid-container' : 'pi-grid-container'}>
       {piRow}
     </div>
   );
