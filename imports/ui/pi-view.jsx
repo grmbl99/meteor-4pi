@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
 import { NOT_SET, START_SPRINT_NOT_SET, ItemTypes, DisplayTypes } from '/imports/api/constants';
@@ -71,7 +71,7 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
 }
 
 function PiView(props) {
-  const { iterations, features, deltaFeatures } = useContext(CollectionContext);
+  const { iterations, features, deltaFeatures } = React.useContext(CollectionContext);
 
   // feature drag and drop logic
   const [{ isOver }, drop] = useDrop(
@@ -86,7 +86,7 @@ function PiView(props) {
   );
 
   // used to let parent (PiViewRow) know how many features are displayed
-  useEffect(() => {
+  React.useEffect(() => {
     props.onFeaturesDisplayed(props.pi, featuresList.length);
   }, [props]); 
 

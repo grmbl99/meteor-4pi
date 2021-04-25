@@ -1,4 +1,4 @@
-import React, { useContext, forwardRef, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { PiView } from './pi-view';
 import { NOT_SET } from '/imports/api/constants';
@@ -6,10 +6,10 @@ import { CollectionContext } from './context';
 
 export { PiViewRow };
 
-const PiViewRow = forwardRef((props, ref) => {
-  const { allocations, velocities } = useContext(CollectionContext);
-  const [piFeaturesDisplayed, setPiFeaturesDisplayed] = useState({});
-  const [featuresDisplayed, setFeaturedDisplayed] = useState(0);
+const PiViewRow = React.forwardRef((props, ref) => {
+  const { allocations, velocities } = React.useContext(CollectionContext);
+  const [piFeaturesDisplayed, setPiFeaturesDisplayed] = React.useState({});
+  const [featuresDisplayed, setFeaturedDisplayed] = React.useState(0);
 
   // callback from 'PiView' to get the number of displayed features per PI
   // this is used to hide the complete row when there are no features to display 

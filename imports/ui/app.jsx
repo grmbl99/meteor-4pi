@@ -1,4 +1,4 @@
-import React, { useState, createRef, forwardRef } from 'react';
+import React from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -120,11 +120,11 @@ export function App(props) {
   });
 
   // react state
-  const [teamFilter, setTeamFilter] = useState('');
-  const [projectFilter, setProjectFilter] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-  const [compareModeOn, setCompareModeOn] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState({
+  const [teamFilter, setTeamFilter] = React.useState('');
+  const [projectFilter, setProjectFilter] = React.useState('');
+  const [showPopup, setShowPopup] = React.useState(false);
+  const [compareModeOn, setCompareModeOn] = React.useState(false);
+  const [selectedFeature, setSelectedFeature] = React.useState({
     name: '',
     pi: '',
     size: '',
@@ -148,7 +148,7 @@ export function App(props) {
   let teamsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const team of teams) {
-    const newRef = createRef();
+    const newRef = React.createRef();
     teamsMenu.push(
       <div
         className='menu-item'
@@ -179,7 +179,7 @@ export function App(props) {
   let projectsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const project of projects) {
-    const newRef = createRef();
+    const newRef = React.createRef();
     projectsMenu.push(
       <div
         className='menu-item'
@@ -256,7 +256,7 @@ export function App(props) {
 }
 
 // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
-const PickDateButton = forwardRef((props, ref) => {
+const PickDateButton = React.forwardRef((props, ref) => {
   return (
     <div className='menu-item' ref={ref} onClick={props.onClick}>
       Compare: {props.value}

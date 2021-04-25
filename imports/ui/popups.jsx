@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 export { UpdateFeaturePopup };
@@ -12,16 +12,16 @@ UpdateFeaturePopup.propTypes = {
 function UpdateFeaturePopup(props) {
   const showHideClassName = props.show ? 'popup display-block' : 'popup display-none';
 
-  const [name, setName] = useState('');
-  const [size, setSize] = useState('');
-  const [progress, setProgress] = useState('');
-  const [pi, setPi] = useState('');
-  const [startSprint, setStartSprint] = useState('');
-  const [endSprint, setEndSprint] = useState('');
+  const [name, setName] = React.useState('');
+  const [size, setSize] = React.useState('');
+  const [progress, setProgress] = React.useState('');
+  const [pi, setPi] = React.useState('');
+  const [startSprint, setStartSprint] = React.useState('');
+  const [endSprint, setEndSprint] = React.useState('');
 
   if (props.feature) {
     // fill the components 'state' with the prop content upon render
-    useEffect(() => {
+    React.useEffect(() => {
       setName(props.feature.name);
       setSize(props.feature.size);
       setPi(props.feature.pi);
