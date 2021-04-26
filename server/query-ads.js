@@ -128,7 +128,7 @@ async function getVelocityFeatureFromADS(witAPI, id, pis) {
 
     teamName = teamName ? teamName.toLowerCase() : 'undefined';
 
-    for (const pi in pis) {
+    for (const pi of pis) {
       if (name.includes(pi)) {
         Collections.VelocitiesCollection.insert({
           team: teamName,
@@ -161,7 +161,7 @@ async function getAllocationStoryFromADS(witAPI, storyId, pis) {
     teamName = teamName ? teamName.toLowerCase() : 'undefined';
     projectName = projectName ? projectName.toLowerCase() : 'undefined';
 
-    for (const pi in pis) {
+    for (const pi of pis) {
       if (name.includes(pi)) {
         Collections.AllocationsCollection.insert({
           team: teamName,
@@ -338,7 +338,7 @@ async function getVelocityFeaturesFromADS(witAPI, pis) {
   try {
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
-      piSubQuery += `[Source].[System.Title] CONTAINS WORDS '${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
+      piSubQuery += `[System.Title] CONTAINS WORDS '${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
 
     const query = {
