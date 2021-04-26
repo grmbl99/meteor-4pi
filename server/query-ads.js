@@ -118,6 +118,66 @@ async function getFeatureFromADS(witAPI, id, asOfDate) {
   return ReturnStatus.OK;
 }
 
+async function getVelocityFeatureFromADS(witAPI, id, pis) {
+  try {
+    const queryResult = await witAPI.getWorkItem(id, [ADSFields.TITLE, ADSFields.NODENAME, ADSFields.EFFORT]);
+
+    let teamName = queryResult.fields[ADSFields.NODENAME];
+    const name = queryResult.fields[ADSFields.TITLE];
+    const size = queryResult.fields[ADSFields.EFFORT];
+
+    teamName = teamName ? teamName.toLowerCase() : 'undefined';
+
+    for (const pi in pis) {
+      if (name.includes(pi)) {
+        Collections.VelocitiesCollection.insert({
+          team: teamName,
+          pi: pi,
+          velocity: size
+        });
+      }
+    }
+  } catch (e) {
+    console.log('Error in getVelocityFeatureFromADS');
+    throw e;
+  }
+  return ReturnStatus.OK;
+}
+
+async function getAllocationStoryFromADS(witAPI, storyId, pis) {
+  try {
+    const queryResult = await witAPI.getWorkItem(storyId, [
+      ADSFields.TITLE,
+      ADSFields.NODENAME,
+      ADSFields.EFFORT,
+      ADSFields.RELEASE
+    ]);
+
+    let teamName = queryResult.fields[ADSFields.NODENAME];
+    let projectName = queryResult.fields[ADSFields.RELEASE];
+    const name = queryResult.fields[ADSFields.TITLE];
+    const size = queryResult.fields[ADSFields.EFFORT];
+
+    teamName = teamName ? teamName.toLowerCase() : 'undefined';
+    projectName = projectName ? projectName.toLowerCase() : 'undefined';
+
+    for (const pi in pis) {
+      if (name.includes(pi)) {
+        Collections.AllocationsCollection.insert({
+          team: teamName,
+          project: projectName,
+          pi: pi,
+          allocation: size
+        });
+      }
+    }
+  } catch (e) {
+    console.log('Error in getAllocationStoryFromADS');
+    throw e;
+  }
+  return ReturnStatus.OK;
+}
+
 async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
   try {
     const queryResult = await witAPI.getWorkItem(
@@ -224,6 +284,94 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
   return ReturnStatus.OK;
 }
 
+async function getAllocationStoriesFromADS(witAPI, pis) {
+  try {
+    let piSubQuery = '';
+    for (const [i, pi] of pis.entries()) {
+      piSubQuery += `[Source].[System.Title] CONTAINS WORDS '${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
+    }
+
+    const query = {
+      query: `
+      SELECT
+          [System.Id]
+      FROM workitemLinks
+      WHERE
+          (
+              [Source].[System.TeamProject] = @project
+              AND [Source].[System.WorkItemType] = 'Feature'
+              AND (${piSubQuery})
+              AND [Source].[System.AreaPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.AREA_OFFSET_WIQL}'
+              AND [Source].[System.State] <> 'Removed'
+              AND [Source].[Philips.Planning.Release] = 'Velocity Plan'
+          )
+          AND (
+              [Target].[System.TeamProject] = @project
+              AND [Target].[System.WorkItemType] = 'Story'
+              AND [Target].[System.State] <> 'Removed'
+          )
+      ORDER BY [System.IterationId],
+          [System.Id]
+      MODE (MayContain)`
+    };
+
+    const teamContext = { project: ADSConfig.PROJECT };
+    const queryResult = await witAPI.queryByWiql(query, teamContext);
+
+    // the ADS query just returns workitem id's
+    // get the actual workitem content in parallel (async), wait for all to finish before continueing
+    let p = [];
+    for (const workItemLink of queryResult.workItemRelations) {
+      if (workItemLink.rel === 'System.LinkTypes.Hierarchy-Forward') {
+        p.push(getAllocationStoryFromADS(witAPI, workItemLink.target.id, pis));
+      }
+    }
+    await Promise.all(p);
+  } catch (e) {
+    console.log('Error in getVelocityStoriesFromADS');
+    throw e;
+  }
+  return ReturnStatus.OK;
+}
+
+async function getVelocityFeaturesFromADS(witAPI, pis) {
+  try {
+    let piSubQuery = '';
+    for (const [i, pi] of pis.entries()) {
+      piSubQuery += `[Source].[System.Title] CONTAINS WORDS '${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
+    }
+
+    const query = {
+      query: `
+      SELECT
+        [System.Id]
+      FROM workitems
+      WHERE
+        [System.TeamProject] = @project
+        AND [System.WorkItemType] = 'Feature'
+        AND (${piSubQuery})
+        AND [System.AreaPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.AREA_OFFSET_WIQL}'
+        AND [System.State] <> 'Removed'
+        AND [Philips.Planning.Release] = 'Velocity Plan'`
+    };
+
+    const teamContext = { project: ADSConfig.PROJECT };
+    const queryResult = await witAPI.queryByWiql(query, teamContext);
+
+    // the ADS query just returns workitem id's
+    // get the actual workitem content in parallel (async), wait for all to finish before continueing
+    let p = [];
+    for (const workItem of queryResult.workItems) {
+      p.push(getVelocityFeatureFromADS(witAPI, workItem.id, pis));
+    }
+    await Promise.all(p);
+  } catch (e) {
+    console.log('Error in getVelocityFeaturesFromADS');
+    throw e;
+  }
+  return ReturnStatus.OK;
+}
+
 async function getFeaturesFromADS(witAPI, pis, asOfDate) {
   try {
     let piSubQuery = '';
@@ -273,10 +421,16 @@ export async function QueryADS(date) {
   const pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
   const asOfDate = date ? format(date, 'MM/dd/yyyy') : '';
 
-  // no need to get the iterations on every as-of query
+  // no need to get the iterations, velocity & allocation on every as-of query
   if (!asOfDate) {
     console.log('getting sprints');
     await getIterationsFromADS(witAPI);
+
+    console.log('getting velocity');
+    await getVelocityFeaturesFromADS(witAPI, pis);
+
+    console.log('getting allocation');
+    await getAllocationStoriesFromADS(witAPI, pis);
   }
 
   console.log('getting features');
