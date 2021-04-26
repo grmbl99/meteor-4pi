@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import { PiView } from './pi-view';
 import { NOT_SET } from '/imports/api/constants';
 import { CollectionContext } from './context';
+import { ADSConfig } from '../api/constants';
 
 export { PiViewRow };
 
 const PiViewRow = React.forwardRef((props, ref) => {
-  const { allocations, velocities } = React.useContext(CollectionContext);
+  const { velocityPlan } = React.useContext(CollectionContext);
   const [piFeaturesDisplayed, setPiFeaturesDisplayed] = React.useState({});
   const [featuresDisplayed, setFeaturedDisplayed] = React.useState(0);
 
   // callback from 'PiView' to get the number of displayed features per PI
-  // this is used to hide the complete row when there are no features to display 
+  // this is used to hide the complete row when there are no features to display
   // (i.e. maxFeatures === 0)
   function onFeaturesDisplayed(pi, nr) {
     const pfd = piFeaturesDisplayed;
@@ -26,22 +27,26 @@ const PiViewRow = React.forwardRef((props, ref) => {
 
     if (team !== '') {
       let teamVelocity = 0;
-      for (const velocity of velocities) {
-        if (velocity.pi === pi && velocity.team === team) {
-          teamVelocity = velocity.velocity;
+      for (const planItem of velocityPlan) {
+        if (
+          planItem.pi === pi &&
+          planItem.team === team &&
+          planItem.project === ADSConfig.VELOCITY_PLAN_PROJECT
+        ) {
+          teamVelocity = planItem.value;
         }
       }
 
       if (project !== '') {
         let teamAllocation = 0;
-        for (const allocation of allocations) {
-          if (allocation.pi === pi && allocation.project === project && allocation.team === team) {
-            teamAllocation = allocation.allocation;
+        for (const planItem of velocityPlan) {
+          if (planItem.pi === pi && planItem.project === project && planItem.team === team) {
+            teamAllocation = planItem.value;
           }
         }
 
         // percentage of the team-velocity allocated to a project
-        alloc = teamAllocation === 0 ? 0 : (teamVelocity / 100) * teamAllocation;
+        alloc = teamVelocity * teamAllocation;
       } else {
         alloc = teamVelocity;
       }

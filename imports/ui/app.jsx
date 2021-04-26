@@ -18,8 +18,7 @@ import {
   IterationsCollection,
   ProjectsCollection,
   TeamsCollection,
-  AllocationsCollection,
-  VelocitiesCollection,
+  VelocityPlanCollection,
   ServerStatusCollection
 } from '/imports/api/collections';
 
@@ -106,13 +105,9 @@ export function App(props) {
     Meteor.subscribe('projects');
     return ProjectsCollection.find({}, { sort: { name: 1 } }).fetch();
   });
-  const allocations = useTracker(() => {
-    Meteor.subscribe('allocations');
-    return AllocationsCollection.find({}).fetch();
-  });
-  const velocities = useTracker(() => {
-    Meteor.subscribe('velocities');
-    return VelocitiesCollection.find({}).fetch();
+  const velocityPlan = useTracker(() => {
+    Meteor.subscribe('velocityplan');
+    return VelocityPlanCollection.find({}).fetch();
   });
   useTracker(() => {
     Meteor.subscribe('serverstatus');
@@ -242,7 +237,7 @@ export function App(props) {
       </div>
       <div className='right'>
         <DndProvider backend={HTML5Backend}>
-          <CollectionContext.Provider value={{ allocations, velocities, iterations, features, deltaFeatures }}>
+          <CollectionContext.Provider value={{ velocityPlan, iterations, features, deltaFeatures }}>
             <div className='heading'>Project Manager View</div>
             {teamsList}
             <div className='heading'>Product Owner View</div>

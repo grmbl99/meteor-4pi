@@ -4,36 +4,6 @@ import { EJSON } from 'meteor/ejson';
 import { ServerStatus, SyncStatus } from '/imports/api/constants';
 import * as Collections from '/imports/api/collections';
 
-function populateAllocationsCollection() {
-  [
-    { team: 'pegasus', project: 'tiger', pi: 'PI 21.1', allocation: 10 },
-    { team: 'mushu', project: 'puma', pi: 'PI 21.1', allocation: 80 },
-    { team: 'hades', project: 'voip', pi: 'PI 21.1', allocation: 70 },
-    { team: 'hercules', project: 'bobcat', pi: 'PI 21.1', allocation: 20 },
-    { team: 'pegasus', project: 'tiger', pi: 'PI 21.2', allocation: 10 },
-    { team: 'mushu', project: 'puma', pi: 'PI 21.2', allocation: 80 },
-    { team: 'hades', project: 'voip', pi: 'PI 21.2', allocation: 70 },
-    { team: 'hercules', project: 'bobcat', pi: 'PI 21.2', allocation: 20 }
-  ].forEach((allocation) => Collections.AllocationsCollection.insert(allocation));
-}
-
-function populateVelocitiesCollection() {
-  [
-    { team: 'pegasus', pi: 'PI 21.1', velocity: 75 },
-    { team: 'mushu', pi: 'PI 21.1', velocity: 60 },
-    { team: 'hades', pi: 'PI 21.1', velocity: 80 },
-    { team: 'hercules', pi: 'PI 21.1', velocity: 60 },
-    { team: 'pegasus', pi: 'PI 21.2', velocity: 75 },
-    { team: 'mushu', pi: 'PI 21.2', velocity: 60 },
-    { team: 'hades', pi: 'PI 21.2', velocity: 80 },
-    { team: 'hercules', pi: 'PI 21.2', velocity: 60 },
-    { team: 'pegasus', pi: 'PI 21.3', velocity: 75 },
-    { team: 'mushu', pi: 'PI 21.3', velocity: 60 },
-    { team: 'hades', pi: 'PI 21.3', velocity: 80 },
-    { team: 'hercules', pi: 'PI 21.3', velocity: 60 }
-  ].forEach((velocity) => Collections.VelocitiesCollection.insert(velocity));
-}
-
 function populateServerStatusCollection() {
   [
     { key: ServerStatus.ADS_SYNC_STATUS, value: SyncStatus.NONE },
@@ -44,16 +14,11 @@ function populateServerStatusCollection() {
 }
 
 export function PopulateCollections() {
-  if (Collections.AllocationsCollection.find().count() === 0) {
-    populateAllocationsCollection();
-  }
-  if (Collections.VelocitiesCollection.find().count() === 0) {
-    populateVelocitiesCollection();
-  }
+
   if (Collections.ServerStatusCollection.find().count() === 0) {
     populateServerStatusCollection();
   }
-
+/*
   // eslint-disable-next-line no-undef
   const teams = EJSON.parse(Assets.getText('teams.json'));
   teams.forEach((team) => Collections.TeamsCollection.insert(team));
@@ -73,4 +38,9 @@ export function PopulateCollections() {
   // eslint-disable-next-line no-undef
   const orgfeatures = EJSON.parse(Assets.getText('orgfeatures.json'));
   orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
+
+  // eslint-disable-next-line no-undef
+  const velocityPlan = EJSON.parse(Assets.getText('velocity-plan.json'));
+  velocityPlan.forEach((planItem) => Collections.VelocityPlanCollection.insert(planItem));
+*/
 }

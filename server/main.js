@@ -13,11 +13,10 @@ Meteor.startup(() => {
     Collections.IterationsCollection,
     Collections.ProjectsCollection,
     Collections.TeamsCollection,
-    Collections.AllocationsCollection,
-    Collections.VelocitiesCollection,
+    Collections.VelocityPlanCollection,
     Collections.ServerStatusCollection
   ].forEach((collection) => collection.remove({}));
 
   PopulateCollections();
-  //SyncADS();
+  SyncADS();
 });

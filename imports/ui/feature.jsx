@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { DisplayTypes, ItemTypes, ADSFields } from '/imports/api/constants';
+import { DisplayTypes, ItemTypes, ADSFields, ADSConfig } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
 
 export { Feature };
@@ -35,7 +35,7 @@ function Feature(props) {
   const stretchIcon = tags.includes(ADSFields.STRETCH) ? <i className='fa fa-gift' /> : '';
 
   const tagsIcon = tags.length > 0 ? <Icon name='fa-tags' value={'Tags: ' + feature.tags} /> : '';
-  const warningIcon = !feature.warning ? <Icon name='fa-exclamation-triangle' value='this is some warning' /> : '';
+  const warningIcon = feature.warning ? <Icon name='fa-exclamation-triangle' value='this is some warning' /> : '';
   const iterationIcon = tags.length > 0 ? <Icon name='fa-calendar' value={'no start/end'} /> : '';
 
   // style the feature based on DisplayType
@@ -49,6 +49,9 @@ function Feature(props) {
   // truncate feature name
   const maxLength = 60;
   const trimmedName = feature.name.length > maxLength ? feature.name.substring(0, maxLength - 3) + '...' : feature.name;
+
+  // workitem URL
+  const workItemUrl = ADSConfig.URL + ADSConfig.PROJECT + '/_workitems/edit/' + feature.id;
 
   return (
     <div
@@ -64,7 +67,7 @@ function Feature(props) {
     >
       <div className='feature-name'>
         {stretchIcon}{' '}
-        <a href='http://www.google.com' target='_blank' rel='noopener noreferrer' onClick={(e) => e.stopPropagation()}>
+        <a href={workItemUrl} target='_blank' rel='noopener noreferrer' onClick={(e) => e.stopPropagation()}>
           {feature.id}
         </a>{' '}
         {trimmedName}
