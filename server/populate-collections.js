@@ -17,7 +17,7 @@ export function PopulateCollections() {
   if (Collections.ServerStatusCollection.find().count() === 0) {
     populateServerStatusCollection();
   }
-
+/*
   // eslint-disable-next-line no-undef
   const teams = EJSON.parse(Assets.getText('teams.json'));
   teams.forEach((team) => Collections.TeamsCollection.insert(team));
@@ -45,4 +45,9 @@ export function PopulateCollections() {
   // eslint-disable-next-line no-undef
   const orgfeatures = EJSON.parse(Assets.getText('orgfeatures.json'));
   orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
+
+  // eslint-disable-next-line no-undef
+  const velocityPlan = EJSON.parse(Assets.getText('velocity-plan.json'));
+  velocityPlan.forEach((planItem) => Collections.VelocityPlanCollection.insert(planItem));
+*/
 }

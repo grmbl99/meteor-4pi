@@ -7,8 +7,7 @@ export const DeltaFeaturesCollection = new Mongo.Collection('deltafeatures');
 export const IterationsCollection = new Mongo.Collection('iterations');
 export const TeamsCollection = new Mongo.Collection('teams');
 export const ProjectsCollection = new Mongo.Collection('projects');
-export const AllocationsCollection = new Mongo.Collection('allocations');
-export const VelocitiesCollection = new Mongo.Collection('velocities');
+export const VelocityPlanCollection = new Mongo.Collection('velocityplan');
 export const ServerStatusCollection = new Mongo.Collection('serverstatus');
 
 if (Meteor.isServer) {
@@ -36,11 +35,8 @@ if (Meteor.isServer) {
   Meteor.publish('projects', function publishProjects() {
     return ProjectsCollection.find();
   });
-  Meteor.publish('allocations', function publishAllocations() {
-    return AllocationsCollection.find();
-  });
-  Meteor.publish('velocities', function publishVelocities() {
-    return VelocitiesCollection.find();
+  Meteor.publish('velocityplan', function publishVelocityPlan() {
+    return VelocityPlanCollection.find();
   });
   Meteor.publish('serverstatus', function publishServerStatus() {
     return ServerStatusCollection.find();

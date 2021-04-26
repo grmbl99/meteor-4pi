@@ -37,7 +37,8 @@ export const ADSConfig = {
   AREA_OFFSET_WIQL: '\\Systems\\Portfolio Fixed\\Solution\\ART Imaging Chain',
   ITERATION_OFFSET: '/systems/safe fixed',
   ITERATION_OFFSET_WIQL: '\\Systems\\SAFe Fixed',
-  ITERATION_DAYS: 14
+  ITERATION_DAYS: 14,
+  VELOCITY_PLAN_PROJECT: 'velocity plan '
 };
 
 // return status for async (future/promise) functions
