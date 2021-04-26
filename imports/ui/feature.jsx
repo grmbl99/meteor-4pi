@@ -28,7 +28,7 @@ function Feature(props) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.FEATURE,
     item: { id: feature._id },
-    collect: (monitor) => ({ isDragging: monitor.isDragging()})
+    collect: (monitor) => ({ isDragging: monitor.isDragging() })
   }));
 
   const tags = feature.tags ? feature.tags.toLowerCase().split('; ') : [];
@@ -58,12 +58,16 @@ function Feature(props) {
       }}
       ref={drag}
       style={{
-        opacity: isDragging ? 0.5 : 1,
+        opacity: isDragging ? 0.5 : 1
         // cursor: 'move'
       }}
     >
       <div className='feature-name'>
-        {stretchIcon} {feature.id} {trimmedName}
+        {stretchIcon}{' '}
+        <a href='http://www.google.com' target='_blank' rel='noopener noreferrer' onClick={(e) => e.stopPropagation()}>
+          {feature.id}
+        </a>{' '}
+        {trimmedName}
       </div>
       <div className='feature-icons'>
         {warningIcon}
