@@ -35,11 +35,13 @@ async function getIterationsFromADS(witAPI) {
       if (pi.hasChildren) {
         for (const sprint of pi.children) {
           const startDate = new Date(sprint.attributes.startDate);
+          const finishDate = new Date(sprint.attributes.finishDate);
           Collections.IterationsCollection.insert({
             pi: pi.name,
             sprint: i++,
             sprintName: sprint.name,
-            startDate: startDate
+            startDate: startDate,
+            finishDate: finishDate
           });
         }
       }

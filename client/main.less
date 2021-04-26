@@ -20,12 +20,17 @@
 @dark-text-color: rgb(50, 50, 50);
 @main-font: Verdana, sans-serif;
 
+@left-menu-width: 180px;
+@menu-item-width: 150px;
+@sprint-width: 65px;
+@sprint-height: 35px;
+
 a {
   text-decoration: none;
   color: @dark-text-color;
 }
 a:hover {
- text-decoration: underline;
+  text-decoration: underline;
 }
 
 :root {
@@ -45,7 +50,7 @@ body {
   position: fixed;
   top: 0px;
   left: 0px;
-  width: 180px;
+  width: @left-menu-width;
   height: 100vh;
   z-index: 10;
   background-color: @menu-background-color;
@@ -55,7 +60,7 @@ body {
 .right {
   position: absolute;
   top: 0px;
-  left: 200px;
+  left: @left-menu-width + 20px;
 }
 
 .menu-container {
@@ -91,7 +96,7 @@ body {
 }
 
 .filter {
-  width: 150px;
+  width: @menu-item-width;
   height: 85px;
   padding-left: 10px;
   padding-top: 5px;
@@ -125,7 +130,7 @@ input[type='submit']:hover {
 
 .menu-item {
   height: 20px;
-  width: 150px;
+  width: @menu-item-width;
   padding-left: 10px;
   padding-top: 5px;
   outline-offset: -1px;
@@ -226,21 +231,37 @@ input[type='submit']:hover {
 }
 
 .sprint {
-  width: 65px;
-  height: 35px;
+  width: @sprint-width;
+  height: @sprint-height;
   text-align: center;
-  line-height: 35px;
+  line-height: @sprint-height;
   outline-offset: -1px;
   font-size: 9pt;
   outline: 1px solid @accent-color;
   background-color: @background-color;
 }
 
+.today-indicator-line {
+  position: relative;
+  height: 300px;
+  border-left: thin orange dotted;
+  z-index: 100;
+}
+.today-indicator-date {
+  position: relative;
+  background-color: orange;
+  line-height: 10px;
+  width: 27px;
+  top: 2px;
+  left: -13px;
+  font-size: 6pt;
+}
+
 .sprint-placeholder {
   width: 250px;
-  height: 35px;
+  height: @sprint-height;
   text-align: center;
-  line-height: 35px;
+  line-height: @sprint-height;
   outline-offset: -1px;
   color: gray;
   font-size: 8pt;
@@ -299,16 +320,16 @@ input[type='submit']:hover {
 
 // invert font-awesome icon-stack on hover
 .fa-stack .fa-circle {
-    color: white;
+  color: white;
 }
 .fa-stack .fa-inverse {
-    color: black;
+  color: black;
 }
 .fa-stack:hover .fa-circle {
   color: black;
 }
 .fa-stack:hover .fa-inverse {
-    color: white;
+  color: white;
 }
 
 .feature-progress-bar {
@@ -329,14 +350,12 @@ input[type='submit']:hover {
   position: absolute;
   height: inherit;
   background-color: @progress-background-color;
-  //box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .progress-bar-done {
   position: absolute;
   height: inherit;
   background-image: var(--fill-style);
-  //box-shadow: inset 1px 1px 3px rgb(50, 50, 50);
 }
 
 .delta-bar {
@@ -453,9 +472,4 @@ input[type='submit']:hover {
 .tooltip:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
-}
-
-.hidden {
-  visibility: hidden;
-  height: 0;
 }

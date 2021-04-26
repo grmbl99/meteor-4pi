@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrop } from 'react-dnd';
-import { NOT_SET, START_SPRINT_NOT_SET, ItemTypes, DisplayTypes } from '/imports/api/constants';
+import { differenceInCalendarDays, format } from 'date-fns';
+import { NOT_SET, START_SPRINT_NOT_SET, ItemTypes, DisplayTypes, ADSConfig } from '/imports/api/constants';
 import { Feature } from './feature';
 import { ProgressBar } from './progress-bar';
 import { CollectionContext } from './context';
@@ -72,6 +73,7 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
 
 function PiView(props) {
   const { iterations, features, deltaFeatures } = React.useContext(CollectionContext);
+  const [nrFeatures, setNrFeatures] = React.useState(0);
 
   // feature drag and drop logic
   const [{ isOver }, drop] = useDrop(
@@ -88,6 +90,7 @@ function PiView(props) {
   // used to let parent (PiViewRow) know how many features are displayed
   React.useEffect(() => {
     props.onFeaturesDisplayed(props.pi, featuresList.length);
+    setNrFeatures(featuresList.length);
   }, [props]);
 
   const sprintsList = []; // list of Sprint objects
@@ -101,12 +104,12 @@ function PiView(props) {
       if (iteration.sprint > piEnd) {
         piEnd = iteration.sprint;
       }
-      sprintsList.push(<Sprint key={iteration._id} name={iteration.sprintName} />);
+      sprintsList.push(<Sprint key={iteration._id} iteration={iteration} nrFeatures={nrFeatures} />);
     }
   }
   const nrSprints = sprintsList.length;
   if (nrSprints === 0) {
-    sprintsList.push(<SprintPlaceholder key='1' name='no sprints defined' />);
+    sprintsList.push(<SprintPlaceholder key='1' iteration={null} />);
   }
 
   let size = 0;
@@ -241,11 +244,38 @@ function PiView(props) {
 }
 
 Sprint.propTypes = {
-  name: PropTypes.string
+  iteration: PropTypes.object.isRequired,
+  nrFeatures: PropTypes.number.isRequired
 };
 
 function Sprint(props) {
-  return <div className='sprint'>{props.name}</div>;
+  let todayIndicator = '';
+  const SPRINT_CSS_WIDTH = 65;
+  const FEATURE_CSS_HEIGHT = 47;
+  const FEATURE_CSS_OFFSET = 60;
+
+  const today = new Date();
+  const offset = differenceInCalendarDays(today, props.iteration.startDate);
+  if (offset >= 0 && offset < ADSConfig.ITERATION_DAYS) {
+    todayIndicator = (
+      <div
+        className='today-indicator-line'
+        style={{
+          left: (SPRINT_CSS_WIDTH * offset) / ADSConfig.ITERATION_DAYS,
+          height: props.nrFeatures * FEATURE_CSS_HEIGHT + FEATURE_CSS_OFFSET
+        }}
+      >
+        <div className='today-indicator-date'>{format(today, 'MM/dd')}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className='sprint'>
+      {props.iteration.sprintName}
+      {todayIndicator}
+    </div>
+  );
 }
 
 SprintPlaceholder.propTypes = {

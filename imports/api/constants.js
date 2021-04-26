@@ -36,7 +36,8 @@ export const ADSConfig = {
   AREA_OFFSET: '/systems/portfolio fixed/solution/art imaging chain',
   AREA_OFFSET_WIQL: '\\Systems\\Portfolio Fixed\\Solution\\ART Imaging Chain',
   ITERATION_OFFSET: '/systems/safe fixed',
-  ITERATION_OFFSET_WIQL: '\\Systems\\SAFe Fixed'
+  ITERATION_OFFSET_WIQL: '\\Systems\\SAFe Fixed',
+  ITERATION_DAYS: 14
 };
 
 // return status for async (future/promise) functions

@@ -73,7 +73,7 @@ const PiViewRow = React.forwardRef((props, ref) => {
   }
 
   return (
-    <div ref={ref} className={featuresDisplayed === 0 ? 'hidden pi-grid-container' : 'pi-grid-container'}>
+    <div ref={ref} className={featuresDisplayed === 0 ? 'display-none' : 'pi-grid-container'}>
       {piRow}
     </div>
   );
