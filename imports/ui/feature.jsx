@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { DisplayTypes, ItemTypes, ADSFields, ADSConfig } from '/imports/api/constants';
+import { DisplayTypes, ItemTypes, ADSFields, ADSConfig, START_SPRINT_NOT_SET, NOT_SET } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
 
 export { Feature };
@@ -18,7 +18,8 @@ Feature.propTypes = {
   orgFeatureEndSprint: PropTypes.number.isRequired, //not used to display anything at the moment
   orgSize: PropTypes.number.isRequired,
   orgProgress: PropTypes.number.isRequired,
-  nrSprints: PropTypes.number.isRequired
+  nrSprints: PropTypes.number.isRequired,
+  startEndMsg: PropTypes.string
 };
 
 function Feature(props) {
@@ -32,11 +33,22 @@ function Feature(props) {
   }));
 
   const tags = feature.tags ? feature.tags.toLowerCase().split('; ') : [];
-  const stretchIcon = tags.includes(ADSFields.STRETCH) ? <i className='fa fa-gift' /> : '';
 
+  let warningMsg = '';
+  if (feature.size !== feature.featureSize) {
+    const storySizeStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(
+      feature.size
+    );
+    const featureSizeStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(
+      feature.featureSize
+    );
+    warningMsg += 'story-size=' + storySizeStr + ',  feature-size=' + featureSizeStr;
+  }
+
+  const stretchIcon = tags.includes(ADSFields.STRETCH) ? <i className='fa fa-gift' /> : '';
   const tagsIcon = tags.length > 0 ? <Icon name='fa-tags' value={'Tags: ' + feature.tags} /> : '';
-  const warningIcon = feature.warning ? <Icon name='fa-exclamation-triangle' value='this is some warning' /> : '';
-  const iterationIcon = tags.length > 0 ? <Icon name='fa-calendar' value={'no start/end'} /> : '';
+  const warningIcon = warningMsg ? <Icon name='fa-exclamation-triangle' value={warningMsg} /> : '';
+  const calendarIcon = props.startEndMsg ? <Icon name='fa-calendar' value={props.startEndMsg} /> : '';
 
   // style the feature based on DisplayType
   let featureClassName = 'feature';
@@ -75,7 +87,7 @@ function Feature(props) {
       <div className='feature-icons'>
         {warningIcon}
         {tagsIcon}
-        {iterationIcon}
+        {calendarIcon}
       </div>
       <div className='feature-progress-bar'>
         <ProgressBar

@@ -28,11 +28,7 @@ const PiViewRow = React.forwardRef((props, ref) => {
     if (team !== '') {
       let teamVelocity = 0;
       for (const planItem of velocityPlan) {
-        if (
-          planItem.pi === pi &&
-          planItem.team === team &&
-          planItem.project === ADSConfig.VELOCITY_PLAN_PROJECT
-        ) {
+        if (planItem.pi === pi && planItem.team === team && planItem.project === ADSConfig.VELOCITY_PLAN_PROJECT) {
           teamVelocity = planItem.value;
         }
       }

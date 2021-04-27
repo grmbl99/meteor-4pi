@@ -26,6 +26,8 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
   let start = NOT_SET;
   let end = NOT_SET;
   let fEnd = NOT_SET;
+  let sprintMsg = '';
+  let featureMsg = '';
 
   if (piStartSprint !== START_SPRINT_NOT_SET && piEndSprint !== NOT_SET) {
     if (
@@ -33,10 +35,15 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
       feature.endSprint !== NOT_SET &&
       feature.startSprint <= feature.endSprint
     ) {
+      const startMsg = 'start: ' + feature.startSprintName + ' ';
+      const endMsg = 'end: ' + feature.endSprintName + ' ';
+
       if (feature.startSprint < piStartSprint && feature.endSprint < piStartSprint) {
         // before
+        sprintMsg = startMsg + endMsg;
       } else if (feature.startSprint < piStartSprint && feature.endSprint <= piEndSprint) {
         // before-in
+        sprintMsg = startMsg;
         start = 0;
         end = feature.endSprint - piStartSprint;
       } else if (feature.startSprint <= piEndSprint && feature.endSprint <= piEndSprint) {
@@ -45,30 +52,36 @@ function calcRelFeatureStartEnd(feature, piStartSprint, piEndSprint) {
         end = feature.endSprint - piStartSprint;
       } else if (feature.startSprint < piStartSprint && feature.endSprint > piEndSprint) {
         // before-after
+        sprintMsg = startMsg + endMsg;
         start = 0;
         end = piEndSprint - piStartSprint;
       } else if (feature.startSprint <= piEndSprint && feature.endSprint > piEndSprint) {
         // in-after
+        sprintMsg = endMsg;
         start = feature.startSprint - piStartSprint;
         end = piEndSprint - piStartSprint;
       } else if (feature.startSprint > piEndSprint && feature.endSprint > piEndSprint) {
         // after
+        sprintMsg = startMsg + endMsg;
       }
     }
 
+    const endMsg = 'feature end: ' + feature.featureEndSprintName;
     if (feature.featureEndSprint !== NOT_SET) {
       if (feature.featureEndSprint < piStartSprint) {
         // before
+        featureMsg = endMsg;
       } else if (feature.featureEndSprint <= piEndSprint) {
         // in
         fEnd = feature.featureEndSprint - piStartSprint;
       } else if (fEnd > piEndSprint) {
         // after
+        featureMsg = endMsg;
       }
     }
   }
 
-  return [start, end, fEnd];
+  return [start, end, fEnd, sprintMsg + featureMsg];
 }
 
 function PiView(props) {
@@ -121,7 +134,7 @@ function PiView(props) {
     let orgFeatureEndSprint = NOT_SET;
     let orgSize = NOT_SET;
     let orgProgress = NOT_SET;
-    const [startSprint, endSprint, featureEndSprint] = calcRelFeatureStartEnd(feature, piStart, piEnd);
+    const [startSprint, endSprint, featureEndSprint, startEndMsg] = calcRelFeatureStartEnd(feature, piStart, piEnd);
 
     if (
       feature.pi === props.pi &&
@@ -168,6 +181,7 @@ function PiView(props) {
           orgProgress={orgProgress}
           nrSprints={nrSprints}
           onFeatureClicked={props.onFeatureClicked}
+          startEndMsg={startEndMsg}
         />
       );
     }

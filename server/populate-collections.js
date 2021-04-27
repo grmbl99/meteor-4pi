@@ -23,14 +23,6 @@ export function PopulateCollections() {
   teams.forEach((team) => Collections.TeamsCollection.insert(team));
 
   // eslint-disable-next-line no-undef
-  const allocations = EJSON.parse(Assets.getText('allocations.json'));
-  allocations.forEach((allocation) => Collections.AllocationsCollection.insert(allocation));
-
-  // eslint-disable-next-line no-undef
-  const velocities = EJSON.parse(Assets.getText('velocities.json'));
-  velocities.forEach((velocity) => Collections.VelocitiesCollection.insert(velocity));
-
-  // eslint-disable-next-line no-undef
   const features = EJSON.parse(Assets.getText('features.json'));
   features.forEach((feature) => Collections.FeaturesCollection.insert(feature));
 
@@ -47,7 +39,7 @@ export function PopulateCollections() {
   orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
 
   // eslint-disable-next-line no-undef
-  const velocityPlan = EJSON.parse(Assets.getText('velocity-plan.json'));
+  const velocityPlan = EJSON.parse(Assets.getText('velocityplan.json'));
   velocityPlan.forEach((planItem) => Collections.VelocityPlanCollection.insert(planItem));
 */
 }
