@@ -1,16 +1,19 @@
 # settings.json
 
-- copy the `settings-example.json` to `settings.json`
-- fill in your own ADSToken (do ***NOT*** put this file in version control)
-- set `useTestData` to `true`, to run using test-data (without connecting to an Azure Devops server)
+- Copy `settings-example.json` to `settings.json`
+- Fill in your own ADSToken (do ***NOT*** put this file in version control)
+- Set `useTestData` to `true`, to run using test-data (without connecting to an Azure Devops server)
 
 ## development
 
-- meteor run --settings settings.json
+- `meteor run --settings settings.json`
+- The development server listens on `http://localhost:3000/`
 
-## docker production
+## production (docker)
 
-- the `startup.sh` script uses the content of `settings.json` to set the `METEOR_SETTINGS` environment variable in the docker image
-- just build and run using docker-compose
-  - docker-compose build
-  - docker-compose up
+- The `startup.sh` script uses the content of `settings.json` to set the `METEOR_SETTINGS` environment variable in the docker image
+- Just build and run using docker-compose
+  - `docker-compose build`
+    - The build step is memory intensive: increase the max memory for docker to 4GB
+  - `docker-compose up`
+- The docker image listens on `http://localhost/`
