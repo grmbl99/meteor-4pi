@@ -18,5 +18,8 @@ Meteor.startup(() => {
   ].forEach((collection) => collection.remove({}));
 
   PopulateCollections();
-  SyncADS();
+  
+  if (!Meteor.settings.useTestData){
+    SyncADS();
+  }
 });

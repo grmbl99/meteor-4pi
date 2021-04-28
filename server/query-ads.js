@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import * as vsoNodeApi from 'azure-devops-node-api';
 import * as Collections from '/imports/api/collections';
 import { ADSFields, ADSConfig, ReturnStatus, NOT_SET, START_SPRINT_NOT_SET } from '/imports/api/constants';
@@ -353,7 +354,7 @@ async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
 }
 
 export async function QueryADS(date) {
-  const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(ADSConfig.TOKEN);
+  const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(Meteor.settings.ADSToken);
   const connection = new vsoNodeApi.WebApi(ADSConfig.URL, authHandler);
   const witAPI = await connection.getWorkItemTrackingApi();
 

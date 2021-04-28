@@ -1,5 +1,9 @@
 # The tag here should match the Meteor version of your app, per .meteor/release
-FROM geoffreybooth/meteor-base:2.1
+FROM geoffreybooth/meteor-base:2.2
+
+# Startup script to set the METEOR_SETTINGS environment variable
+COPY ./startup.sh $SCRIPTS_FOLDER/
+COPY ./settings.json $SCRIPTS_FOLDER/
 
 # Copy app package.json and package-lock.json into container
 COPY ./package*.json $APP_SOURCE_FOLDER/

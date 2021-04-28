@@ -17,29 +17,30 @@ export function PopulateCollections() {
   if (Collections.ServerStatusCollection.find().count() === 0) {
     populateServerStatusCollection();
   }
-/*
-  // eslint-disable-next-line no-undef
-  const teams = EJSON.parse(Assets.getText('teams.json'));
-  teams.forEach((team) => Collections.TeamsCollection.insert(team));
 
-  // eslint-disable-next-line no-undef
-  const features = EJSON.parse(Assets.getText('features.json'));
-  features.forEach((feature) => Collections.FeaturesCollection.insert(feature));
+  if(Meteor.settings.useTestData) {
+    // eslint-disable-next-line no-undef
+    const teams = EJSON.parse(Assets.getText('teams.json'));
+    teams.forEach((team) => Collections.TeamsCollection.insert(team));
 
-  // eslint-disable-next-line no-undef
-  const iterations = EJSON.parse(Assets.getText('iterations.json'));
-  iterations.forEach((iteration) => Collections.IterationsCollection.insert(iteration));
+    // eslint-disable-next-line no-undef
+    const features = EJSON.parse(Assets.getText('features.json'));
+    features.forEach((feature) => Collections.FeaturesCollection.insert(feature));
 
-  // eslint-disable-next-line no-undef
-  const projects = EJSON.parse(Assets.getText('projects.json'));
-  projects.forEach((project) => Collections.ProjectsCollection.insert(project));
+    // eslint-disable-next-line no-undef
+    const iterations = EJSON.parse(Assets.getText('iterations.json'));
+    iterations.forEach((iteration) => Collections.IterationsCollection.insert(iteration));
 
-  // eslint-disable-next-line no-undef
-  const orgfeatures = EJSON.parse(Assets.getText('orgfeatures.json'));
-  orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
+    // eslint-disable-next-line no-undef
+    const projects = EJSON.parse(Assets.getText('projects.json'));
+    projects.forEach((project) => Collections.ProjectsCollection.insert(project));
 
-  // eslint-disable-next-line no-undef
-  const velocityPlan = EJSON.parse(Assets.getText('velocityplan.json'));
-  velocityPlan.forEach((planItem) => Collections.VelocityPlanCollection.insert(planItem));
-*/
+    // eslint-disable-next-line no-undef
+    const orgfeatures = EJSON.parse(Assets.getText('orgfeatures.json'));
+    orgfeatures.forEach((feature) => Collections.OrgFeaturesCollection.insert(feature));
+
+    // eslint-disable-next-line no-undef
+    const velocityPlan = EJSON.parse(Assets.getText('velocityplan.json'));
+    velocityPlan.forEach((planItem) => Collections.VelocityPlanCollection.insert(planItem));
+  }
 }
