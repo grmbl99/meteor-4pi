@@ -1,4 +1,4 @@
-# settings.json
+# how to run
 
 - Copy `settings-example.json` to `settings.json`
 - Fill in your own ADSToken (do ***NOT*** put this file in version control)
