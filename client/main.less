@@ -245,7 +245,7 @@ input[type='submit']:hover {
   position: relative;
   height: 300px;
   border-left: thin orange dotted;
-  z-index: 100;
+  z-index: 10;
 }
 .today-indicator-date {
   position: relative;
@@ -416,6 +416,7 @@ input[type='submit']:hover {
   bottom: 0;
   margin: auto;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 20;
 }
 
 .popup-main {
@@ -472,4 +473,8 @@ input[type='submit']:hover {
 .tooltip:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+
+.input-invalid {
+  border: 2px solid red;
 }

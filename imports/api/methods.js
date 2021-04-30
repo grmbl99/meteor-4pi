@@ -32,7 +32,9 @@ Meteor.methods({
           progress: parseInt(input.progress),
           pi: input.pi,
           startSprint: input.startSprint,
-          endSprint: input.endSprint
+          startSprintName: input.startSprintName,
+          endSprint: input.endSprint,
+          endSprintName: input.endSprintName
         }
       }
     );

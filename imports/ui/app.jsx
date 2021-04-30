@@ -46,7 +46,9 @@ export function App(props) {
   // executed when closing the feature-update modal dialog
   function updateFeature(input) {
     setShowPopup(false);
-    Meteor.call('UpdateFeature', input);
+    if (input.success) {
+      Meteor.call('UpdateFeature', input);
+    }
   }
 
   // show feature-update modal dialog
@@ -242,9 +244,9 @@ export function App(props) {
             {teamsList}
             <div className='heading'>Product Owner View</div>
             {projectsList}
+            <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature} />
           </CollectionContext.Provider>
         </DndProvider>
-        <UpdateFeaturePopup show={showPopup} feature={selectedFeature} onSubmit={updateFeature} />
       </div>
     </div>
   );

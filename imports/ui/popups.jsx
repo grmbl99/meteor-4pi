@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import { CollectionContext } from './context';
 
 export { UpdateFeaturePopup };
 
@@ -10,54 +12,119 @@ UpdateFeaturePopup.propTypes = {
 };
 
 function UpdateFeaturePopup(props) {
+  const { iterations } = React.useContext(CollectionContext);
   const showHideClassName = props.show ? 'popup display-block' : 'popup display-none';
 
-  const [name, setName] = React.useState('');
-  const [size, setSize] = React.useState('');
-  const [progress, setProgress] = React.useState('');
-  const [pi, setPi] = React.useState('');
-  const [startSprint, setStartSprint] = React.useState('');
-  const [endSprint, setEndSprint] = React.useState('');
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors }
+  } = useForm({ mode: 'onChange' });
 
-  if (props.feature) {
-    // fill the components 'state' with the prop content upon render
-    React.useEffect(() => {
-      setName(props.feature.name);
-      setSize(props.feature.size);
-      setPi(props.feature.pi);
-      setProgress(props.feature.progress);
-      setStartSprint(props.feature.startSprint);
-      setEndSprint(props.feature.endSprint);
-    }, [props]);
+  useEffect(() => {
+    reset({
+      name: props.feature.name,
+      size: props.feature.size,
+      progress: props.feature.progress,
+      pi: props.feature.pi,
+      startSprint: sprintRevLookup[props.feature.startSprint] || props.feature.startSprint,
+      endSprint: sprintRevLookup[props.feature.endSprint] || props.feature.endSprint
+    });
+  }, [props]);
+
+  function onSubmit(data) {
+    props.onSubmit({
+      success: true,
+      _id: props.feature._id,
+      name: data.name,
+      size: data.size,
+      progress: data.progress,
+      pi: data.pi,
+      startSprint: sprintLookup[data.startSprint],
+      startSprintName: data.startSprint,
+      endSprint: sprintLookup[data.endSprint],
+      endSprintName: data.endSprint
+    });
   }
 
-  function handleSubmit(event) {
+  function onError(errors) {
+    console.log(errors);
+  }
+
+  function onCancel() {
     props.onSubmit({
-      _id: props.feature._id,
-      name: name,
-      size: size,
-      progress: progress,
-      pi: pi,
-      startSprint: startSprint,
-      endSprint: endSprint
+      success: false
     });
-    event.preventDefault();
+  }
+
+  const iterationList = [];
+  const piList = [];
+  const sprintLookup = {};
+  const sprintRevLookup = {};
+  const piLookup = {};
+  for (const iteration of iterations) {
+    iterationList.push(<option key={iteration.sprint} value={iteration.sprintName} />);
+    sprintLookup[iteration.sprintName] = iteration.sprint;
+    sprintRevLookup[iteration.sprint] = iteration.sprintName;
+
+    if (!(iteration.pi in piLookup)) {
+      piLookup[iteration.pi] = true;
+      piList.push(<option key={iteration.pi} value={iteration.pi} />);
+    }
   }
 
   return (
     <div className={showHideClassName}>
       <section className='popup-main'>
-        <form className='popup-grid-container' onSubmit={handleSubmit}>
-          <label>Name:</label> <input type='text' value={name} onChange={(event) => setName(event.target.value)} />
-          <label>Size:</label> <input type='text' value={size} onChange={(event) => setSize(event.target.value)} />
-          <label>Progress:</label>{' '}
-          <input type='text' value={progress} onChange={(event) => setProgress(event.target.value)} />
-          <label>PI:</label> <input type='text' value={pi} onChange={(event) => setPi(event.target.value)} />
-          <label>Start:</label>{' '}
-          <input type='text' value={startSprint} onChange={(event) => setStartSprint(event.target.value)} />
-          <label>End:</label>{' '}
-          <input type='text' value={endSprint} onChange={(event) => setEndSprint(event.target.value)} />
+        <form className='popup-grid-container' onSubmit={handleSubmit(onSubmit, onError)}>
+          <label>Name:</label>{' '}
+          <input className={errors.name && 'input-invalid'} type='text' {...register('name', { required: true })} />
+          <label>Size:</label>{' '}
+          <input
+            className={errors.size && 'input-invalid'}
+            type='text'
+            {...register('size', {
+              required: true,
+              min: 0,
+              validate: () => Number(getValues('size')) >= Number(getValues('progress'))
+            })}
+          />
+          <label>Progress:</label>
+          <input
+            className={errors.progress && 'input-invalid'}
+            type='text'
+            {...register('progress', {
+              required: true,
+              min: 0,
+              validate: () => Number(getValues('size')) >= Number(getValues('progress'))
+            })}
+          />
+          <label>PI:</label>{' '}
+          <input
+            className={errors.pi && 'input-invalid'}
+            list='pis'
+            {...register('pi', { validate: (v) => v in piLookup })}
+          />
+          <label>Start:</label>
+          <input
+            className={errors.startSprint && 'input-invalid'}
+            list='iterations'
+            {...register('startSprint', { validate: (v) => v in sprintLookup })}
+          />
+          <label>End:</label>
+          <input
+            className={errors.endSprint && 'input-invalid'}
+            list='iterations'
+            {...register('endSprint', { validate: (v) => v in sprintLookup })}
+          />
+          <datalist id='iterations'>{iterationList}</datalist>
+          <datalist id='pis'>{piList}</datalist>
           <input type='submit' value='Submit' />
+          <div className='menu-item' onClick={onCancel}>
+            Cancel
+          </div>
         </form>
       </section>
     </div>
