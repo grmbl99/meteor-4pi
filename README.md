@@ -1,17 +1,22 @@
-# how to run
+# How to run
+
+Take the following steps to configure the application for your specific instance:
 
 - Copy `settings-example.json` to `settings.json`
-- Fill in your own ADSToken
-- Set `useTestData` to `true`, to run using test-data (without connecting to an Azure Devops server)
+  - Fill in your own ADS-Token, ADS-Project and ADS-Url
+  - Set `useTestData` to `true`, to run using test-data (without connecting to an Azure Devops server)
 - Copy `private\*-example.json` to `private\*.json`
+
 - Do ***NOT*** put these files in version control !
 
-## development
+Note that some additional ADS instance specific settings are located in `imports\api\constants.js`
+
+## Development
 
 - `meteor run --settings settings.json`
 - The development server listens on `http://localhost:3000/`
 
-## production (docker)
+## Production (docker)
 
 - The `startup.sh` script uses the content of `settings.json` to set the `METEOR_SETTINGS` environment variable in the docker image
 - Just build and run using docker-compose
