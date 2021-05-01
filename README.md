@@ -1,4 +1,6 @@
-# How to run
+# Meteor 4PI viewer
+
+## Configuration
 
 Take the following steps to configure the application for your specific instance:
 
@@ -9,7 +11,15 @@ Take the following steps to configure the application for your specific instance
 
 - Do ***NOT*** put these files in version control !
 
-Note that some additional ADS instance specific settings are located in `imports\api\constants.js`
+  Note that some additional ADS instance specific settings are located in `imports\api\constants.js`
+
+- Run `meteor npm install` to install the dependencies from `package.json`
+- Create a `public` directory with a symlink to `node_modules/font-awesome/fonts`
+  - `mkdir public`
+  - `cd public`
+  - `ln -s ../node_modules/font-awesome/fonts .`
+
+  On Windows you cannot create symlinks, so just copy the `fonts` directory
 
 ## Development
 
