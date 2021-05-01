@@ -1,8 +1,10 @@
 # how to run
 
 - Copy `settings-example.json` to `settings.json`
-- Fill in your own ADSToken (do ***NOT*** put this file in version control)
+- Fill in your own ADSToken
 - Set `useTestData` to `true`, to run using test-data (without connecting to an Azure Devops server)
+- Copy `private\*-example.json` to `private\*.json`
+- Do ***NOT*** put these files in version control !
 
 ## development
 
