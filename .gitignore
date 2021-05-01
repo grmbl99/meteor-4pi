@@ -1,3 +1,10 @@
 node_modules/
 public/
+private/deltafeatures.json
+private/features.json
+private/orgfeatures.json
+private/iterations.json
+private/projects.json
+private/teams.json
+private/velocityplan.json
 settings.json
