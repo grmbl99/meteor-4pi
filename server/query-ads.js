@@ -4,28 +4,11 @@ import * as Collections from '/imports/api/collections';
 import { ADSFields, ADSConfig, ReturnStatus, NOT_SET, START_SPRINT_NOT_SET } from '/imports/api/constants';
 import { format } from 'date-fns';
 
-/*
-async function getTeamsFromADS(witAPI) {
-  try {
-    // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/areas/systems/portfolio%20fixed/solution/art%20imaging%20chain?$depth=1
-    const queryResult = await witAPI.getClassificationNode(Constants.ADSConfig.PROJECT, 'areas', Constants.ADSConfig.AREA_OFFSET,1);
-
-    for (const team of queryResult.children) {
-      Collections.TeamsCollection.insert({name: team.name});
-    }
-  } catch(e) {
-    console.log('Error in getTeamsFromADS');
-    throw(e);
-  }
-  return(Constants.ReturnStatus.OK);
-}
-*/
-
 async function getIterationsFromADS(witAPI) {
   try {
     // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/iterations/systems/safe%20fixed?$depth=2
     const queryResult = await witAPI.getClassificationNode(
-      ADSConfig.PROJECT,
+      Meteor.settings.public.ADSProject,
       'iterations',
       ADSConfig.ITERATION_OFFSET,
       2
@@ -71,7 +54,7 @@ async function getVelocityPlanFromADS(witAPI, pis) {
               [Source].[System.TeamProject] = @project
               AND [Source].[System.WorkItemType] = 'Feature'
               AND (${piSubQuery})
-              AND [Source].[System.AreaPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.AREA_OFFSET_WIQL}'
+              AND [Source].[System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.AREA_OFFSET_WIQL}'
               AND [Source].[System.State] <> 'Removed'
               AND [Source].[Philips.Planning.Release] = 'Velocity Plan'
           )
@@ -85,7 +68,7 @@ async function getVelocityPlanFromADS(witAPI, pis) {
       MODE (MayContain)`
     };
 
-    const teamContext = { project: ADSConfig.PROJECT };
+    const teamContext = { project: Meteor.settings.public.ADSProject };
     const queryResult = await witAPI.queryByWiql(query, teamContext);
 
     // the ADS query just returns workitem id's
@@ -145,7 +128,7 @@ async function getFeaturesFromADS(witAPI, pis, asOfDate) {
   try {
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
-      piSubQuery += `[System.IterationPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.ITERATION_OFFSET_WIQL}\\${pi}' ${
+      piSubQuery += `[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.ITERATION_OFFSET_WIQL}\\${pi}' ${
         i !== pis.length - 1 ? 'OR ' : ''
       }`;
     }
@@ -159,13 +142,13 @@ async function getFeaturesFromADS(witAPI, pis, asOfDate) {
       WHERE
           [System.TeamProject] = @project
           AND [System.WorkItemType] = 'Feature'
-          AND [System.AreaPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.AREA_OFFSET_WIQL}'
+          AND [System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.AREA_OFFSET_WIQL}'
           AND (${piSubQuery})
           AND [System.State] <> 'Removed'
       ${asOfSubQuery}`
     };
 
-    const teamContext = { project: ADSConfig.PROJECT };
+    const teamContext = { project: Meteor.settings.public.ADSProject };
     const queryResult = await witAPI.queryByWiql(query, teamContext);
 
     // the ADS query just returns workitem id's
@@ -251,7 +234,7 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
   try {
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
-      piSubQuery += `[Source].[System.IterationPath] UNDER '${ADSConfig.PROJECT}${
+      piSubQuery += `[Source].[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${
         ADSConfig.ITERATION_OFFSET_WIQL
       }\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
@@ -266,7 +249,7 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
           (
               [Source].[System.TeamProject] = @project
               AND [Source].[System.WorkItemType] = 'Feature'
-              AND [Source].[System.AreaPath] UNDER '${ADSConfig.PROJECT}${ADSConfig.AREA_OFFSET_WIQL}'
+              AND [Source].[System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.AREA_OFFSET_WIQL}'
               AND (${piSubQuery})
               AND [Source].[System.State] <> 'Removed'
           )
@@ -282,7 +265,7 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
       MODE (MayContain)`
     };
 
-    const teamContext = { project: ADSConfig.PROJECT };
+    const teamContext = { project: Meteor.settings.public.ADSProject };
     const queryResult = await witAPI.queryByWiql(query, teamContext);
 
     // the ADS query just returns workitem id's
@@ -355,7 +338,7 @@ async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
 
 export async function QueryADS(date) {
   const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(Meteor.settings.ADSToken);
-  const connection = new vsoNodeApi.WebApi(ADSConfig.URL, authHandler);
+  const connection = new vsoNodeApi.WebApi(Meteor.settings.public.ADSUrl, authHandler);
   const witAPI = await connection.getWorkItemTrackingApi();
 
   const pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];

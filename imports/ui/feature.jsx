@@ -1,4 +1,5 @@
 import React from 'react';
+import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import { DisplayTypes, ItemTypes, ADSFields, ADSConfig, START_SPRINT_NOT_SET, NOT_SET } from '/imports/api/constants';
@@ -63,7 +64,8 @@ function Feature(props) {
   const trimmedName = feature.name.length > maxLength ? feature.name.substring(0, maxLength - 3) + '...' : feature.name;
 
   // workitem URL
-  const workItemUrl = ADSConfig.URL + ADSConfig.PROJECT + '/_workitems/edit/' + feature.id;
+  const workItemUrl =
+    Meteor.settings.public.ADSUrl + Meteor.settings.public.ADSProject + '/_workitems/edit/' + feature.id;
 
   return (
     <div

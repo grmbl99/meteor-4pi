@@ -30,8 +30,6 @@ export const ADSFields = {
 
 // Azure instance specific information
 export const ADSConfig = {
-  PROJECT: 'IGT',
-  URL: 'https://tfsemea1.ta.philips.com/tfs/TPC_Region22/',
   AREA_OFFSET: '/systems/portfolio fixed/solution/art imaging chain',
   AREA_OFFSET_WIQL: '\\Systems\\Portfolio Fixed\\Solution\\ART Imaging Chain',
   ITERATION_OFFSET: '/systems/safe fixed',

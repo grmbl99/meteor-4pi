@@ -1,1 +1,8 @@
-{ "useTestData": false, "ADSToken": "put your ADS token here" }
+{
+  "useTestData": false,
+  "ADSToken": "put your ADS token here",
+  "public": {
+    "ADSProject": "project name",
+    "ADSUrl": "https://some.ads.server/tfs/SomeTeamProjectCollection/"
+  }
+}
