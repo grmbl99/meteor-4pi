@@ -3,13 +3,12 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DatePicker from 'react-datepicker';
-import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import { Meteor } from 'meteor/meteor';
 import { PiViewRow } from './pi-view-row';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
-import { SyncStatus, ServerStatus } from '/imports/api/constants';
+import { SyncStatus, ServerStatus, START_SPRINT_NOT_SET, NOT_SET } from '/imports/api/constants';
 import { getServerStatus } from '/imports/api/server-status';
 import { CollectionContext } from './context';
 import {
@@ -21,16 +20,23 @@ import {
   VelocityPlanCollection,
   ServerStatusCollection
 } from '/imports/api/collections';
+import { featureType } from '/imports/api/types';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'font-awesome/css/font-awesome.min.css';
 
-export function App(props) {
+export function App(_props: any) {
+  interface updateType {
+    pi: string;
+    project?: string;
+    team?: string;
+  }
+
   // move a feature between teams/projects/pi's
   // (exectued using drag-and-drop)
-  function moveFeature(featureId, pi, team, project) {
+  function moveFeature(featureId: number, pi: string, team: string, project: string) {
     if (!compareModeOn) {
-      let updates = { pi: pi };
+      let updates: updateType = { pi: pi };
       if (project !== '') {
         updates['project'] = project;
       }
@@ -42,9 +48,22 @@ export function App(props) {
     }
   }
 
+  interface inputType {
+    success: boolean;
+    _id: string;
+    name: string;
+    size: number;
+    progress: number;
+    pi: string;
+    startSprint: number;
+    startSprintName: string;
+    endSprint: number;
+    endSprintName: string;
+  }
+
   // store updated feature
   // executed when closing the feature-update modal dialog
-  function updateFeature(input) {
+  function updateFeature(input: inputType) {
     setShowPopup(false);
     if (input.success) {
       Meteor.call('UpdateFeature', input);
@@ -53,7 +72,7 @@ export function App(props) {
 
   // show feature-update modal dialog
   // executed when clicking on a feature
-  function editFeature(feature) {
+  function editFeature(feature: featureType) {
     if (!compareModeOn) {
       setSelectedFeature(feature);
       setShowPopup(true);
@@ -61,7 +80,7 @@ export function App(props) {
   }
 
   // call method on server to update delta's
-  function toggleCompareMode(event) {
+  function toggleCompareMode(_event: any) {
     if (!compareModeOn) {
       setCompareModeOn(true);
       Meteor.call('UpdateDeltaFeatureCollection');
@@ -71,7 +90,7 @@ export function App(props) {
   }
 
   // call method on server to refresh data from ADS
-  function refreshADS(event) {
+  function refreshADS(_event: any) {
     if (adsSyncStatus !== SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
       setCompareModeOn(false);
@@ -79,7 +98,7 @@ export function App(props) {
   }
 
   // call method on server to refresh compare data from ADS
-  function refreshCompareADS(date) {
+  function refreshCompareADS(date: Date | [Date, Date] | null) {
     if (adsSyncStatus !== SyncStatus.BUSY) {
       Meteor.call('RefreshCompareADS', date);
       setCompareModeOn(true);
@@ -124,10 +143,20 @@ export function App(props) {
   const [selectedFeature, setSelectedFeature] = React.useState({
     name: '',
     pi: '',
-    size: '',
-    progress: '',
-    startSprint: '',
-    endSprint: ''
+    size: 0,
+    progress: 0,
+    startSprint: START_SPRINT_NOT_SET,
+    endSprint: NOT_SET,
+    startSprintName: '',
+    endSprintName: '',
+    _id: '',
+    id: 0,
+    featureEndSprintName: '',
+    featureEndSprint: NOT_SET,
+    tags: '',
+    featureSize: 0,
+    team: '',
+    project: ''
   });
 
   // get the server state (azure sync status & dates) from server
@@ -145,13 +174,13 @@ export function App(props) {
   let teamsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const team of teams) {
-    const newRef = React.createRef();
+    const newRef = React.createRef<HTMLDivElement>();
     teamsMenu.push(
       <div
         className='menu-item'
         key={menuEntryKey}
         onClick={() => {
-          newRef.current.scrollIntoView();
+          newRef.current?.scrollIntoView();
         }}
       >
         {team.name}
@@ -176,13 +205,13 @@ export function App(props) {
   let projectsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const project of projects) {
-    const newRef = React.createRef();
+    const newRef = React.createRef<HTMLDivElement>();
     projectsMenu.push(
       <div
         className='menu-item'
         key={menuEntryKey}
         onClick={() => {
-          newRef.current.scrollIntoView();
+          newRef.current?.scrollIntoView();
         }}
       >
         {project.name}
@@ -229,11 +258,11 @@ export function App(props) {
           <div className={loadingClassName} />
 
           <div className='menu-heading'>Teams</div>
-          <FilterForm text='Project filter' onSubmit={(input) => setProjectFilter(input.filterName)} />
+          <FilterForm text='Project filter' onSubmit={(input: string) => setProjectFilter(input)} />
           {teamsMenu}
 
           <div className='menu-heading'>Projects</div>
-          <FilterForm text='Team filter' onSubmit={(input) => setTeamFilter(input.filterName)} />
+          <FilterForm text='Team filter' onSubmit={(input: string) => setTeamFilter(input)} />
           {projectsMenu}
         </div>
       </div>
@@ -253,15 +282,17 @@ export function App(props) {
 }
 
 // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
-const PickDateButton = React.forwardRef((props, ref) => {
+const PickDateButton = React.forwardRef((props: PickDateButtonPropTypes, ref: React.ForwardedRef<HTMLDivElement>) => {
   return (
     <div className='menu-item' ref={ref} onClick={props.onClick}>
       Compare: {props.value}
     </div>
   );
 });
-PickDateButton.propTypes = {
-  onClick: PropTypes.func,
-  value: PropTypes.string
-};
+
+interface PickDateButtonPropTypes {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  value?: string;
+}
+
 PickDateButton.displayName = 'PickDateButton';

@@ -1,29 +1,29 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { DisplayTypes, ItemTypes, ADSFields, ADSConfig, START_SPRINT_NOT_SET, NOT_SET } from '/imports/api/constants';
+import { DisplayTypes, ItemTypes, ADSFields } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
+import { featureType } from '/imports/api/types';
 
 export { Feature };
 
-Feature.propTypes = {
-  feature: PropTypes.object.isRequired,
-  displayType: PropTypes.string.isRequired,
-  onFeatureClicked: PropTypes.func.isRequired,
-  startSprint: PropTypes.number.isRequired,
-  endSprint: PropTypes.number.isRequired,
-  featureEndSprint: PropTypes.number.isRequired,
-  orgStartSprint: PropTypes.number.isRequired,
-  orgEndSprint: PropTypes.number.isRequired,
-  orgFeatureEndSprint: PropTypes.number.isRequired, //not used to display anything at the moment
-  orgSize: PropTypes.number.isRequired,
-  orgProgress: PropTypes.number.isRequired,
-  nrSprints: PropTypes.number.isRequired,
-  startEndMsg: PropTypes.string
-};
+interface FeaturePropTypes {
+  feature: featureType;
+  displayType: string;
+  onFeatureClicked: Function;
+  startSprint: number;
+  endSprint: number;
+  featureEndSprint: number;
+  orgStartSprint: number;
+  orgEndSprint: number;
+  orgFeatureEndSprint: number; //not used to display anything at the moment
+  orgSize: number;
+  orgProgress: number;
+  nrSprints: number;
+  startEndMsg?: string;
+}
 
-function Feature(props) {
+function Feature(props: FeaturePropTypes) {
   const feature = props.feature;
 
   // feature drag-and-drop logic
@@ -108,13 +108,13 @@ function Feature(props) {
   );
 }
 
-Icon.propTypes = {
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired
-};
+interface IconPropTypes {
+  name: string;
+  value: string;
+}
 
 // returns a 'font-awesome' icon-stack with a popover tooltip
-function Icon(props) {
+function Icon(props: IconPropTypes) {
   return (
     <span className='tooltip'>
       <span className='fa-stack'>

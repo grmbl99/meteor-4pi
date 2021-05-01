@@ -1,18 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 export { FilterForm, NewFeatureForm };
 
-FilterForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  text: PropTypes.string.isRequired
-};
+interface FilterFormPropTypes {
+  onSubmit: Function;
+  text: string;
+}
 
-function FilterForm(props) {
+function FilterForm(props: FilterFormPropTypes) {
   const [filterName, setFilterName] = React.useState('');
 
-  function handleSubmit(event) {
-    props.onSubmit({ filterName: filterName });
+  function handleSubmit(event: React.FormEvent) {
+    props.onSubmit(filterName);
     event.preventDefault();
   }
 
@@ -34,16 +33,16 @@ function FilterForm(props) {
   );
 }
 
-NewFeatureForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired
-};
+interface NewFeatureFormPropTypes {
+  onSubmit: Function;
+}
 
-function NewFeatureForm(props) {
+function NewFeatureForm(props: NewFeatureFormPropTypes) {
   const [name, setName] = React.useState('');
   const [size, setSize] = React.useState('');
   const [pi, setPi] = React.useState('');
 
-  function handleSubmit(event) {
+  function handleSubmit(event: React.FormEvent) {
     props.onSubmit({ name: name, size: size, pi: pi });
     setName('');
     setSize('');

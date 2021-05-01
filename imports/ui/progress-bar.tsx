@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { NOT_SET } from '/imports/api/constants';
 
 export { ProgressBar };
 
 // calculate start & duration as percentace of nr-of-sprints in a PI
-function calcDuration(startSprint, endSprint, nrSprints) {
+function calcDuration(startSprint: number, endSprint: number, nrSprints: number) {
   let pDuration = 0;
   let pStart = 0;
 
@@ -17,19 +16,19 @@ function calcDuration(startSprint, endSprint, nrSprints) {
   return [pStart, pDuration];
 }
 
-ProgressBar.propTypes = {
-  startSprint: PropTypes.number.isRequired,
-  endSprint: PropTypes.number.isRequired,
-  featureEndSprint: PropTypes.number.isRequired,
-  size: PropTypes.number.isRequired,
-  progress: PropTypes.number.isRequired,
-  orgStartSprint: PropTypes.number.isRequired,
-  orgEndSprint: PropTypes.number.isRequired,
-  orgSize: PropTypes.number.isRequired,
-  nrSprints: PropTypes.number.isRequired
-};
+interface ProgressBarPropTypes {
+  startSprint: number;
+  endSprint: number;
+  featureEndSprint: number;
+  size: number;
+  progress: number;
+  orgStartSprint: number;
+  orgEndSprint: number;
+  orgSize: number;
+  nrSprints: number;
+}
 
-function ProgressBar(props) {
+function ProgressBar(props: ProgressBarPropTypes) {
   let perctDone = props.size > 0 ? props.progress / props.size : 0;
   const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone > 1 ? 1 : perctDone);
   const sizeStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.size);
@@ -38,7 +37,7 @@ function ProgressBar(props) {
   );
 
   // determine wether to display the progress bar
-  let progressBar = '';
+  let progressBar = null;
   let [start, width] = calcDuration(props.startSprint, props.endSprint, props.nrSprints);
   if (width === 0) {
     width = 100; //no bar is displayed, use 100% of the width so text is nicely right-aligned
@@ -51,7 +50,7 @@ function ProgressBar(props) {
   }
 
   // determine whether to display the 'delta-size' badge
-  let deltaBadge = '';
+  let deltaBadge = null;
   if (props.orgSize !== NOT_SET) {
     const delta = props.size - props.orgSize;
     const deltaStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(delta);
@@ -63,7 +62,7 @@ function ProgressBar(props) {
   }
 
   // determine whether to display the delta-bar
-  let deltaBar = '';
+  let deltaBar = null;
   if (
     props.orgStartSprint !== NOT_SET &&
     props.orgEndSprint !== NOT_SET &&
@@ -74,7 +73,7 @@ function ProgressBar(props) {
   }
 
   // determine whether to display the feature end marker
-  let endMarker = '';
+  let endMarker = null;
   if (props.featureEndSprint !== NOT_SET && props.featureEndSprint !== props.endSprint) {
     let [start, width] = calcDuration(0, props.featureEndSprint, props.nrSprints);
     endMarker = <div className='end-marker' style={{ left: start + '%', width: width + '%' }} />;
