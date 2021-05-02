@@ -24,11 +24,13 @@ export interface featureType {
   team: string;
   project: string;
   state: string;
+  priority: string;
 }
 
 export interface iterationType {
   _id: string;
-  startDate: Date;
+  startDate: Date | undefined;
+  finishDate: Date | undefined;
   sprintName: string;
   sprint: number;
   pi: string;

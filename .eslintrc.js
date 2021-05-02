@@ -24,6 +24,7 @@ module.exports = {
       version: 'detect'
     }
   },
+  ignorePatterns: ['.meteor/**', 'packages/**'],
   rules: {
     quotes: ['error', 'single'],
     semi: ['error', 'always'],

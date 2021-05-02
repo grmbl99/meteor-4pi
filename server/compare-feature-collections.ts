@@ -2,7 +2,7 @@ import { FeaturesCollection, OrgFeaturesCollection, DeltaFeaturesCollection } fr
 import { DisplayTypes } from '/imports/api/constants';
 
 // compare FeaturesCollection with OrgFeaturesCollection: fill DeltaFeaturesCollection
-export function CompareFeatureCollections() {
+export function CompareFeatureCollections(): void {
   const features = FeaturesCollection.find({}).fetch();
 
   for (const feature of features) {

@@ -20,6 +20,6 @@ Meteor.startup(() => {
   PopulateCollections();
 
   if (!Meteor.settings.useTestData) {
-    SyncADS('');
+    SyncADS(undefined);
   }
 });

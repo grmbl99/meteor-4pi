@@ -2,31 +2,35 @@ import { Meteor } from 'meteor/meteor';
 import * as vsoNodeApi from 'azure-devops-node-api';
 import * as Collections from '/imports/api/collections';
 import { ADSFields, ADSConfig, ReturnStatus, NOT_SET, START_SPRINT_NOT_SET } from '/imports/api/constants';
-import { format } from 'date-fns';
+import { IWorkItemTrackingApi } from 'azure-devops-node-api/WorkItemTrackingApi';
+//import * as WorkItemTrackingApi from 'azure-devops-node-api/WorkItemTrackingApi';
+import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 
-async function getIterationsFromADS(witAPI) {
+async function getIterationsFromADS(witAPI: IWorkItemTrackingApi) {
   try {
     // https://tfsemea1.ta.philips.com/tfs/TPC_Region22/IGT/_apis/wit/classificationnodes/iterations/systems/safe%20fixed?$depth=2
     const queryResult = await witAPI.getClassificationNode(
       Meteor.settings.public.ADSProject,
-      'iterations',
+      WorkItemTrackingInterfaces.TreeStructureGroup.Iterations,
       ADSConfig.ITERATION_OFFSET,
       2
     );
 
     let i = 0;
-    for (const pi of queryResult.children) {
-      if (pi.hasChildren) {
-        for (const sprint of pi.children) {
-          const startDate = new Date(sprint.attributes.startDate);
-          const finishDate = new Date(sprint.attributes.finishDate);
-          Collections.IterationsCollection.insert({
-            pi: pi.name,
-            sprint: i++,
-            sprintName: sprint.name,
-            startDate: startDate,
-            finishDate: finishDate
-          });
+    if (queryResult.children) {
+      for (const pi of queryResult.children) {
+        if (pi.hasChildren && pi.children) {
+          for (const sprint of pi.children) {
+            const startDate = sprint.attributes ? new Date(sprint.attributes.startDate) : undefined;
+            const finishDate = sprint.attributes ? new Date(sprint.attributes.finishDate) : undefined;
+            Collections.IterationsCollection.insert({
+              pi: pi.name || '',
+              sprint: i++,
+              sprintName: sprint.name || '',
+              startDate: startDate,
+              finishDate: finishDate
+            });
+          }
         }
       }
     }
@@ -37,7 +41,7 @@ async function getIterationsFromADS(witAPI) {
   return ReturnStatus.OK;
 }
 
-async function getVelocityPlanFromADS(witAPI, pis) {
+async function getVelocityPlanFromADS(witAPI: IWorkItemTrackingApi, pis: string[]) {
   try {
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
@@ -73,14 +77,18 @@ async function getVelocityPlanFromADS(witAPI, pis) {
 
     // the ADS query just returns workitem id's
     // get the actual workitem content in parallel (async), wait for all to finish before continueing
-    let p = [];
-    for (const workItemLink of queryResult.workItemRelations) {
-      // in the returned hierarchy:
-      // - the top level (feature) items hold the team velocity
-      // - the child (story) items hold the team allocation percentage per project
-      p.push(getVelocityPlanItemFromADS(witAPI, workItemLink.target.id, pis));
+    if (queryResult.workItemRelations) {
+      const p = [];
+      for (const workItemLink of queryResult.workItemRelations) {
+        // in the returned hierarchy:
+        // - the top level (feature) items hold the team velocity
+        // - the child (story) items hold the team allocation percentage per project
+        if (workItemLink.target && workItemLink.target.id) {
+          p.push(getVelocityPlanItemFromADS(witAPI, workItemLink.target.id, pis));
+        }
+      }
+      await Promise.all(p);
     }
-    await Promise.all(p);
   } catch (e) {
     console.log('Error in getVelocityPlanFromADS');
     throw e;
@@ -88,7 +96,7 @@ async function getVelocityPlanFromADS(witAPI, pis) {
   return ReturnStatus.OK;
 }
 
-async function getVelocityPlanItemFromADS(witAPI, id, pis) {
+async function getVelocityPlanItemFromADS(witAPI: IWorkItemTrackingApi, id: number, pis: string[]) {
   try {
     const queryResult = await witAPI.getWorkItem(id, [
       ADSFields.TITLE,
@@ -97,24 +105,26 @@ async function getVelocityPlanItemFromADS(witAPI, id, pis) {
       ADSFields.RELEASE
     ]);
 
-    let teamName = queryResult.fields[ADSFields.NODENAME];
-    let projectName = queryResult.fields[ADSFields.RELEASE];
-    const name = queryResult.fields[ADSFields.TITLE];
-    const value = queryResult.fields[ADSFields.EFFORT];
+    if (queryResult.fields) {
+      let teamName = queryResult.fields[ADSFields.NODENAME];
+      let projectName = queryResult.fields[ADSFields.RELEASE];
+      const name = queryResult.fields[ADSFields.TITLE];
+      const value = queryResult.fields[ADSFields.EFFORT];
 
-    teamName = teamName ? teamName.toLowerCase() : 'undefined';
-    projectName = projectName ? projectName.toLowerCase() : 'undefined';
+      teamName = teamName ? teamName.toLowerCase() : 'undefined';
+      projectName = projectName ? projectName.toLowerCase() : 'undefined';
 
-    for (const pi of pis) {
-      if (name.includes(pi)) {
-        Collections.VelocityPlanCollection.insert({
-          team: teamName,
-          project: projectName,
-          pi: pi,
-          // if projectName is a special string as defined in ADSConfig.VELOCITY_PLAN_PROJECT (i.e. 'velocity plan')
-          // size contains the team velocity, otherwise size contains the team allocation percentage
-          value: value
-        });
+      for (const pi of pis) {
+        if (name.includes(pi)) {
+          Collections.VelocityPlanCollection.insert({
+            team: teamName,
+            project: projectName,
+            pi: pi,
+            // if projectName is a special string as defined in ADSConfig.VELOCITY_PLAN_PROJECT (i.e. 'velocity plan')
+            // size contains the team velocity, otherwise size contains the team allocation percentage
+            value: value
+          });
+        }
       }
     }
   } catch (e) {
@@ -124,13 +134,13 @@ async function getVelocityPlanItemFromADS(witAPI, id, pis) {
   return ReturnStatus.OK;
 }
 
-async function getFeaturesFromADS(witAPI, pis, asOfDate) {
+async function getFeaturesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], asOfDate: Date | undefined) {
   try {
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
-      piSubQuery += `[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.ITERATION_OFFSET_WIQL}\\${pi}' ${
-        i !== pis.length - 1 ? 'OR ' : ''
-      }`;
+      piSubQuery += `[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${
+        ADSConfig.ITERATION_OFFSET_WIQL
+      }\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
     const asOfSubQuery = asOfDate ? `ASOF '${asOfDate}'` : '';
 
@@ -153,11 +163,15 @@ async function getFeaturesFromADS(witAPI, pis, asOfDate) {
 
     // the ADS query just returns workitem id's
     // get the actual workitem content in parallel (async), wait for all to finish before continueing
-    let p = [];
-    for (const workItem of queryResult.workItems) {
-      p.push(getFeatureFromADS(witAPI, workItem.id, asOfDate));
+    if (queryResult.workItems) {
+      const p = [];
+      for (const workItem of queryResult.workItems) {
+        if (workItem.id) {
+          p.push(getFeatureFromADS(witAPI, workItem.id, asOfDate));
+        }
+      }
+      await Promise.all(p);
     }
-    await Promise.all(p);
   } catch (e) {
     console.log('Error in getFeaturesFromADS');
     throw e;
@@ -165,7 +179,7 @@ async function getFeaturesFromADS(witAPI, pis, asOfDate) {
   return ReturnStatus.OK;
 }
 
-async function getFeatureFromADS(witAPI, id, asOfDate) {
+async function getFeatureFromADS(witAPI: IWorkItemTrackingApi, id: number, asOfDate: Date | undefined) {
   try {
     const queryResult = await witAPI.getWorkItem(
       id,
@@ -182,47 +196,51 @@ async function getFeatureFromADS(witAPI, id, asOfDate) {
       asOfDate
     );
 
-    let projectName = queryResult.fields[ADSFields.RELEASE];
-    let teamName = queryResult.fields[ADSFields.NODENAME];
-    const parts = queryResult.fields[ADSFields.ITERATION_PATH].split('\\');
-    const name = queryResult.fields[ADSFields.TITLE];
-    const size = queryResult.fields[ADSFields.EFFORT];
-    const state = queryResult.fields[ADSFields.STATE];
-    const tags = queryResult.fields[ADSFields.TAGS];
-    const priority = queryResult.fields[ADSFields.PRIORITY];
+    if (queryResult.fields) {
+      let projectName = queryResult.fields[ADSFields.RELEASE];
+      let teamName = queryResult.fields[ADSFields.NODENAME];
+      const parts = queryResult.fields[ADSFields.ITERATION_PATH].split('\\');
+      const name = queryResult.fields[ADSFields.TITLE];
+      const size = queryResult.fields[ADSFields.EFFORT];
+      const state = queryResult.fields[ADSFields.STATE];
+      const tags = queryResult.fields[ADSFields.TAGS];
+      const priority = queryResult.fields[ADSFields.PRIORITY];
 
-    projectName = projectName ? projectName.toLowerCase() : 'undefined';
-    teamName = teamName ? teamName.toLowerCase() : 'undefined';
+      projectName = projectName ? projectName.toLowerCase() : 'undefined';
+      teamName = teamName ? teamName.toLowerCase() : 'undefined';
 
-    const pi = parts.length > 3 ? parts[3] : 'undefined';
-    const sprintName = parts.length > 4 ? parts[4] : 'undefined';
+      const pi = parts.length > 3 ? parts[3] : 'undefined';
+      const sprintName = parts.length > 4 ? parts[4] : 'undefined';
 
-    const iteration = Collections.IterationsCollection.findOne({
-      sprintName: sprintName
-    });
-    const sprint = iteration ? iteration.sprint : NOT_SET;
+      const iteration = Collections.IterationsCollection.findOne({
+        sprintName: sprintName
+      });
+      const sprint = iteration ? iteration.sprint : NOT_SET;
 
-    const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
-    collection.insert({
-      id: id,
-      name: name,
-      pi: pi,
-      featureSize: size ? size : 0,
-      progress: 0,
-      startSprint: START_SPRINT_NOT_SET,
-      endSprint: NOT_SET,
-      team: teamName,
-      project: projectName,
-      featureEndSprint: sprint,
-      featureEndSprintName: sprintName,
-      size: 0,
-      state: state,
-      tags: tags,
-      priority: priority
-    });
+      const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
+      collection.insert({
+        id: id,
+        name: name,
+        pi: pi,
+        featureSize: size ? size : 0,
+        progress: 0,
+        startSprint: START_SPRINT_NOT_SET,
+        startSprintName: '',
+        endSprint: NOT_SET,
+        endSprintName: '',
+        team: teamName,
+        project: projectName,
+        featureEndSprint: sprint,
+        featureEndSprintName: sprintName,
+        size: 0,
+        state: state,
+        tags: tags,
+        priority: priority
+      });
 
-    Collections.ProjectsCollection.upsert({ name: projectName }, { $set: { name: projectName } });
-    Collections.TeamsCollection.upsert({ name: teamName }, { $set: { name: teamName } });
+      Collections.ProjectsCollection.upsert({ name: projectName }, { $set: { name: projectName } });
+      Collections.TeamsCollection.upsert({ name: teamName }, { $set: { name: teamName } });
+    }
   } catch (e) {
     console.log('Error in getFeatureFromADS');
     throw e;
@@ -230,7 +248,7 @@ async function getFeatureFromADS(witAPI, id, asOfDate) {
   return ReturnStatus.OK;
 }
 
-async function getStoriesFromADS(witAPI, pis, asOfDate) {
+async function getStoriesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], asOfDate: Date | undefined) {
   try {
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
@@ -270,13 +288,17 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
 
     // the ADS query just returns workitem id's
     // get the actual workitem content in parallel (async), wait for all to finish before continueing
-    let p = [];
-    for (const workItemLink of queryResult.workItemRelations) {
-      if (workItemLink.rel === 'System.LinkTypes.Hierarchy-Forward') {
-        p.push(getStoryFromADS(witAPI, workItemLink.target.id, workItemLink.source.id, asOfDate, pis));
+    if (queryResult.workItemRelations) {
+      const p = [];
+      for (const workItemLink of queryResult.workItemRelations) {
+        if (workItemLink.rel === 'System.LinkTypes.Hierarchy-Forward') {
+          if (workItemLink.target && workItemLink.target.id && workItemLink.source && workItemLink.source.id) {
+            p.push(getStoryFromADS(witAPI, workItemLink.target.id, workItemLink.source.id, asOfDate, pis));
+          }
+        }
       }
+      await Promise.all(p);
     }
-    await Promise.all(p);
   } catch (e) {
     console.log('Error in getStoriesFromADS');
     throw e;
@@ -284,7 +306,13 @@ async function getStoriesFromADS(witAPI, pis, asOfDate) {
   return ReturnStatus.OK;
 }
 
-async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
+async function getStoryFromADS(
+  witAPI: IWorkItemTrackingApi,
+  storyId: number,
+  featureId: number,
+  asOfDate: Date | undefined,
+  pis: string[]
+) {
   try {
     const queryResult = await witAPI.getWorkItem(
       storyId,
@@ -292,41 +320,43 @@ async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
       asOfDate
     );
 
-    const state = queryResult.fields[ADSFields.STATE];
-    const effort = queryResult.fields[ADSFields.EFFORT];
-    const parts = queryResult.fields[ADSFields.ITERATION_PATH].split('\\');
+    if (queryResult.fields) {
+      const state = queryResult.fields[ADSFields.STATE];
+      const effort = queryResult.fields[ADSFields.EFFORT];
+      const parts = queryResult.fields[ADSFields.ITERATION_PATH].split('\\');
 
-    const pi = parts.length > 3 ? parts[3] : 'undefined';
+      const pi = parts.length > 3 ? parts[3] : 'undefined';
 
-    // only include stories in our current pi scope
-    if (pis.includes(pi)) {
-      const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
+      // only include stories in our current pi scope
+      if (pis.includes(pi)) {
+        const collection = asOfDate ? Collections.OrgFeaturesCollection : Collections.FeaturesCollection;
 
-      if (effort > 0) {
-        // adds storypoints to size
-        collection.update({ id: featureId }, { $inc: { size: effort } });
+        if (effort > 0) {
+          // adds storypoints to size
+          collection.update({ id: featureId }, { $inc: { size: effort } });
 
-        if (state === ADSFields.DONE) {
-          // adds storypoints for 'done' stories
-          collection.update({ id: featureId }, { $inc: { progress: effort } });
+          if (state === ADSFields.DONE) {
+            // adds storypoints for 'done' stories
+            collection.update({ id: featureId }, { $inc: { progress: effort } });
+          }
         }
-      }
 
-      const sprintName = parts.length > 4 ? parts[4] : 'undefined';
-      const iteration = Collections.IterationsCollection.findOne({
-        sprintName: sprintName
-      });
+        const sprintName = parts.length > 4 ? parts[4] : 'undefined';
+        const iteration = Collections.IterationsCollection.findOne({
+          sprintName: sprintName
+        });
 
-      // set startSprint/endSprint in feature to first and last sprint of child stories
-      if (iteration) {
-        collection.update(
-          { id: featureId, startSprint: { $gt: iteration.sprint } },
-          { $set: { startSprint: iteration.sprint, startSprintName: sprintName } }
-        );
-        collection.update(
-          { id: featureId, endSprint: { $lt: iteration.sprint } },
-          { $set: { endSprint: iteration.sprint, endSprintName: sprintName } }
-        );
+        // set startSprint/endSprint in feature to first and last sprint of child stories
+        if (iteration) {
+          collection.update(
+            { id: featureId, startSprint: { $gt: iteration.sprint } },
+            { $set: { startSprint: iteration.sprint, startSprintName: sprintName } }
+          );
+          collection.update(
+            { id: featureId, endSprint: { $lt: iteration.sprint } },
+            { $set: { endSprint: iteration.sprint, endSprintName: sprintName } }
+          );
+        }
       }
     }
   } catch (e) {
@@ -336,16 +366,16 @@ async function getStoryFromADS(witAPI, storyId, featureId, asOfDate, pis) {
   return ReturnStatus.OK;
 }
 
-export async function QueryADS(date) {
+export async function QueryADS(date: Date | undefined): Promise<boolean> {
   const authHandler = vsoNodeApi.getPersonalAccessTokenHandler(Meteor.settings.ADSToken);
   const connection = new vsoNodeApi.WebApi(Meteor.settings.public.ADSUrl, authHandler);
   const witAPI = await connection.getWorkItemTrackingApi();
 
   const pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
-  const asOfDate = date ? format(date, 'MM/dd/yyyy') : '';
+  //const asOfDate = date ? format(date, 'MM/dd/yyyy') : '';
 
   // no need to get the iterations, velocity & allocation on every as-of query
-  if (!asOfDate) {
+  if (!date) {
     console.log('getting sprints');
     await getIterationsFromADS(witAPI);
 
@@ -354,10 +384,10 @@ export async function QueryADS(date) {
   }
 
   console.log('getting features');
-  await getFeaturesFromADS(witAPI, pis, asOfDate);
+  await getFeaturesFromADS(witAPI, pis, date);
 
   console.log('getting stories');
-  await getStoriesFromADS(witAPI, pis, asOfDate);
+  await getStoriesFromADS(witAPI, pis, date);
 
   return ReturnStatus.OK;
 }

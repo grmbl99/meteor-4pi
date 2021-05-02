@@ -17,7 +17,7 @@ function featurePostProcessing() {
   }
 }
 
-export function SyncADS(date: string): void {
+export function SyncADS(date: Date | undefined): void {
   // prevent running multiple ADS syncs at the same time
   if (setServerStatus(ServerStatus.ADS_SYNC_STATUS, SyncStatus.BUSY)) {
     console.log('query ADS ' + date);
@@ -31,7 +31,7 @@ export function SyncADS(date: string): void {
 
         const today = new Date();
         if (date) {
-          setServerStatus(ServerStatus.ADS_COMPARE_DATE, date);
+          setServerStatus(ServerStatus.ADS_COMPARE_DATE, date.toISOString());
           setServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE, today.toISOString());
         } else {
           setServerStatus(ServerStatus.ADS_SYNC_DATE, today.toISOString());

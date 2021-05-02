@@ -5,21 +5,20 @@
     "module": "esNext",
     "lib": ["esnext", "dom"],
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "jsx": "preserve",
     "incremental": true,
     "noEmit": true,
 
     /* Strict Type-Checking Options */
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
 
     /* Additional Checks */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": false,
 
     /* Module Resolution Options */
     "baseUrl": ".",
@@ -34,7 +33,7 @@
     "preserveSymlinks": true
   },
   "exclude": [
-    "./.meteor/**",
-    "./packages/**"
+    ".meteor/**",
+    "packages/**"
   ]
 }
