@@ -24,7 +24,7 @@ export interface featureType {
   team: string;
   project: string;
   state: string;
-  priority: number;
+  priority: string;
 }
 
 export interface iterationType {
