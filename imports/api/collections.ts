@@ -6,7 +6,7 @@ export interface ServerStatusType {
   value: string;
 }
 
-export interface featureType {
+export interface FeatureType {
   _id: string;
   id: number;
   name: string;
@@ -27,7 +27,7 @@ export interface featureType {
   priority: number;
 }
 
-export interface iterationType {
+export interface IterationType {
   _id: string;
   startDate: Date | undefined;
   finishDate: Date | undefined;
@@ -36,35 +36,35 @@ export interface iterationType {
   pi: string;
 }
 
-export interface velocityType {
+export interface VelocityType {
   pi: string;
   team: string;
   project: string;
   value: number;
 }
 
-export interface deltaFeatureType {
-  feature: featureType;
+export interface DeltaFeatureType {
+  feature: FeatureType;
   type: string;
 }
 
-export interface teamType {
+export interface TeamType {
   _id: string;
   name: string;
 }
 
-export interface projectType {
+export interface ProjectType {
   _id: string;
   name: string;
 }
 
-export const FeaturesCollection = new Mongo.Collection<featureType>('features');
-export const OrgFeaturesCollection = new Mongo.Collection<featureType>('orgfeatures');
-export const DeltaFeaturesCollection = new Mongo.Collection<deltaFeatureType>('deltafeatures');
-export const IterationsCollection = new Mongo.Collection<iterationType>('iterations');
-export const TeamsCollection = new Mongo.Collection<teamType>('teams');
-export const ProjectsCollection = new Mongo.Collection<projectType>('projects');
-export const VelocityPlanCollection = new Mongo.Collection<velocityType>('velocityplan');
+export const FeaturesCollection = new Mongo.Collection<FeatureType>('features');
+export const OrgFeaturesCollection = new Mongo.Collection<FeatureType>('orgfeatures');
+export const DeltaFeaturesCollection = new Mongo.Collection<DeltaFeatureType>('deltafeatures');
+export const IterationsCollection = new Mongo.Collection<IterationType>('iterations');
+export const TeamsCollection = new Mongo.Collection<TeamType>('teams');
+export const ProjectsCollection = new Mongo.Collection<ProjectType>('projects');
+export const VelocityPlanCollection = new Mongo.Collection<VelocityType>('velocityplan');
 export const ServerStatusCollection = new Mongo.Collection<ServerStatusType>('serverstatus');
 
 if (Meteor.isServer) {

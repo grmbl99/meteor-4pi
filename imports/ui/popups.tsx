@@ -1,18 +1,18 @@
 import React, { ReactElement, useEffect } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { CollectionContext } from './context';
-import { LookUpType, RevLookUpType, BoolLookUpType, inputType } from '/imports/api/types';
-import { featureType } from '/imports/api/collections';
+import { LookUpType, RevLookUpType, BoolLookUpType, InputType } from '/imports/api/types';
+import { FeatureType } from '/imports/api/collections';
 
 export { UpdateFeaturePopup };
 
 interface onSubmitType {
-  (input: inputType): void;
+  (input: InputType): void;
 }
 
 interface UpdateFeaturePopupPropTypes {
   show: boolean;
-  feature: featureType;
+  feature: FeatureType;
   onSubmit: onSubmitType;
 }
 

@@ -3,7 +3,7 @@ import { PiView } from './pi-view';
 import { NOT_SET, ADSConfig } from '/imports/api/constants';
 import { CollectionContext } from './context';
 import { OnFeatureClickType, OnFeatureDropType, LookUpType } from '/imports/api/types';
-import { velocityType } from '/imports/api/collections';
+import { VelocityType } from '/imports/api/collections';
 
 export { PiViewRow };
 
@@ -32,7 +32,7 @@ const PiViewRow = React.forwardRef((props: PiViewRowPropTypes, ref: React.Forwar
     setFeaturesDisplayed(Object.values(pfd).reduce((a: number, b: number) => (a > b ? a : b)));
   }
 
-  function getAllocation(pi: string, project: string, team: string, velocityPlan: velocityType[]) {
+  function getAllocation(pi: string, project: string, team: string, velocityPlan: VelocityType[]) {
     let alloc = 0;
 
     if (team !== '') {

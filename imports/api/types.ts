@@ -1,4 +1,4 @@
-import { featureType } from '/imports/api/collections';
+import { FeatureType } from '/imports/api/collections';
 
 export interface LookUpType {
   [details: string]: number;
@@ -13,18 +13,18 @@ export interface BoolLookUpType {
 }
 
 export interface OnFeatureClickType {
-  (feature: featureType): void;
+  (feature: FeatureType): void;
 }
 
 export interface OnFeatureDropType {
-  (featureId: number, pi: string, team: string, project: string): void;
+  (featureId: string, pi: string, team: string, project: string): void;
 }
 
 export interface OnFeaturesDisplayedType {
   (pi: string, nr: number): void;
 }
 
-export interface inputType {
+export interface InputType {
   success: boolean;
   _id?: string;
   name?: string;
@@ -35,4 +35,10 @@ export interface inputType {
   startSprintName?: string;
   endSprint?: number;
   endSprintName?: string;
+}
+
+export interface UpdateType {
+  pi: string;
+  project?: string;
+  team?: string;
 }

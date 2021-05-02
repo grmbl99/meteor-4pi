@@ -9,6 +9,7 @@ import { PiViewRow } from './pi-view-row';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
 import { SyncStatus, ServerStatus, EMPTY_FEATURE } from '/imports/api/constants';
+import { InputType, UpdateType } from '/imports/api/types';
 import { getServerStatus } from '/imports/api/server-status';
 import { CollectionContext } from './context';
 import {
@@ -19,25 +20,18 @@ import {
   TeamsCollection,
   VelocityPlanCollection,
   ServerStatusCollection,
-  featureType
+  FeatureType
 } from '/imports/api/collections';
-import { inputType } from '/imports/api/types';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'font-awesome/css/font-awesome.min.css';
 
 export function App(): ReactElement {
-  interface updateType {
-    pi: string;
-    project?: string;
-    team?: string;
-  }
-
   // move a feature between teams/projects/pi's
   // (exectued using drag-and-drop)
-  function moveFeature(featureId: number, pi: string, team: string, project: string) {
+  function moveFeature(featureId: string, pi: string, team: string, project: string) {
     if (!compareModeOn) {
-      const updates: updateType = { pi: pi };
+      const updates: UpdateType = { pi: pi };
       if (project !== '') {
         updates['project'] = project;
       }
@@ -51,7 +45,7 @@ export function App(): ReactElement {
 
   // store updated feature
   // executed when closing the feature-update modal dialog
-  function updateFeature(input: inputType) {
+  function updateFeature(input: InputType) {
     setShowPopup(false);
     if (input.success) {
       Meteor.call('UpdateFeature', input);
@@ -60,7 +54,7 @@ export function App(): ReactElement {
 
   // show feature-update modal dialog
   // executed when clicking on a feature
-  function editFeature(feature: featureType) {
+  function editFeature(feature: FeatureType) {
     if (!compareModeOn) {
       setSelectedFeature(feature);
       setShowPopup(true);

@@ -4,12 +4,12 @@ import { useDrag } from 'react-dnd';
 import { DisplayTypes, ItemTypes, ADSFields } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
 import { OnFeatureClickType } from '/imports/api/types';
-import { featureType } from '/imports/api/collections';
+import { FeatureType } from '/imports/api/collections';
 
 export { Feature };
 
 interface FeaturePropTypes {
-  feature: featureType;
+  feature: FeatureType;
   displayType: string;
   onFeatureClicked: OnFeatureClickType;
   startSprint: number;

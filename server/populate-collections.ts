@@ -24,24 +24,24 @@ export function PopulateCollections(): void {
 
   if (Meteor.settings.useTestData) {
     const teams = JSON.parse(Assets.getText('teams.json'));
-    teams.forEach((team: Collections.teamType) => Collections.TeamsCollection.insert(team));
+    teams.forEach((team: Collections.TeamType) => Collections.TeamsCollection.insert(team));
 
     const features = JSON.parse(Assets.getText('features.json'));
-    features.forEach((feature: Collections.featureType) => Collections.FeaturesCollection.insert(feature));
+    features.forEach((feature: Collections.FeatureType) => Collections.FeaturesCollection.insert(feature));
 
     // use EJSON.parse and casting to correctly handle $date values in iterations.json
     const iterations = EJSON.parse(Assets.getText('iterations.json'));
-    ((iterations as unknown) as Collections.iterationType[]).forEach((iteration: Collections.iterationType) => {
+    ((iterations as unknown) as Collections.IterationType[]).forEach((iteration: Collections.IterationType) => {
       Collections.IterationsCollection.insert(iteration);
     });
 
     const projects = JSON.parse(Assets.getText('projects.json'));
-    projects.forEach((project: Collections.projectType) => Collections.ProjectsCollection.insert(project));
+    projects.forEach((project: Collections.ProjectType) => Collections.ProjectsCollection.insert(project));
 
     const orgfeatures = JSON.parse(Assets.getText('orgfeatures.json'));
-    orgfeatures.forEach((feature: Collections.featureType) => Collections.OrgFeaturesCollection.insert(feature));
+    orgfeatures.forEach((feature: Collections.FeatureType) => Collections.OrgFeaturesCollection.insert(feature));
 
     const velocityPlan = JSON.parse(Assets.getText('velocityplan.json'));
-    velocityPlan.forEach((planItem: Collections.velocityType) => Collections.VelocityPlanCollection.insert(planItem));
+    velocityPlan.forEach((planItem: Collections.VelocityType) => Collections.VelocityPlanCollection.insert(planItem));
   }
 }

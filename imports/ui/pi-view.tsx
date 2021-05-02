@@ -6,7 +6,7 @@ import { Feature } from './feature';
 import { ProgressBar } from './progress-bar';
 import { CollectionContext } from './context';
 import { OnFeatureClickType, OnFeatureDropType, OnFeaturesDisplayedType } from '/imports/api/types';
-import { featureType, iterationType } from '/imports/api/collections';
+import { FeatureType, IterationType } from '/imports/api/collections';
 
 export { PiView };
 
@@ -24,7 +24,7 @@ interface PiViewPropTypes {
 // determine how feature-start&end fall within a PI;
 // returns start/end relative to PI-start (i.e. 0=first sprint of PI)
 function calcRelFeatureStartEnd(
-  feature: featureType,
+  feature: FeatureType,
   piStartSprint: number,
   piEndSprint: number
 ): [number, number, number, string] {
@@ -101,7 +101,7 @@ function PiView(props: PiViewPropTypes): ReactElement | null {
     const [{ isOver }, drop] = useDrop(
       () => ({
         accept: ItemTypes.FEATURE,
-        drop: (item: { id: number }) => {
+        drop: (item: { id: string }) => {
           props.onFeatureDropped(item.id, props.pi, props.team, props.project);
         },
         collect: (monitor) => ({ isOver: monitor.isOver() })
@@ -269,7 +269,7 @@ function PiView(props: PiViewPropTypes): ReactElement | null {
 }
 
 interface SprintPropTypes {
-  iteration: iterationType;
+  iteration: IterationType;
   nrFeatures: number;
 }
 

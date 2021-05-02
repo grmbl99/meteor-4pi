@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 //import { check } from 'meteor/check';
 import * as Collections from '/imports/api/collections';
+import { InputType, UpdateType } from '/imports/api/types';
 import { CompareFeatureCollections } from '/server/compare-feature-collections';
 import { SyncADS } from '/server/sync-ads';
 
 // Meteor methods, called from clients
 Meteor.methods({
-  MoveFeature(featureId, updates) {
+  MoveFeature(featureId: string, updates: UpdateType) {
     //check(text, String);
 
     // if (!this.userId) {
@@ -16,7 +17,7 @@ Meteor.methods({
     Collections.FeaturesCollection.update({ _id: featureId }, { $set: updates });
   },
 
-  UpdateFeature(input) {
+  UpdateFeature(input: InputType) {
     //check(text, String);
 
     // if (!this.userId) {
@@ -28,8 +29,8 @@ Meteor.methods({
       {
         $set: {
           name: input.name,
-          size: parseInt(input.size),
-          progress: parseInt(input.progress),
+          size: input.size,
+          progress: input.progress,
           pi: input.pi,
           startSprint: input.startSprint,
           startSprintName: input.startSprintName,
@@ -45,7 +46,7 @@ Meteor.methods({
     CompareFeatureCollections();
   },
 
-  RefreshCompareADS(date) {
+  RefreshCompareADS(date: Date) {
     [Collections.OrgFeaturesCollection, Collections.DeltaFeaturesCollection].forEach((collection) =>
       collection.remove({})
     );
