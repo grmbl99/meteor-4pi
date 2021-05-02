@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { useDrag } from 'react-dnd';
 import { DisplayTypes, ItemTypes, ADSFields } from '/imports/api/constants';
 import { ProgressBar } from './progress-bar';
-import { featureType } from '/imports/api/types';
+import { OnFeatureClickType } from '/imports/api/types';
+import { featureType } from '/imports/api/collections';
 
 export { Feature };
 
 interface FeaturePropTypes {
   feature: featureType;
   displayType: string;
-  onFeatureClicked: Function;
+  onFeatureClicked: OnFeatureClickType;
   startSprint: number;
   endSprint: number;
   featureEndSprint: number;
@@ -23,7 +24,7 @@ interface FeaturePropTypes {
   startEndMsg?: string;
 }
 
-function Feature(props: FeaturePropTypes) {
+function Feature(props: FeaturePropTypes): ReactElement {
   const feature = props.feature;
 
   // feature drag-and-drop logic

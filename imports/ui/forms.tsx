@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-export { FilterForm, NewFeatureForm };
+export { FilterForm };
+
+interface onSubmitType {
+  (input: string): void;
+}
 
 interface FilterFormPropTypes {
-  onSubmit: Function;
+  onSubmit: onSubmitType;
   text: string;
 }
 
-function FilterForm(props: FilterFormPropTypes) {
+function FilterForm(props: FilterFormPropTypes): ReactElement {
   const [filterName, setFilterName] = React.useState('');
 
   function handleSubmit(event: React.FormEvent) {
@@ -30,35 +34,5 @@ function FilterForm(props: FilterFormPropTypes) {
         </div>
       </form>
     </div>
-  );
-}
-
-interface NewFeatureFormPropTypes {
-  onSubmit: Function;
-}
-
-function NewFeatureForm(props: NewFeatureFormPropTypes) {
-  const [name, setName] = React.useState('');
-  const [size, setSize] = React.useState('');
-  const [pi, setPi] = React.useState('');
-
-  function handleSubmit(event: React.FormEvent) {
-    props.onSubmit({ name: name, size: size, pi: pi });
-    setName('');
-    setSize('');
-    setPi('');
-    event.preventDefault();
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>Name: </label>
-      <input type='text' value={name} onChange={(event) => setName(event.target.value)} />
-      <label>Size: </label>
-      <input type='text' value={size} onChange={(event) => setSize(event.target.value)} />
-      <label>PI: </label>
-      <input type='text' value={pi} onChange={(event) => setPi(event.target.value)} />
-      <input type='submit' value='Submit' />
-    </form>
   );
 }

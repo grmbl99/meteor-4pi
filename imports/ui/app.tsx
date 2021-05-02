@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { PiViewRow } from './pi-view-row';
 import { FilterForm } from './forms';
 import { UpdateFeaturePopup } from './popups';
-import { SyncStatus, ServerStatus, START_SPRINT_NOT_SET, NOT_SET } from '/imports/api/constants';
+import { SyncStatus, ServerStatus, EMPTY_FEATURE } from '/imports/api/constants';
 import { getServerStatus } from '/imports/api/server-status';
 import { CollectionContext } from './context';
 import {
@@ -18,14 +18,15 @@ import {
   ProjectsCollection,
   TeamsCollection,
   VelocityPlanCollection,
-  ServerStatusCollection
+  ServerStatusCollection,
+  featureType
 } from '/imports/api/collections';
-import { featureType } from '/imports/api/types';
+import { inputType } from '/imports/api/types';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'font-awesome/css/font-awesome.min.css';
 
-export function App(_props: any) {
+export function App(): ReactElement {
   interface updateType {
     pi: string;
     project?: string;
@@ -36,7 +37,7 @@ export function App(_props: any) {
   // (exectued using drag-and-drop)
   function moveFeature(featureId: number, pi: string, team: string, project: string) {
     if (!compareModeOn) {
-      let updates: updateType = { pi: pi };
+      const updates: updateType = { pi: pi };
       if (project !== '') {
         updates['project'] = project;
       }
@@ -46,19 +47,6 @@ export function App(_props: any) {
 
       Meteor.call('MoveFeature', featureId, updates);
     }
-  }
-
-  interface inputType {
-    success: boolean;
-    _id: string;
-    name: string;
-    size: number;
-    progress: number;
-    pi: string;
-    startSprint: number;
-    startSprintName: string;
-    endSprint: number;
-    endSprintName: string;
   }
 
   // store updated feature
@@ -80,7 +68,7 @@ export function App(_props: any) {
   }
 
   // call method on server to update delta's
-  function toggleCompareMode(_event: any) {
+  function toggleCompareMode() {
     if (!compareModeOn) {
       setCompareModeOn(true);
       Meteor.call('UpdateDeltaFeatureCollection');
@@ -90,7 +78,7 @@ export function App(_props: any) {
   }
 
   // call method on server to refresh data from ADS
-  function refreshADS(_event: any) {
+  function refreshADS() {
     if (adsSyncStatus !== SyncStatus.BUSY) {
       Meteor.call('RefreshADS');
       setCompareModeOn(false);
@@ -140,38 +128,22 @@ export function App(_props: any) {
   const [projectFilter, setProjectFilter] = React.useState('');
   const [showPopup, setShowPopup] = React.useState(false);
   const [compareModeOn, setCompareModeOn] = React.useState(false);
-  const [selectedFeature, setSelectedFeature] = React.useState({
-    name: '',
-    pi: '',
-    size: 0,
-    progress: 0,
-    startSprint: START_SPRINT_NOT_SET,
-    endSprint: NOT_SET,
-    startSprintName: '',
-    endSprintName: '',
-    _id: '',
-    id: 0,
-    featureEndSprintName: '',
-    featureEndSprint: NOT_SET,
-    tags: '',
-    featureSize: 0,
-    team: '',
-    project: ''
-  });
+  const [selectedFeature, setSelectedFeature] = React.useState(EMPTY_FEATURE);
 
   // get the server state (azure sync status & dates) from server
   const adsSyncStatus = getServerStatus(ServerStatus.ADS_SYNC_STATUS);
-  const compareDate = getServerStatus(ServerStatus.ADS_COMPARE_DATE);
-  let adsSyncDate = getServerStatus(ServerStatus.ADS_SYNC_DATE);
-  adsSyncDate = adsSyncDate ? format(adsSyncDate, 'EEE MMM d yyyy HH:mm.ss') : '';
-  let adsCompareSyncDate = getServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE);
-  adsCompareSyncDate = adsCompareSyncDate ? format(adsCompareSyncDate, 'EEE MMM d yyyy HH:mm.ss') : '';
+  const d1 = getServerStatus(ServerStatus.ADS_COMPARE_DATE);
+  const compareDate = d1 ? new Date(d1) : null;
+  const d2 = getServerStatus(ServerStatus.ADS_SYNC_DATE);
+  const adsSyncDateStr = d2 ? format(new Date(d2), 'EEE MMM d yyyy HH:mm.ss') : '';
+  const d3 = getServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE);
+  const adsCompareSyncDateStr = d3 ? format(new Date(d3), 'EEE MMM d yyyy HH:mm.ss') : '';
 
-  let pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
+  const pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
 
   let menuEntryKey = 0;
-  let teamsList = []; // set of PIView's per team
-  let teamsMenu = []; // used as navigation buttons on left-side of screen
+  const teamsList = []; // set of PIView's per team
+  const teamsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const team of teams) {
     const newRef = React.createRef<HTMLDivElement>();
@@ -201,8 +173,8 @@ export function App(_props: any) {
     );
   }
 
-  let projectsList = []; // set of PIView's per project
-  let projectsMenu = []; // used as navigation buttons on left-side of screen
+  const projectsList = []; // set of PIView's per project
+  const projectsMenu = []; // used as navigation buttons on left-side of screen
 
   for (const project of projects) {
     const newRef = React.createRef<HTMLDivElement>();
@@ -243,7 +215,7 @@ export function App(_props: any) {
           <div className={adsSyncClassName} onClick={refreshADS}>
             ADS Sync: {adsSyncStatus}
           </div>
-          <div className='ads-sync-date'>{adsSyncDate}</div>
+          <div className='ads-sync-date'>{adsSyncDateStr}</div>
 
           <DatePicker
             selected={compareDate}
@@ -251,7 +223,7 @@ export function App(_props: any) {
             onChange={(date) => refreshCompareADS(date)}
             customInput={<PickDateButton />}
           />
-          <div className='ads-sync-date'>{adsCompareSyncDate}</div>
+          <div className='ads-sync-date'>{adsCompareSyncDateStr}</div>
           <div>
             Compare: <input type='checkbox' checked={compareModeOn} onChange={toggleCompareMode} />
           </div>
@@ -281,6 +253,11 @@ export function App(_props: any) {
   );
 }
 
+interface PickDateButtonPropTypes {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  value?: string;
+}
+
 // to use a custom button with the react-datepicker, we need to create it as a 'forwardRef'
 const PickDateButton = React.forwardRef((props: PickDateButtonPropTypes, ref: React.ForwardedRef<HTMLDivElement>) => {
   return (
@@ -289,10 +266,5 @@ const PickDateButton = React.forwardRef((props: PickDateButtonPropTypes, ref: Re
     </div>
   );
 });
-
-interface PickDateButtonPropTypes {
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
-  value?: string;
-}
 
 PickDateButton.displayName = 'PickDateButton';

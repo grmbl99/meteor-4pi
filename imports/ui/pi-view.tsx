@@ -1,23 +1,24 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useDrop } from 'react-dnd';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { NOT_SET, START_SPRINT_NOT_SET, ItemTypes, DisplayTypes, ADSConfig } from '/imports/api/constants';
 import { Feature } from './feature';
 import { ProgressBar } from './progress-bar';
 import { CollectionContext } from './context';
-import { featureType, iterationType } from '/imports/api/types';
+import { OnFeatureClickType, OnFeatureDropType, OnFeaturesDisplayedType } from '/imports/api/types';
+import { featureType, iterationType } from '/imports/api/collections';
 
 export { PiView };
 
 interface PiViewPropTypes {
-  onFeatureDropped: Function;
-  onFeatureClicked: Function;
+  onFeatureDropped: OnFeatureDropType;
+  onFeatureClicked: OnFeatureClickType;
   pi: string;
   team: string;
   project: string;
   compareModeOn: boolean;
   allocation: number;
-  onFeaturesDisplayed: Function;
+  onFeaturesDisplayed: OnFeaturesDisplayedType;
 }
 
 // determine how feature-start&end fall within a PI;
@@ -88,7 +89,7 @@ function calcRelFeatureStartEnd(
   return [start, end, fEnd, sprintMsg + featureMsg];
 }
 
-function PiView(props: PiViewPropTypes) {
+function PiView(props: PiViewPropTypes): ReactElement | null {
   const context = React.useContext(CollectionContext);
 
   if (context) {
@@ -100,7 +101,7 @@ function PiView(props: PiViewPropTypes) {
     const [{ isOver }, drop] = useDrop(
       () => ({
         accept: ItemTypes.FEATURE,
-        drop: (item: { id: string }) => {
+        drop: (item: { id: number }) => {
           props.onFeatureDropped(item.id, props.pi, props.team, props.project);
         },
         collect: (monitor) => ({ isOver: monitor.isOver() })
@@ -207,7 +208,7 @@ function PiView(props: PiViewPropTypes) {
             (props.team === '' || feature.team === props.team) &&
             (props.project === '' || feature.project === props.project)
           ) {
-            let displayType = DisplayTypes.REMOVED;
+            const displayType = DisplayTypes.REMOVED;
             featuresList.push(
               <Feature
                 key={feature._id}

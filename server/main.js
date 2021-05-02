@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import * as Collections from '/imports/api/collections';
 import { PopulateCollections } from './populate-collections';
 import { SyncADS } from './sync-ads';
-import '/imports/api/methods.js';
+import '/imports/api/methods';
 
 // Runs when the server is started
 Meteor.startup(() => {
@@ -18,8 +18,8 @@ Meteor.startup(() => {
   ].forEach((collection) => collection.remove({}));
 
   PopulateCollections();
-  
-  if (!Meteor.settings.useTestData){
-    SyncADS();
+
+  if (!Meteor.settings.useTestData) {
+    SyncADS('');
   }
 });

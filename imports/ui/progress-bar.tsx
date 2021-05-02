@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { NOT_SET } from '/imports/api/constants';
 
 export { ProgressBar };
@@ -28,8 +28,8 @@ interface ProgressBarPropTypes {
   nrSprints: number;
 }
 
-function ProgressBar(props: ProgressBarPropTypes) {
-  let perctDone = props.size > 0 ? props.progress / props.size : 0;
+function ProgressBar(props: ProgressBarPropTypes): ReactElement {
+  const perctDone = props.size > 0 ? props.progress / props.size : 0;
   const perctDoneStr = Intl.NumberFormat('en-IN', { style: 'percent' }).format(perctDone > 1 ? 1 : perctDone);
   const sizeStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(props.size);
   const progressStr = Intl.NumberFormat('en-IN', { maximumFractionDigits: 1, useGrouping: false }).format(
@@ -68,14 +68,14 @@ function ProgressBar(props: ProgressBarPropTypes) {
     props.orgEndSprint !== NOT_SET &&
     (props.orgStartSprint !== props.startSprint || props.orgEndSprint !== props.endSprint)
   ) {
-    let [start, width] = calcDuration(props.orgStartSprint, props.orgEndSprint, props.nrSprints);
+    const [start, width] = calcDuration(props.orgStartSprint, props.orgEndSprint, props.nrSprints);
     deltaBar = <div className='delta-bar' style={{ left: start + '%', width: width + '%' }} />;
   }
 
   // determine whether to display the feature end marker
   let endMarker = null;
   if (props.featureEndSprint !== NOT_SET && props.featureEndSprint !== props.endSprint) {
-    let [start, width] = calcDuration(0, props.featureEndSprint, props.nrSprints);
+    const [start, width] = calcDuration(0, props.featureEndSprint, props.nrSprints);
     endMarker = <div className='end-marker' style={{ left: start + '%', width: width + '%' }} />;
   }
 

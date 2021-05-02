@@ -63,6 +63,6 @@ Meteor.methods({
       Collections.TeamsCollection
     ].forEach((collection) => collection.remove({}));
 
-    SyncADS();
+    SyncADS('');
   }
 });

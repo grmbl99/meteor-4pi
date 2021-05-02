@@ -59,3 +59,23 @@ export const SyncStatus = {
   BUSY: 'busy',
   NONE: 'none'
 };
+
+export const EMPTY_FEATURE = {
+  name: '',
+  pi: '',
+  size: 0,
+  progress: 0,
+  startSprint: START_SPRINT_NOT_SET,
+  endSprint: NOT_SET,
+  startSprintName: '',
+  endSprintName: '',
+  _id: '',
+  id: 0,
+  featureEndSprintName: '',
+  featureEndSprint: NOT_SET,
+  tags: '',
+  featureSize: 0,
+  team: '',
+  project: '',
+  state: ''
+};

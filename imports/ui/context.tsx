@@ -1,5 +1,5 @@
 import React from 'react';
-import { featureType, iterationType, velocityType, deltaFeatureType } from '/imports/api/types';
+import { featureType, iterationType, velocityType, deltaFeatureType } from '/imports/api/collections';
 
 export const CollectionContext = React.createContext<collectionContextType | null>(null);
 
