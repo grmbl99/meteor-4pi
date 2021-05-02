@@ -9,6 +9,7 @@
     "jsx": "preserve",
     "incremental": true,
     "noEmit": true,
+    "skipLibCheck": true,
 
     /* Strict Type-Checking Options */
     "strict": true,
@@ -33,7 +34,7 @@
     "preserveSymlinks": true
   },
   "exclude": [
-    ".meteor/**",
-    "packages/**"
+    "./.meteor/**",
+    "./node_modules/**"
   ]
 }

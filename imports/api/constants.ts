@@ -77,5 +77,6 @@ export const EMPTY_FEATURE = {
   featureSize: 0,
   team: '',
   project: '',
-  state: ''
+  state: '',
+  priority: 0
 };
