@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { format } from 'date-fns';
 import * as vsoNodeApi from 'azure-devops-node-api';
+import { IWorkItemTrackingApi } from 'azure-devops-node-api/WorkItemTrackingApi';
+import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import * as Collections from '/imports/api/collections';
 import { ADSFields, ADSConfig, ReturnStatus, NOT_SET, START_SPRINT_NOT_SET } from '/imports/api/constants';
-import { IWorkItemTrackingApi } from 'azure-devops-node-api/WorkItemTrackingApi';
-//import * as WorkItemTrackingApi from 'azure-devops-node-api/WorkItemTrackingApi';
-import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 
 async function getIterationsFromADS(witAPI: IWorkItemTrackingApi) {
   try {
@@ -142,7 +142,7 @@ async function getFeaturesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], a
         ADSConfig.ITERATION_OFFSET_WIQL
       }\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
-    const asOfSubQuery = asOfDate ? `ASOF '${asOfDate}'` : '';
+    const asOfSubQuery = asOfDate ? `ASOF '${format(asOfDate, 'MM/dd/yyyy')}'` : '';
 
     const query = {
       query: `
@@ -256,7 +256,7 @@ async function getStoriesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], as
         ADSConfig.ITERATION_OFFSET_WIQL
       }\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
-    const asOfSubQuery = asOfDate ? `ASOF '${asOfDate}'` : '';
+    const asOfSubQuery = asOfDate ? `ASOF '${format(asOfDate, 'MM/dd/yyyy')}'` : '';
 
     const query = {
       query: `
