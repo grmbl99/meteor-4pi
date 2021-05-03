@@ -47,7 +47,7 @@ function Feature(props: FeaturePropTypes): ReactElement {
     warningMsg += 'story-size=' + storySizeStr + ',  feature-size=' + featureSizeStr;
   }
 
-  const stretchIcon = tags.includes(ADSFields.STRETCH) ? <i className='fa fa-gift' /> : '';
+  const stretchIcon = tags.includes(ADSFields.STRETCH) ? <i className='fas fa-gift' /> : '';
   const tagsIcon = tags.length > 0 ? <Icon name='fa-tags' value={'Tags: ' + feature.tags} /> : '';
   const warningIcon = warningMsg ? <Icon name='fa-exclamation-triangle' value={warningMsg} /> : '';
   const calendarIcon = props.startEndMsg ? <Icon name='fa-calendar' value={props.startEndMsg} /> : '';
@@ -119,8 +119,8 @@ function Icon(props: IconPropTypes) {
   return (
     <span className='tooltip'>
       <span className='fa-stack'>
-        <i className='fa fa-circle fa-stack-2x' />
-        <i className={props.name + ' fa fa-stack-1x fa-inverse'} />
+        <i className='fas fa-circle fa-stack-2x' />
+        <i className={'fas ' + props.name + ' fa-stack-1x fa-inverse'} />
       </span>
       <span className='tooltip-text'>{props.value}</span>
     </span>

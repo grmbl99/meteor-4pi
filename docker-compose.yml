@@ -2,6 +2,7 @@ version: '3'
 
 services:
   app:
+    # image: grmbl/meteor-4pi:latest
     build:
       context: .
       dockerfile: Dockerfile

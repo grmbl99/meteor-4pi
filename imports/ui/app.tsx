@@ -24,7 +24,6 @@ import {
 } from '/imports/api/collections';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import 'font-awesome/css/font-awesome.min.css';
 
 export function App(): ReactElement {
   // move a feature between teams/projects/pi's
