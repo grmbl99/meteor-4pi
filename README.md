@@ -37,5 +37,18 @@ Take the following steps to configure the application for your specific Azure De
 - Just build and run using docker-compose
   - `docker-compose build`
     - The build step is memory intensive: increase the max memory for docker to 4GB
+    - To pull the image from docker-hub instead of building locally, edit `docker-compose.yml` as follows:
+
+      ```yml
+        services:
+          app:
+            image: grmbl/meteor-4pi:latest
+            # build:
+            #   context: .
+            #   dockerfile: Dockerfile
+            ports:
+              - '80:3000'
+      ```
+
   - `docker-compose up`
 - The docker image listens on `http://localhost/`
