@@ -1,3 +1,6 @@
+<!-- markdownlint-disable-next-line -->
+![build](https://github.com/grmbl99/meteor-4pi/actions/workflows/main.yml/badge.svg)
+
 # Meteor 4PI viewer
 
 This application is build using the **Meteor** framework. To install this framework, follow the installation instructions on [meteor.com](https://www.meteor.com/developers/install)
