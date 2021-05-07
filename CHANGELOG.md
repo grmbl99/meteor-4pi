@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.0.2](https://github.com/grmbl99/meteor-4pi/compare/v1.0.1...v1.0.2) (2021-05-07)
+
+
+### Bug Fixes
+
+* use external github_token ([198d42f](https://github.com/grmbl99/meteor-4pi/commit/198d42f4e0a299ea477869c6a5dbf87bc5f74e11))
+
 ## [1.0.1](https://github.com/grmbl99/meteor-4pi/compare/v1.0.0...v1.0.1) (2021-05-07)
 
 
