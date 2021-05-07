@@ -1,7 +1,5 @@
 <!-- markdownlint-disable-next-line -->
-![check](https://github.com/grmbl99/meteor-4pi/actions/workflows/main.yml/badge.svg)
-<!-- markdownlint-disable-next-line -->
-![publish](https://github.com/grmbl99/meteor-4pi/actions/workflows/docker.yml/badge.svg)
+![check](https://github.com/grmbl99/meteor-4pi/actions/workflows/main.yml/badge.svg) ![publish](https://github.com/grmbl99/meteor-4pi/actions/workflows/docker.yml/badge.svg)
 
 # Meteor 4PI viewer
 
