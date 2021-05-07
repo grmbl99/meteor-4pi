@@ -2,9 +2,11 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - 'main'
   pull_request:
-    branches: [ main ]
+    branches:
+      - 'main'
 
   workflow_dispatch:
 
@@ -12,34 +14,47 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - run: npm ci
-    - run: npm run lint:spell
-    - run: npm run lint:md
-    - run: npm run lint:es
-    - run: npm run lint:ts
+    - 
+      name: Checkout
+      uses: actions/checkout@v2
+    - 
+      name: Setup Node.js
+      uses: actions/setup-node@v1
+    - 
+      name: Install dependencies
+      run: npm ci
+    - 
+      name: Markdown Spellcheck
+      run: npm run lint:spell
+    - 
+      name: Markdown Linter
+      run: npm run lint:md
+    - 
+      name: Javascript Linter
+      run: npm run lint:es
+    - 
+      name: Typescript Compiler
+      run: npm run lint:ts
 
   release:
     needs: checks
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - 
+        name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Setup Node.js
+      - 
+        name: Setup Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Install dependencies
+      - 
+        name: Install dependencies
         run: npm ci
-      - name: Release
+      - 
+        name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: npx semantic-release
-
-
-
