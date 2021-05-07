@@ -31,7 +31,7 @@ Take the following steps to configure the application for your specific Azure De
 - The dockerized application takes its configuration from the `METEOR_SETTINGS` environment variable (as defined in `docker-compose.yml`).
   - On Linux/MacOS:
     - Use the `setenv.sh` script to set the environment variable with the contents of `settings.json`
-      - `source startup.sh`
+      - `source setenv.sh`
   - On Windows:
     - Remove all line-breaks and whitespace from `settings.json`
     - Use the `setenv.cmd` script to set the environment variable with the contents of `settings.json`
