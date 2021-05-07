@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.0.3](https://github.com/grmbl99/meteor-4pi/compare/v1.0.2...v1.0.3) (2021-05-07)
+
+
+### Bug Fixes
+
+* fix name of app ([a41855c](https://github.com/grmbl99/meteor-4pi/commit/a41855c3cb8d00cf95e472857faa497ef85436ed))
+
 ## [1.0.2](https://github.com/grmbl99/meteor-4pi/compare/v1.0.1...v1.0.2) (2021-05-07)
 
 
