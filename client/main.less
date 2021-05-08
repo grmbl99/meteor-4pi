@@ -115,16 +115,19 @@ body {
   width: 110px;
 }
 
-input[type='submit'] {
+input[type='submit'],
+input[type='button'] {
   border: none;
   padding: 5px 5px;
   outline-offset: -1px;
+  width: 100px;
   outline: 1px solid @accent-color;
   color: @light-text-color;
   background-color: @background-color;
 }
 
-input[type='submit']:hover {
+input[type='submit']:hover,
+input[type='button']:hover {
   background-color: @accent-color;
 }
 
@@ -427,9 +430,9 @@ input[type='submit']:hover {
 .popup-main {
   position: absolute;
   width: 600px;
-  height: 400px;
+  height: 570px;
   left: 30%;
-  top: 30%;
+  top: 20%;
   margin: auto;
   border-radius: 20px;
   background: @menu-background-color;
@@ -446,7 +449,7 @@ input[type='submit']:hover {
 .popup-grid-container {
   padding: 80px;
   display: grid;
-  grid-template-columns: 80px 320px;
+  grid-template-columns: 100px 320px;
   gap: 10px 10px;
 }
 

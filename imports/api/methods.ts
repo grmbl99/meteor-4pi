@@ -35,7 +35,14 @@ Meteor.methods({
           startSprint: input.startSprint,
           startSprintName: input.startSprintName,
           endSprint: input.endSprint,
-          endSprintName: input.endSprintName
+          endSprintName: input.endSprintName,
+          featureEndSprint: input.featureEndSprint,
+          featureEndSprintName: input.featureEndSprintName,
+          tags: input.tags,
+          featureSize: input.featureSize,
+          team: input.team,
+          project: input.project,
+          priority: input.priority
         }
       }
     );

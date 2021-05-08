@@ -233,7 +233,7 @@ export function App(): ReactElement {
       </div>
       <div className='right'>
         <DndProvider backend={HTML5Backend}>
-          <CollectionContext.Provider value={{ velocityPlan, iterations, features, deltaFeatures }}>
+          <CollectionContext.Provider value={{ velocityPlan, iterations, features, deltaFeatures, projects, teams }}>
             <div className='heading'>Project Manager View</div>
             {teamsList}
             <div className='heading'>Product Owner View</div>

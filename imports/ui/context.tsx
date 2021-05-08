@@ -1,5 +1,12 @@
 import React from 'react';
-import { FeatureType, IterationType, VelocityType, DeltaFeatureType } from '/imports/api/collections';
+import {
+  FeatureType,
+  IterationType,
+  VelocityType,
+  DeltaFeatureType,
+  TeamType,
+  ProjectType
+} from '/imports/api/collections';
 
 export const CollectionContext = React.createContext<collectionContextType | null>(null);
 
@@ -8,4 +15,6 @@ export interface collectionContextType {
   features: FeatureType[];
   velocityPlan: VelocityType[];
   deltaFeatures: DeltaFeatureType[];
+  teams: TeamType[];
+  projects: ProjectType[];
 }
