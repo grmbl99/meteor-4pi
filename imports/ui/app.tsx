@@ -138,6 +138,7 @@ export function App(): ReactElement {
   const d3 = getServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE);
   const adsCompareSyncDateStr = d3 ? format(new Date(d3), 'EEE MMM d yyyy HH:mm.ss') : '';
 
+  // find the current PI and the upcoming 3 PI's
   const pis = getCurrentPIs(increments);
 
   let menuEntryKey = 0;
