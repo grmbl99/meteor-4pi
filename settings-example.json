@@ -3,6 +3,7 @@
   "ADSToken": "put your ADS token here",
   "public": {
     "ADSProject": "project name",
+    "AreaOffset": "/path/to/project/area",
     "ADSUrl": "https://some.ads.server/tfs/SomeTeamProjectCollection/"
   }
 }

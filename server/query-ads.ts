@@ -48,6 +48,8 @@ async function getVelocityPlanFromADS(witAPI: IWorkItemTrackingApi, pis: string[
       piSubQuery += `[Source].[System.Title] CONTAINS WORDS '${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
 
+    const areaOffsetWIQL = Meteor.settings.public.AreaOffset.split('/').join('\\');
+
     const query = {
       query: `
       SELECT
@@ -58,7 +60,7 @@ async function getVelocityPlanFromADS(witAPI: IWorkItemTrackingApi, pis: string[
               [Source].[System.TeamProject] = @project
               AND [Source].[System.WorkItemType] = 'Feature'
               AND (${piSubQuery})
-              AND [Source].[System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.AREA_OFFSET_WIQL}'
+              AND [Source].[System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${areaOffsetWIQL}'
               AND [Source].[System.State] <> 'Removed'
               AND [Source].[Philips.Planning.Release] = 'Velocity Plan'
           )
@@ -136,11 +138,14 @@ async function getVelocityPlanItemFromADS(witAPI: IWorkItemTrackingApi, id: numb
 
 async function getFeaturesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], asOfDate: Date | undefined) {
   try {
+    const areaOffsetWIQL = Meteor.settings.public.AreaOffset.split('/').join('\\');
+    const iterationOffsetWIQL = ADSConfig.ITERATION_OFFSET.split('/').join('\\');
+
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
-      piSubQuery += `[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${
-        ADSConfig.ITERATION_OFFSET_WIQL
-      }\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
+      piSubQuery += `[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${iterationOffsetWIQL}\\${pi}' ${
+        i !== pis.length - 1 ? 'OR ' : ''
+      }`;
     }
     const asOfSubQuery = asOfDate ? `ASOF '${format(asOfDate, 'MM/dd/yyyy')}'` : '';
 
@@ -152,7 +157,7 @@ async function getFeaturesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], a
       WHERE
           [System.TeamProject] = @project
           AND [System.WorkItemType] = 'Feature'
-          AND [System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.AREA_OFFSET_WIQL}'
+          AND [System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${areaOffsetWIQL}'
           AND (${piSubQuery})
           AND [System.State] <> 'Removed'
       ${asOfSubQuery}`
@@ -250,11 +255,14 @@ async function getFeatureFromADS(witAPI: IWorkItemTrackingApi, id: number, asOfD
 
 async function getStoriesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], asOfDate: Date | undefined) {
   try {
+    const areaOffsetWIQL = Meteor.settings.public.AreaOffset.split('/').join('\\');
+    const iterationOffsetWIQL = ADSConfig.ITERATION_OFFSET.split('/').join('\\');
+
     let piSubQuery = '';
     for (const [i, pi] of pis.entries()) {
-      piSubQuery += `[Source].[System.IterationPath] UNDER '${Meteor.settings.public.ADSProject}${
-        ADSConfig.ITERATION_OFFSET_WIQL
-      }\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
+      piSubQuery += `[Source].[System.IterationPath] UNDER '${
+        Meteor.settings.public.ADSProject
+      }${iterationOffsetWIQL}\\${pi}' ${i !== pis.length - 1 ? 'OR ' : ''}`;
     }
     const asOfSubQuery = asOfDate ? `ASOF '${format(asOfDate, 'MM/dd/yyyy')}'` : '';
 
@@ -267,7 +275,7 @@ async function getStoriesFromADS(witAPI: IWorkItemTrackingApi, pis: string[], as
           (
               [Source].[System.TeamProject] = @project
               AND [Source].[System.WorkItemType] = 'Feature'
-              AND [Source].[System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${ADSConfig.AREA_OFFSET_WIQL}'
+              AND [Source].[System.AreaPath] UNDER '${Meteor.settings.public.ADSProject}${areaOffsetWIQL}'
               AND (${piSubQuery})
               AND [Source].[System.State] <> 'Removed'
           )
