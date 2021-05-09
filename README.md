@@ -12,7 +12,7 @@ After installation, `git clone` this repository and follow the instructions belo
 Take the following steps to configure the application for your specific Azure DevOps instance:
 
 - Copy `settings-example.json` to `settings.json`
-  - Fill in your own ADS-Token, ADS-Project, ADS-Area-Offset and ADS-Url
+  - Fill in your own Azure-DevOps Token, Project, Area-Offset and URL
   - Set `useTestData` to `true`, to run using test-data (without connecting to an Azure DevOps server).
 
 - Do ***NOT*** put this file in version control !
@@ -28,12 +28,12 @@ Take the following steps to configure the application for your specific Azure De
 
 ## Production (Docker)
 
-- The dockerized application takes its configuration from the `METEOR_SETTINGS` environment variable (as defined in `docker-compose.yml`).
+- The dockerized application takes its configuration from the `METEOR_SETTINGS` environment variable (it can be mapped to any host environment variable in `docker-compose.yml`).
   - On Linux/MacOS:
     - Use the `setenv.sh` script to set the environment variable with the contents of `settings.json`
       - `source setenv.sh`
   - On Windows:
-    - Remove all line-breaks and whitespace from `settings.json`
+    - Remove all line-breaks from `settings.json`
     - Use the `setenv.cmd` script to set the environment variable with the contents of `settings.json`
       - `setenv.cmd`
 

@@ -1,3 +1,7 @@
+# Example docker-compose file for running multiple instances 
+# (i.e. for different agile release trains)
+# The instance specific configuration must be placed in the 
+# host environment variables METEOR_SETTINGS_ICC and METEOR_SETTINGS_MDC
 version: '3'
 
 services:
