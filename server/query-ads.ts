@@ -19,16 +19,20 @@ async function getIterationsFromADS(witAPI: IWorkItemTrackingApi) {
     let i = 0;
     if (queryResult.children) {
       for (const pi of queryResult.children) {
+        Collections.IncrementsCollection.insert({
+          pi: pi.name || '',
+          startDate: pi.attributes ? new Date(pi.attributes.startDate) : undefined,
+          finishDate: pi.attributes ? new Date(pi.attributes.finishDate) : undefined
+        });
+
         if (pi.hasChildren && pi.children) {
           for (const sprint of pi.children) {
-            const startDate = sprint.attributes ? new Date(sprint.attributes.startDate) : undefined;
-            const finishDate = sprint.attributes ? new Date(sprint.attributes.finishDate) : undefined;
             Collections.IterationsCollection.insert({
               pi: pi.name || '',
               sprint: i++,
               sprintName: sprint.name || '',
-              startDate: startDate,
-              finishDate: finishDate
+              startDate: sprint.attributes ? new Date(sprint.attributes.startDate) : undefined,
+              finishDate: sprint.attributes ? new Date(sprint.attributes.finishDate) : undefined
             });
           }
         }
@@ -379,14 +383,17 @@ export async function QueryADS(date: Date | undefined): Promise<boolean> {
   const connection = new vsoNodeApi.WebApi(Meteor.settings.public.ADSUrl, authHandler);
   const witAPI = await connection.getWorkItemTrackingApi();
 
-  const pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
-  //const asOfDate = date ? format(date, 'MM/dd/yyyy') : '';
-
-  // no need to get the iterations, velocity & allocation on every as-of query
+  // no need to get the iterations on every as-of query
   if (!date) {
     console.log('getting sprints');
     await getIterationsFromADS(witAPI);
+  }
 
+  // find the current PI and the upcoming 3 PI's
+  const pis = Collections.getCurrentPIs(Collections.IncrementsCollection.find().fetch());
+
+  // no need to get the velocity/allocation on every as-of query
+  if (!date) {
     console.log('getting velocity plan');
     await getVelocityPlanFromADS(witAPI, pis);
   }

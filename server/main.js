@@ -12,6 +12,7 @@ Meteor.startup(() => {
     Collections.FeaturesCollection,
     Collections.DeltaFeaturesCollection,
     Collections.IterationsCollection,
+    Collections.IncrementsCollection,
     Collections.ProjectsCollection,
     Collections.TeamsCollection,
     Collections.VelocityPlanCollection,

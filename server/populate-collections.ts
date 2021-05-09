@@ -35,6 +35,12 @@ export function PopulateCollections(): void {
       Collections.IterationsCollection.insert(iteration);
     });
 
+    // use EJSON.parse and casting to correctly handle $date values in increments.json
+    const increments = EJSON.parse(Assets.getText('increments.json'));
+    ((increments as unknown) as Collections.IncrementType[]).forEach((increment: Collections.IncrementType) => {
+      Collections.IncrementsCollection.insert(increment);
+    });
+
     const projects = JSON.parse(Assets.getText('projects.json'));
     projects.forEach((project: Collections.ProjectType) => Collections.ProjectsCollection.insert(project));
 
