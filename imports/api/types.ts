@@ -35,6 +35,13 @@ export interface InputType {
   startSprintName?: string;
   endSprint?: number;
   endSprintName?: string;
+  featureEndSprint?: number;
+  featureEndSprintName?: string;
+  tags?: string;
+  featureSize?: number;
+  team?: string;
+  project?: string;
+  priority?: number;
 }
 
 export interface UpdateType {

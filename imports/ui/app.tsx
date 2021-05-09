@@ -137,6 +137,7 @@ export function App(): ReactElement {
   let menuEntryKey = 0;
   const teamsList = []; // set of PIView's per team
   const teamsMenu = []; // used as navigation buttons on left-side of screen
+  const teamNamesList = []; // used for dropdown selection in team-filter
 
   for (const team of teams) {
     const newRef = React.createRef<HTMLDivElement>();
@@ -164,10 +165,13 @@ export function App(): ReactElement {
         teamName={team.name}
       />
     );
+
+    teamNamesList.push(team.name);
   }
 
   const projectsList = []; // set of PIView's per project
   const projectsMenu = []; // used as navigation buttons on left-side of screen
+  const projectNamesList = []; // used for dropdown selection in team-filter
 
   for (const project of projects) {
     const newRef = React.createRef<HTMLDivElement>();
@@ -195,6 +199,8 @@ export function App(): ReactElement {
         teamName={teamFilter}
       />
     );
+
+    projectNamesList.push(project.name);
   }
 
   // to show/hide 'loading' indicators
@@ -223,17 +229,21 @@ export function App(): ReactElement {
           <div className={loadingClassName} />
 
           <div className='menu-heading'>Teams</div>
-          <FilterForm text='Project filter' onSubmit={(input: string) => setProjectFilter(input)} />
+          <FilterForm
+            text='Project filter'
+            list={projectNamesList}
+            onSubmit={(input: string) => setProjectFilter(input)}
+          />
           {teamsMenu}
 
           <div className='menu-heading'>Projects</div>
-          <FilterForm text='Team filter' onSubmit={(input: string) => setTeamFilter(input)} />
+          <FilterForm text='Team filter' list={teamNamesList} onSubmit={(input: string) => setTeamFilter(input)} />
           {projectsMenu}
         </div>
       </div>
       <div className='right'>
         <DndProvider backend={HTML5Backend}>
-          <CollectionContext.Provider value={{ velocityPlan, iterations, features, deltaFeatures }}>
+          <CollectionContext.Provider value={{ velocityPlan, iterations, features, deltaFeatures, projects, teams }}>
             <div className='heading'>Project Manager View</div>
             {teamsList}
             <div className='heading'>Product Owner View</div>

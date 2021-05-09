@@ -12,7 +12,7 @@ After installation, `git clone` this repository and follow the instructions belo
 Take the following steps to configure the application for your specific Azure DevOps instance:
 
 - Copy `settings-example.json` to `settings.json`
-  - Fill in your own ADS-Token, ADS-Project and ADS-Url
+  - Fill in your own ADS-Token, ADS-Project, ADS-Area-Offset and ADS-Url
   - Set `useTestData` to `true`, to run using test-data (without connecting to an Azure DevOps server).
 
 - Do ***NOT*** put this file in version control !

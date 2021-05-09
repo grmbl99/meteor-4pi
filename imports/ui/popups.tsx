@@ -20,6 +20,8 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
   const sprintLookup: LookUpType = {};
   const sprintRevLookup: RevLookUpType = {};
   const piLookup: BoolLookUpType = {};
+  const teamLookup: BoolLookUpType = {};
+  const projectLookup: BoolLookUpType = {};
 
   interface FormInputs {
     name: string;
@@ -28,6 +30,12 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
     pi: string;
     startSprint: string;
     endSprint: string;
+    featureEndSprint: string;
+    tags: string;
+    featureSize: number;
+    team: string;
+    project: string;
+    priority: number;
   }
 
   function onSubmit(data: FormInputs) {
@@ -41,7 +49,14 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
       startSprint: sprintLookup[data.startSprint],
       startSprintName: data.startSprint,
       endSprint: sprintLookup[data.endSprint],
-      endSprintName: data.endSprint
+      endSprintName: data.endSprint,
+      featureEndSprint: sprintLookup[data.featureEndSprint],
+      featureEndSprintName: data.featureEndSprint,
+      tags: data.tags,
+      featureSize: data.featureSize,
+      team: data.team,
+      project: data.project,
+      priority: data.priority
     });
   }
 
@@ -57,7 +72,7 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
 
   const context = React.useContext(CollectionContext);
   if (context) {
-    const { iterations } = context;
+    const { iterations, teams, projects } = context;
 
     const showHideClassName = props.show ? 'popup display-block' : 'popup display-none';
 
@@ -76,7 +91,13 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
         progress: props.feature.progress,
         pi: props.feature.pi,
         startSprint: sprintRevLookup[props.feature.startSprint] || props.feature.startSprint.toString(),
-        endSprint: sprintRevLookup[props.feature.endSprint] || props.feature.endSprint.toString()
+        endSprint: sprintRevLookup[props.feature.endSprint] || props.feature.endSprint.toString(),
+        featureEndSprint: sprintRevLookup[props.feature.featureEndSprint] || props.feature.featureEndSprint.toString(),
+        tags: props.feature.tags,
+        featureSize: props.feature.featureSize,
+        team: props.feature.team,
+        project: props.feature.project,
+        priority: props.feature.priority
       });
     }, [props]);
 
@@ -93,12 +114,32 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
       }
     }
 
+    const teamList = [];
+    for (const team of teams) {
+      teamList.push(<option key={team._id} value={team.name} />);
+      teamLookup[team.name] = true;
+    }
+
+    const projectList = [];
+    for (const project of projects) {
+      projectList.push(<option key={project._id} value={project.name} />);
+      projectLookup[project.name] = true;
+    }
+
     return (
       <div className={showHideClassName}>
         <section className='popup-main'>
           <form className='popup-grid-container' onSubmit={handleSubmit(onSubmit, onError)}>
             <label>Name:</label>{' '}
             <input className={errors.name && 'input-invalid'} type='text' {...register('name', { required: true })} />
+            <label>Tags:</label>{' '}
+            <input className={errors.tags && 'input-invalid'} type='text' {...register('tags', { required: false })} />
+            <label>Priority:</label>{' '}
+            <input
+              className={errors.priority && 'input-invalid'}
+              type='text'
+              {...register('priority', { required: false })}
+            />
             <label>Size:</label>{' '}
             <input
               className={errors.size && 'input-invalid'}
@@ -107,6 +148,16 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
                 required: true,
                 min: 0,
                 validate: () => Number(getValues('size')) >= Number(getValues('progress'))
+              })}
+            />
+            <label>Feature Size:</label>{' '}
+            <input
+              className={errors.featureSize && 'input-invalid'}
+              type='text'
+              {...register('featureSize', {
+                required: true,
+                min: 0,
+                validate: () => Number(getValues('featureSize')) >= Number(getValues('featureSize'))
               })}
             />
             <label>Progress:</label>
@@ -137,12 +188,30 @@ function UpdateFeaturePopup(props: UpdateFeaturePopupPropTypes): ReactElement | 
               list='iterations'
               {...register('endSprint', { validate: (v) => v in sprintLookup })}
             />
+            <label>Feature End:</label>
+            <input
+              className={errors.featureEndSprint && 'input-invalid'}
+              list='iterations'
+              {...register('featureEndSprint', { validate: (v) => v in sprintLookup })}
+            />
+            <label>Team:</label>
+            <input
+              className={errors.team && 'input-invalid'}
+              list='teams'
+              {...register('team', { validate: (v) => v in teamLookup })}
+            />
+            <label>Project:</label>
+            <input
+              className={errors.project && 'input-invalid'}
+              list='projects'
+              {...register('project', { validate: (v) => v in projectLookup })}
+            />
             <datalist id='iterations'>{iterationList}</datalist>
             <datalist id='pis'>{piList}</datalist>
+            <datalist id='teams'>{teamList}</datalist>
+            <datalist id='projects'>{projectList}</datalist>
             <input type='submit' value='Submit' />
-            <div className='menu-item' onClick={onCancel}>
-              Cancel
-            </div>
+            <input type='button' onClick={onCancel} value='Cancel' />
           </form>
         </section>
       </div>

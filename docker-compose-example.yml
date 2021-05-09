@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  icc:
+    image: grmbl/meteor-4pi:latest
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+    environment:
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://mongo:27017/icc
+      PORT: 3000
+      METEOR_SETTINGS: ${METEOR_SETTINGS_ICC}
+
+  mdc:
+    image: grmbl/meteor-4pi:latest
+    ports:
+      - '3001:3000'
+    depends_on:
+      - mongo
+    environment:
+      ROOT_URL: ${APP_ROOT_URL:-http://localhost}
+      MONGO_URL: mongodb://mongo:27017/mdc
+      PORT: 3000
+      METEOR_SETTINGS: ${METEOR_SETTINGS_MDC}
+    
+  mongo:
+    image: mongo:latest
+    command:
+      - --storageEngine=wiredTiger
+    volumes:
+      - data:/data/db
+
+volumes:
+  data:

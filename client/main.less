@@ -97,7 +97,7 @@ body {
 
 .filter {
   width: @menu-item-width;
-  height: 85px;
+  height: 50px;
   padding-left: 10px;
   padding-top: 5px;
   outline-offset: -1px;
@@ -112,19 +112,22 @@ body {
 }
 
 .filter-form-cell {
-  width: 110px;
+  width: 140px;
 }
 
-input[type='submit'] {
+input[type='submit'],
+input[type='button'] {
   border: none;
   padding: 5px 5px;
   outline-offset: -1px;
+  width: 100px;
   outline: 1px solid @accent-color;
   color: @light-text-color;
   background-color: @background-color;
 }
 
-input[type='submit']:hover {
+input[type='submit']:hover,
+input[type='button']:hover {
   background-color: @accent-color;
 }
 
@@ -314,8 +317,9 @@ input[type='submit']:hover {
 .feature-icons {
   position: absolute;
   right: 5px;
+  top: 1px;
   text-decoration: inherit;
-  font-size: 8pt;
+  font-size: 7pt;
 }
 
 // invert font-awesome icon-stack on hover
@@ -325,7 +329,7 @@ input[type='submit']:hover {
   margin-right: -5px;
 }
 .fa-stack .fa-circle {
-  color: white;
+  color: @feature-background-color;
 }
 .fa-stack .fa-inverse {
   color: black;
@@ -334,7 +338,7 @@ input[type='submit']:hover {
   color: black;
 }
 .fa-stack:hover .fa-inverse {
-  color: white;
+  color: @feature-background-color;
 }
 
 .feature-progress-bar {
@@ -427,9 +431,9 @@ input[type='submit']:hover {
 .popup-main {
   position: absolute;
   width: 600px;
-  height: 400px;
+  height: 570px;
   left: 30%;
-  top: 30%;
+  top: 20%;
   margin: auto;
   border-radius: 20px;
   background: @menu-background-color;
@@ -446,7 +450,7 @@ input[type='submit']:hover {
 .popup-grid-container {
   padding: 80px;
   display: grid;
-  grid-template-columns: 80px 320px;
+  grid-template-columns: 100px 320px;
   gap: 10px 10px;
 }
 
