@@ -317,8 +317,9 @@ input[type='button']:hover {
 .feature-icons {
   position: absolute;
   right: 5px;
+  top: 1px;
   text-decoration: inherit;
-  font-size: 8pt;
+  font-size: 7pt;
 }
 
 // invert font-awesome icon-stack on hover
@@ -328,7 +329,7 @@ input[type='button']:hover {
   margin-right: -5px;
 }
 .fa-stack .fa-circle {
-  color: white;
+  color: @feature-background-color;
 }
 .fa-stack .fa-inverse {
   color: black;
@@ -337,7 +338,7 @@ input[type='button']:hover {
   color: black;
 }
 .fa-stack:hover .fa-inverse {
-  color: white;
+  color: @feature-background-color;
 }
 
 .feature-progress-bar {
