@@ -1,5 +1,20 @@
 # Meteor-4PI
 
+# [1.1.0](https://github.com/grmbl99/meteor-4pi/compare/v1.0.3...v1.1.0) (2021-05-09)
+
+
+### Bug Fixes
+
+* adjust icon positioning and background color ([afaf71d](https://github.com/grmbl99/meteor-4pi/commit/afaf71d426a8ab584090817dd808b6163aeb2c64))
+
+
+### Features
+
+* add fields to edit feature popup ([2a2d702](https://github.com/grmbl99/meteor-4pi/commit/2a2d70299a151f42958c59c13b866e731011d4cb))
+* dropdown select for team and project filters ([8c6cdc3](https://github.com/grmbl99/meteor-4pi/commit/8c6cdc31654f0d4dc83e27b34a5676d825516b8b))
+* log version number on server ([d100107](https://github.com/grmbl99/meteor-4pi/commit/d10010720ca1ff814ab2afa1e4c3aa46b97448d3))
+* Move area-offset to settings.json ([5f1beae](https://github.com/grmbl99/meteor-4pi/commit/5f1beae746cfbdd628cbda5ef770b1d3b84d4920))
+
 ## [1.0.3](https://github.com/grmbl99/meteor-4pi/compare/v1.0.2...v1.0.3) (2021-05-07)
 
 
