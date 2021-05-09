@@ -1,0 +1,8 @@
+[
+  {"_id":"7nKPx46kKyq5erEdr","pi":"PI 20.4","startDate":{"$date":"2020-12-04T00:00:00Z"}, "finishDate":{"$date":"2021-02-25T00:00:00Z"}},
+  {"_id":"2JZ4e83BtfcjhdENs","pi":"PI 21.1","startDate":{"$date":"2021-02-26T00:00:00Z"}, "finishDate":{"$date":"2021-06-03T00:00:00Z"}},
+  {"_id":"qxi22wsBsbntF7yzm","pi":"PI 21.2","startDate":{"$date":"2021-06-04T00:00:00Z"}, "finishDate":{"$date":"2021-09-09T00:00:00Z"}},
+  {"_id":"vpTG6StQnWi3tQTXg","pi":"PI 21.3","startDate":{"$date":"2021-09-10T00:00:00Z"}, "finishDate":{"$date":"2021-12-02T00:00:00Z"}},
+  {"_id":"RSj8tFoEquhywyPQp","pi":"PI 21.4","startDate":{"$date":"2021-12-03T00:00:00Z"}, "finishDate":{"$date":"2022-03-24T00:00:00Z"}},
+  {"_id":"2Acv5EowZiH4yaetw","pi":"PI 22.1","startDate":{"$date":"2022-03-25T00:00:00Z"}, "finishDate":{"$date":"2022-06-03T00:00:00Z"}}
+]

@@ -16,11 +16,13 @@ import {
   FeaturesCollection,
   DeltaFeaturesCollection,
   IterationsCollection,
+  IncrementsCollection,
   ProjectsCollection,
   TeamsCollection,
   VelocityPlanCollection,
   ServerStatusCollection,
-  FeatureType
+  FeatureType,
+  getCurrentPIs
 } from '/imports/api/collections';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -99,6 +101,10 @@ export function App(): ReactElement {
     Meteor.subscribe('iterations');
     return IterationsCollection.find({}).fetch();
   });
+  const increments = useTracker(() => {
+    Meteor.subscribe('increments');
+    return IncrementsCollection.find({}).fetch();
+  });
   const teams = useTracker(() => {
     Meteor.subscribe('teams');
     return TeamsCollection.find({}, { sort: { name: 1 } }).fetch();
@@ -132,7 +138,7 @@ export function App(): ReactElement {
   const d3 = getServerStatus(ServerStatus.ADS_COMPARE_SYNC_DATE);
   const adsCompareSyncDateStr = d3 ? format(new Date(d3), 'EEE MMM d yyyy HH:mm.ss') : '';
 
-  const pis = ['PI 21.1', 'PI 21.2', 'PI 21.3', 'PI 21.4'];
+  const pis = getCurrentPIs(increments);
 
   let menuEntryKey = 0;
   const teamsList = []; // set of PIView's per team

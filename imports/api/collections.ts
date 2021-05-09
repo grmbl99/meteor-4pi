@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
+import { NOT_SET } from '/imports/api/constants';
 
 export interface ServerStatusType {
   key: string;
@@ -36,6 +37,13 @@ export interface IterationType {
   pi: string;
 }
 
+export interface IncrementType {
+  _id: string;
+  startDate: Date | undefined;
+  finishDate: Date | undefined;
+  pi: string;
+}
+
 export interface VelocityType {
   pi: string;
   team: string;
@@ -62,6 +70,7 @@ export const FeaturesCollection = new Mongo.Collection<FeatureType>('features');
 export const OrgFeaturesCollection = new Mongo.Collection<FeatureType>('orgfeatures');
 export const DeltaFeaturesCollection = new Mongo.Collection<DeltaFeatureType>('deltafeatures');
 export const IterationsCollection = new Mongo.Collection<IterationType>('iterations');
+export const IncrementsCollection = new Mongo.Collection<IncrementType>('increments');
 export const TeamsCollection = new Mongo.Collection<TeamType>('teams');
 export const ProjectsCollection = new Mongo.Collection<ProjectType>('projects');
 export const VelocityPlanCollection = new Mongo.Collection<VelocityType>('velocityplan');
@@ -86,6 +95,9 @@ if (Meteor.isServer) {
   Meteor.publish('iterations', function publishIterations() {
     return IterationsCollection.find();
   });
+  Meteor.publish('increments', function publishIncrements() {
+    return IncrementsCollection.find();
+  });
   Meteor.publish('teams', function publishTeams() {
     return TeamsCollection.find();
   });
@@ -98,4 +110,25 @@ if (Meteor.isServer) {
   Meteor.publish('serverstatus', function publishServerStatus() {
     return ServerStatusCollection.find();
   });
+}
+
+export function getCurrentPIs(increments: IncrementType[]): string[] {
+  const today = new Date();
+
+  let piIndex = NOT_SET;
+  for (const [i, pi] of increments.entries()) {
+    if (pi.startDate && pi.finishDate && today >= pi.startDate && today <= pi.finishDate) {
+      piIndex = i;
+    }
+  }
+
+  const pis = [];
+  if (piIndex !== NOT_SET) {
+    pis.push(increments[piIndex++].pi);
+    piIndex < increments.length && pis.push(increments[piIndex++].pi);
+    piIndex < increments.length && pis.push(increments[piIndex++].pi);
+    piIndex < increments.length && pis.push(increments[piIndex++].pi);
+  }
+
+  return pis;
 }
