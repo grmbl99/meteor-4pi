@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+# [1.2.0](https://github.com/grmbl99/meteor-4pi/compare/v1.1.0...v1.2.0) (2021-05-09)
+
+
+### Features
+
+* read pi's from ads ([c2d410d](https://github.com/grmbl99/meteor-4pi/commit/c2d410d22ba3d2867ef47ba8b17c649b985d1b1f))
+
 # [1.1.0](https://github.com/grmbl99/meteor-4pi/compare/v1.0.3...v1.1.0) (2021-05-09)
 
 
