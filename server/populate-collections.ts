@@ -31,13 +31,13 @@ export function PopulateCollections(): void {
 
     // use EJSON.parse and casting to correctly handle $date values in iterations.json
     const iterations = EJSON.parse(Assets.getText('iterations.json'));
-    ((iterations as unknown) as Collections.IterationType[]).forEach((iteration: Collections.IterationType) => {
+    (iterations as unknown as Collections.IterationType[]).forEach((iteration: Collections.IterationType) => {
       Collections.IterationsCollection.insert(iteration);
     });
 
     // use EJSON.parse and casting to correctly handle $date values in increments.json
     const increments = EJSON.parse(Assets.getText('increments.json'));
-    ((increments as unknown) as Collections.IncrementType[]).forEach((increment: Collections.IncrementType) => {
+    (increments as unknown as Collections.IncrementType[]).forEach((increment: Collections.IncrementType) => {
       Collections.IncrementsCollection.insert(increment);
     });
 
