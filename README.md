@@ -5,7 +5,7 @@
 
 This application is build using the **Meteor** framework. To install this framework, follow the installation instructions on [meteor.com](https://www.meteor.com/developers/install)
 
-After installation, `git clone` this repository and follow the instructions below.
+After installation, `git clone` this repository and follow the instructions below
 
 ## Configuration
 
