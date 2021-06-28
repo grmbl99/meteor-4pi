@@ -17,7 +17,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.6",
     "@types/jest": "^26.0.23",
-    "@types/meteor": "^1.4.70",
+    "@types/meteor": "^1.4.71",
     "@types/node": "^15.12.4",
     "@types/react": "^17.0.11",
     "@types/react-datepicker": "^3.1.8",
