@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+# [1.3.0](https://github.com/grmbl99/meteor-4pi/compare/v1.2.2...v1.3.0) (2021-07-21)
+
+
+### Features
+
+* Meteor update to 2.3 ([ed12cd5](https://github.com/grmbl99/meteor-4pi/commit/ed12cd54dd74884da2a54d9d51b81de8068930b1))
+
 ## [1.2.2](https://github.com/grmbl99/meteor-4pi/compare/v1.2.1...v1.2.2) (2021-06-17)
 
 
