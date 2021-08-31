@@ -14,7 +14,7 @@ jobs:
       - 
         name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3.4.1
+        uses: docker/metadata-action@v3.5.0
         with:
           images: grmbl/meteor-4pi
           tags: |
@@ -28,7 +28,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build and push
-        uses: docker/build-push-action@v2.6.1
+        uses: docker/build-push-action@v2.7.0
         with:
           context: .
           push: true
