@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.3.3](https://github.com/grmbl99/meteor-4pi/compare/v1.3.2...v1.3.3) (2021-08-31)
+
+
+### Bug Fixes
+
+* Also apply node update in Dockerfile ([a3b3bfe](https://github.com/grmbl99/meteor-4pi/commit/a3b3bfed59b6388e7a3d572d9d2b721fc53c8633))
+
 ## [1.3.2](https://github.com/grmbl99/meteor-4pi/compare/v1.3.1...v1.3.2) (2021-08-31)
 
 
