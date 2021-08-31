@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.3.2](https://github.com/grmbl99/meteor-4pi/compare/v1.3.1...v1.3.2) (2021-08-31)
+
+
+### Bug Fixes
+
+* meteor requires node14 or higher ([0612726](https://github.com/grmbl99/meteor-4pi/commit/06127268319fa848f81cce6c0c3177e23770ab4a))
+
 ## [1.3.1](https://github.com/grmbl99/meteor-4pi/compare/v1.3.0...v1.3.1) (2021-08-31)
 
 
