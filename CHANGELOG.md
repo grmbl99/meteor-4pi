@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.3.1](https://github.com/grmbl99/meteor-4pi/compare/v1.3.0...v1.3.1) (2021-08-31)
+
+
+### Bug Fixes
+
+* fix datepicker type issue ([a4d89ab](https://github.com/grmbl99/meteor-4pi/commit/a4d89aba9d9fa1fea5cf79be6799dea8dc447ea3))
+
 # [1.3.0](https://github.com/grmbl99/meteor-4pi/compare/v1.2.2...v1.3.0) (2021-07-21)
 
 
