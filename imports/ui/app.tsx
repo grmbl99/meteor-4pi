@@ -81,7 +81,7 @@ export function App(): ReactElement {
   }
 
   // call method on server to refresh compare data from ADS
-  function refreshCompareADS(date: Date | [Date, Date] | null) {
+  function refreshCompareADS(date: Date | [Date | null, Date | null] | null) {
     if (adsSyncStatus !== SyncStatus.BUSY) {
       Meteor.call('RefreshCompareADS', date);
       setCompareModeOn(true);
