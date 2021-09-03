@@ -15,7 +15,7 @@
     "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
-    "@babel/runtime": "^7.15.3",
+    "@babel/runtime": "^7.15.4",
     "@types/jest": "^27.0.1",
     "@types/meteor": "^1.4.77",
     "@types/node": "^16.7.8",
