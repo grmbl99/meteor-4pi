@@ -18,7 +18,7 @@
     "@babel/runtime": "^7.15.4",
     "@types/jest": "^27.0.2",
     "@types/meteor": "^1.4.78",
-    "@types/node": "^16.9.6",
+    "@types/node": "^16.10.9",
     "@types/react": "^17.0.21",
     "@types/react-datepicker": "^4.1.7",
     "@types/react-dom": "^17.0.9",
