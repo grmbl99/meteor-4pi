@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.4.1](https://github.com/grmbl99/meteor-4pi/compare/v1.4.0...v1.4.1) (2021-11-16)
+
+
+### Bug Fixes
+
+* typescript-eslint upgrade ([a43670a](https://github.com/grmbl99/meteor-4pi/commit/a43670a0024aab664f2b44f120a62b7e604e240e))
+
 # [1.4.0](https://github.com/grmbl99/meteor-4pi/compare/v1.3.3...v1.4.0) (2021-11-16)
 
 
