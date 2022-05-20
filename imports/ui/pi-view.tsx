@@ -280,6 +280,7 @@ function Sprint(props: SprintPropTypes) {
   const FEATURE_CSS_OFFSET = 60;
 
   const today = new Date();
+  //const today = new Date(2021, 2, 8);
   const offset = props.iteration.startDate ? differenceInCalendarDays(today, props.iteration.startDate) : NOT_SET;
   if (offset >= 0 && offset < ADSConfig.ITERATION_DAYS) {
     todayIndicator = (

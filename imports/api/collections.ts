@@ -114,6 +114,7 @@ if (Meteor.isServer) {
 
 export function getCurrentPIs(increments: IncrementType[]): string[] {
   const today = new Date();
+  //const today = new Date(2021, 2, 8);
 
   let piIndex = NOT_SET;
   for (const [i, pi] of increments.entries()) {

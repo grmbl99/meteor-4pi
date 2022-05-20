@@ -15,24 +15,24 @@
     "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
-    "@babel/runtime": "^7.16.7",
-    "@types/jest": "^27.4.0",
-    "@types/meteor": "^2.0.1",
-    "@types/node": "^17.0.8",
+    "@babel/runtime": "^7.18.0",
+    "@types/jest": "^27.5.1",
+    "@types/meteor": "^2.6.3",
+    "@types/node": "^17.0.35",
     "@types/react": "^18.0.9",
-    "@types/react-datepicker": "^4.3.4",
+    "@types/react-datepicker": "^4.4.1",
     "@types/react-dom": "^18.0.4",
     "azure-devops-node-api": "^11.1.0",
     "date-fns": "^2.28.0",
     "meteor-node-stubs": "^1.2.3",
     "prop-types": "^15.8.1",
-    "react": "^17.0.2",
-    "react-datepicker": "^4.6.0",
+    "react": "^18.1.0",
+    "react-datepicker": "^4.8.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.1.0",
-    "react-hook-form": "^7.22.5",
-    "typescript": "^4.5.4"
+    "react-hook-form": "^7.31.1",
+    "typescript": "^4.6.4"
   },
   "meteor": {
     "mainModule": {
@@ -41,9 +41,9 @@
     }
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
-    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/git": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
     "eslint": "^8.15.0",
