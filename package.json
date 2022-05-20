@@ -54,7 +54,7 @@
     "markdownlint-cli": "^0.31.1",
     "prettier": "^2.6.2",
     "semantic-release": "^18.0.1",
-    "sinon": "^12.0.1"
+    "sinon": "^14.0.0"
   },
   "release": {
     "branches": [
