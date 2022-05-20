@@ -1,5 +1,12 @@
 # Meteor-4PI
 
+## [1.4.3](https://github.com/grmbl99/meteor-4pi/compare/v1.4.2...v1.4.3) (2022-05-20)
+
+
+### Bug Fixes
+
+* dependency updates ([f600014](https://github.com/grmbl99/meteor-4pi/commit/f60001402cc62417e6e2a347abab3149c0b7e086))
+
 ## [1.4.2](https://github.com/grmbl99/meteor-4pi/compare/v1.4.1...v1.4.2) (2022-05-20)
 
 
